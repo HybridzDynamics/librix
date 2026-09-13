@@ -1,0 +1,199 @@
+<?php
+
+// Configuration
+
+require_once __DIR__ . "/../../../config/config.php";
+require_once __DIR__ . "/../../../config/database.php";
+require_once __DIR__ . "/../../../helpers/response.php";
+require_once __DIR__ . "/../../../helpers/validation.php";
+require_once __DIR__ . "/../../../helpers/functions.php";
+
+
+// Request Method
+
+if ($_SERVER["REQUEST_METHOD"] !== "POST") {
+    MethodNotAllowedResponse(["POST"]);
+}
+
+
+// Rate Limiting
+
+$ClientIp = GetClientIp();
+$RateLimitKey = "register_" . $ClientIp;
+$RetryAfter = CheckRateLimit($RateLimitKey, RATE_LIMIT_AUTH_MAX, RATE_LIMIT_WINDOW_SECONDS);
+
+if ($RetryAfter > 0) {
+    TooManyRequestsResponse("Too many registration attempts. Please try again later.", $RetryAfter);
+}
+
+
+// Request Data
+
+$RequestData = GetJsonInput();
+
+$UserName = trim($RequestData["name"] ?? "");
+$UserEmail = trim($RequestData["email"] ?? "");
+$Password = $RequestData["password"] ?? "";
+
+
+// Validation
+
+$Errors = [];
+
+$NameError = Required($UserName, "Name");
+
+if ($NameError !== null) {
+    $Errors["name"] = $NameError;
+} else {
+    $NameError = MinLength($UserName, 2, "Name");
+
+    if ($NameError !== null) {
+        $Errors["name"] = $NameError;
+    }
+}
+
+$EmailError = Required($UserEmail, "Email");
+
+if ($EmailError !== null) {
+    $Errors["email"] = $EmailError;
+} else {
+    $EmailError = ValidateEmail($UserEmail);
+
+    if ($EmailError !== null) {
+        $Errors["email"] = $EmailError;
+    }
+}
+
+$PasswordError = Required($Password, "Password");
+
+if ($PasswordError !== null) {
+    $Errors["password"] = $PasswordError;
+} else {
+    $PasswordError = MinLength($Password, 8, "Password");
+
+    if ($PasswordError !== null) {
+        $Errors["password"] = $PasswordError;
+    }
+}
+
+if (HasValidationErrors($Errors)) {
+    ValidationErrorResponse($Errors);
+}
+
+
+// Check Existing User
+
+try {
+    $Stmt = $pdo->prepare(
+        "SELECT id FROM users WHERE email = ? LIMIT 1"
+    );
+
+    $Stmt->execute([$UserEmail]);
+
+    $ExistingUser = $Stmt->fetch();
+
+} catch (PDOException $e) {
+    ErrorResponse("Database error", 500);
+}
+
+if ($ExistingUser) {
+    ErrorResponse("Email is already registered", 409);
+}
+
+
+// Create User
+
+$HashedPassword = password_hash(
+    $Password,
+    PASSWORD_DEFAULT
+);
+
+$InitialStatus = EMAIL_VERIFICATION_ENABLED ? "inactive" : "active";
+$EmailVerifiedAt = EMAIL_VERIFICATION_ENABLED ? null : date("Y-m-d H:i:s");
+
+try {
+    $pdo->beginTransaction();
+
+    $Stmt = $pdo->prepare(
+        "INSERT INTO users
+        (name, email, password, role, status, email_verified_at)
+        VALUES (?, ?, ?, ?, ?, ?)"
+    );
+
+    $Stmt->execute([
+        $UserName,
+        $UserEmail,
+        $HashedPassword,
+        "user",
+        $InitialStatus,
+        $EmailVerifiedAt
+    ]);
+
+    $UserId = (int)$pdo->lastInsertId();
+
+    if (EMAIL_VERIFICATION_ENABLED) {
+        $VerificationToken = GenerateToken(32);
+        $ExpiresAt = date("Y-m-d H:i:s", strtotime("+24 hours"));
+
+        $Stmt = $pdo->prepare(
+            "INSERT INTO email_verification_tokens
+            (user_id, token, expires_at)
+            VALUES (?, ?, ?)"
+        );
+
+        $Stmt->execute([
+            $UserId,
+            $VerificationToken,
+            $ExpiresAt
+        ]);
+    }
+
+    $pdo->commit();
+
+    LogAudit($UserId, "user_registered", "users", $UserId, "User registered with email $UserEmail");
+
+} catch (PDOException $e) {
+    if ($pdo->inTransaction()) {
+        $pdo->rollBack();
+    }
+    ErrorResponse("Unable to create account", 500);
+}
+
+
+// Get Created User
+
+try {
+    $Stmt = $pdo->prepare(
+        "SELECT id, name, email, role, status, email_verified_at, created_at
+         FROM users
+         WHERE id = ?
+         LIMIT 1"
+    );
+
+    $Stmt->execute([$UserId]);
+
+    $User = $Stmt->fetch();
+
+} catch (PDOException $e) {
+    ErrorResponse("Unable to retrieve account", 500);
+}
+
+
+// Registration Response
+
+SuccessResponse(
+    [
+        "user" => [
+            "id" => (int)$User["id"],
+            "name" => $User["name"],
+            "email" => $User["email"],
+            "role" => $User["role"],
+            "status" => $User["status"],
+            "created_at" => $User["created_at"]
+        ]
+    ],
+    "Registration successful",
+    201
+);
+
+?>

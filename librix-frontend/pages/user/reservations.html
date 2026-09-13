@@ -1,0 +1,130 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>My Reservations | LibriX</title>
+    <link rel="icon" type="image/png" href="../../assets/images/favicon.png">
+    <link rel="stylesheet" href="../../assets/css/global.css">
+    <link rel="stylesheet" href="../../assets/css/dashboard.css">
+    <script src="../../assets/js/icons.js"></script>
+</head>
+<body>
+    <div class="dashboard-wrapper">
+        <aside class="dashboard-sidebar" id="sidebar">
+            <div class="sidebar-brand"><img src="../../assets/images/logo.png" alt="LibriX Logo"><h2>LibriX</h2></div>
+            <div class="sidebar-user">
+                <div class="sidebar-avatar" id="user-avatar">U</div>
+                <div class="sidebar-user-info">
+                    <div class="sidebar-user-name" id="user-name-display">Loading...</div>
+                    <div class="sidebar-user-role">Patron Account</div>
+                </div>
+            </div>
+            <ul class="sidebar-menu">
+                <li class="sidebar-item"><a href="dashboard.html"><span class="sidebar-icon"><i data-lucide="layout-dashboard" data-size="18"></i></span><span>Dashboard</span></a></li>
+                <li class="sidebar-item"><a href="my-books.html"><span class="sidebar-icon"><i data-lucide="book" data-size="18"></i></span><span>My Borrowed Books</span></a></li>
+                <li class="sidebar-item"><a href="history.html"><span class="sidebar-icon"><i data-lucide="clock" data-size="18"></i></span><span>Borrowing History</span></a></li>
+                <li class="sidebar-item"><a href="reservations.html" class="active"><span class="sidebar-icon"><i data-lucide="bookmark" data-size="18"></i></span><span>Reservations</span></a></li>
+                <li class="sidebar-item"><a href="favorites.html"><span class="sidebar-icon"><i data-lucide="heart" data-size="18"></i></span><span>My Favorites</span></a></li>
+                <li class="sidebar-item"><a href="notifications.html"><span class="sidebar-icon"><i data-lucide="bell" data-size="18"></i></span><span>Notifications</span></a></li>
+                <li class="sidebar-item"><a href="profile.html"><span class="sidebar-icon"><i data-lucide="settings" data-size="18"></i></span><span>Profile &amp; Settings</span></a></li>
+                <li class="sidebar-item" style="margin-top:12px;border-top:1px solid var(--border);padding-top:12px;"><a href="../catalogue.html"><span class="sidebar-icon"><i data-lucide="search" data-size="18"></i></span><span>Explore Catalogue</span></a></li>
+            </ul>
+            <div class="sidebar-footer">
+                <button class="btn btn-outline btn-sm" style="width:100%;display:flex;align-items:center;justify-content:center;gap:8px;border-color:var(--border);" onclick="auth.logout()"><i data-lucide="log-out" data-size="16"></i> Sign Out</button>
+            </div>
+        </aside>
+
+        <main class="dashboard-main">
+            <header class="dashboard-topbar">
+                <div style="display:flex;align-items:center;gap:14px;">
+                    <button class="mobile-menu-toggle" onclick="toggleSidebar()" style="display:flex;align-items:center;justify-content:center;"><i data-lucide="menu" data-size="22"></i></button>
+                    <span style="font-weight:700;font-size:var(--font-base);">Book Reservations Queue</span>
+                </div>
+                <div class="topbar-actions">
+                    <a href="../catalogue.html" class="btn btn-primary btn-sm" style="display:flex;align-items:center;gap:6px;"><i data-lucide="plus" data-size="16"></i> Reserve Books</a>
+                </div>
+            </header>
+
+            <div class="dashboard-body">
+                <div class="page-header">
+                    <h1 class="page-title">Active Book Reservations</h1>
+                    <p class="page-subtitle">Track your waiting queues. You will receive an immediate alert once a reserved copy is returned.</p>
+                </div>
+                <div class="card">
+                    <div id="reservations-container">
+                        <div style="padding:60px;text-align:center;"><div class="spinner"></div></div>
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <script src="../../assets/js/api.js"></script>
+    <script src="../../assets/js/utils.js"></script>
+    <script src="../../assets/js/auth.js"></script>
+    <script>
+        if (!auth.requireAuth()) {}
+        const user = auth.getUser();
+        if (user) {
+            document.getElementById('user-name-display').textContent = user.name;
+            document.getElementById('user-avatar').textContent = user.name.charAt(0).toUpperCase();
+        }
+        function toggleSidebar() { document.getElementById('sidebar').classList.toggle('is-open'); }
+
+        async function loadReservations() {
+            const container = document.getElementById('reservations-container');
+            container.innerHTML = `<div style="padding:60px;text-align:center;"><div class="spinner"></div></div>`;
+            try {
+                const res = await api.get('/library/my-books');
+                const reservations = (res.data && res.data.reservations) ? res.data.reservations : [];
+                if (reservations.length === 0) {
+                    container.innerHTML = `
+                        <div class="empty-state">
+                            <div class="empty-state-icon"><svg xmlns="http://www.w3.org/2000/svg" width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="m19 21-7-4-7 4V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2v16z"/></svg></div>
+                            <div class="empty-state-title">No Active Reservations</div>
+                            <div class="empty-state-desc">When a popular title is currently checked out by another patron, you can reserve it to hold your place in queue.</div>
+                            <a href="../catalogue.html" class="btn btn-primary btn-sm">Explore Catalogue</a>
+                        </div>`;
+                    return;
+                }
+                container.innerHTML = `
+                    <div class="table-wrapper" style="border:none;">
+                        <table class="table table-hover">
+                            <thead><tr>
+                                <th>Reserved Title</th><th>Author</th><th>Reserved Date</th><th>Queue Status</th><th style="text-align:right;">Action</th>
+                            </tr></thead>
+                            <tbody>
+                                ${reservations.map(r => `<tr>
+                                    <td><strong style="color:var(--text-main);font-size:var(--font-sm);">${utils.escapeHtml(r.title)}</strong></td>
+                                    <td style="color:var(--text-muted);font-size:var(--font-xs);">${utils.escapeHtml(r.author_name || '—')}</td>
+                                    <td style="font-size:var(--font-xs);">${utils.formatDate(r.reserved_at)}</td>
+                                    <td><span class="badge badge-warning">Queue Active</span></td>
+                                    <td style="text-align:right;">
+                                        <button class="btn btn-outline btn-sm" style="color:var(--danger);border-color:var(--danger);" onclick="cancelReservation(${r.reservation_id}, '${utils.escapeHtml(r.title)}')">Cancel</button>
+                                    </td>
+                                </tr>`).join('')}
+                            </tbody>
+                        </table>
+                    </div>`;
+            } catch (err) {
+                container.innerHTML = `<div style="padding:40px;text-align:center;color:var(--danger);">Failed to load reservations.</div>`;
+            }
+        }
+
+        async function cancelReservation(resId, title) {
+            if (confirm(`Cancel reservation for "${title}"?`)) {
+                try {
+                    await api.post('/library/cancel-reservation', { reservation_id: resId });
+                    utils.toast("Reservation Cancelled", `Cancelled hold on "${title}".`, "info");
+                    loadReservations();
+                } catch (err) {
+                    utils.toast("Cancellation Failed", err.message, "error");
+                }
+            }
+        }
+
+        loadReservations();
+    </script>
+</body>
+</html>

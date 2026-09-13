@@ -1,0 +1,237 @@
+/* ==========================================================================
+   LibriX User Dashboard & Shared Layout Styles
+   ========================================================================== */
+
+.dashboard-wrapper {
+    display: flex;
+    min-height: 100vh;
+    background-color: #f8fafc;
+}
+
+/* Sidebar */
+.dashboard-sidebar {
+    width: 260px;
+    background-color: #ffffff;
+    border-right: 1px solid var(--border);
+    display: flex;
+    flex-direction: column;
+    flex-shrink: 0;
+    position: sticky;
+    top: 0;
+    height: 100vh;
+    z-index: 100;
+    transition: transform var(--transition-base);
+}
+
+.sidebar-brand {
+    padding: 24px;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    border-bottom: 1px solid var(--border);
+}
+
+.sidebar-brand img {
+    width: 36px;
+    height: 36px;
+}
+
+.sidebar-brand h2 {
+    font-size: var(--font-xl);
+    font-weight: 800;
+    color: var(--primary);
+    margin: 0;
+}
+
+.sidebar-user {
+    padding: 20px 24px;
+    border-bottom: 1px solid var(--border);
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    background: #fafbfc;
+}
+
+.sidebar-avatar {
+    width: 44px;
+    height: 44px;
+    border-radius: 50%;
+    background: linear-gradient(135deg, var(--primary), var(--secondary));
+    color: #ffffff;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: 700;
+    font-size: var(--font-md);
+    flex-shrink: 0;
+}
+
+.sidebar-user-info {
+    overflow: hidden;
+}
+
+.sidebar-user-name {
+    font-size: var(--font-sm);
+    font-weight: 700;
+    color: var(--text-main);
+    white-space: nowrap;
+    text-overflow: ellipsis;
+    overflow: hidden;
+}
+
+.sidebar-user-role {
+    font-size: var(--font-xs);
+    color: var(--text-muted);
+}
+
+.sidebar-menu {
+    padding: 16px 12px;
+    list-style: none;
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+    flex: 1;
+    overflow-y: auto;
+}
+
+.sidebar-item a {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 11px 16px;
+    border-radius: var(--radius-md);
+    font-size: var(--font-sm);
+    font-weight: 600;
+    color: var(--text-muted);
+    transition: all var(--transition-fast);
+    text-decoration: none;
+}
+
+.sidebar-item a:hover {
+    background-color: #f1f5f9;
+    color: var(--primary);
+}
+
+.sidebar-item a.active {
+    background-color: var(--primary-light);
+    color: var(--primary);
+}
+
+.sidebar-icon {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 20px;
+    height: 20px;
+    flex-shrink: 0;
+}
+.sidebar-icon svg {
+    width: 18px;
+    height: 18px;
+}
+
+.sidebar-footer {
+    padding: 16px 20px;
+    border-top: 1px solid var(--border);
+}
+
+/* Main Content Area */
+.dashboard-main {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    min-width: 0;
+}
+
+.dashboard-topbar {
+    height: 72px;
+    background-color: #ffffff;
+    border-bottom: 1px solid var(--border);
+    padding: 0 32px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    position: sticky;
+    top: 0;
+    z-index: 90;
+}
+
+.topbar-search {
+    position: relative;
+    width: 320px;
+}
+
+.topbar-search input {
+    width: 100%;
+    padding: 8px 12px 8px 36px;
+    border: 1px solid var(--border);
+    border-radius: var(--radius-md);
+    font-size: var(--font-sm);
+    outline: none;
+}
+
+.topbar-search-icon {
+    position: absolute;
+    left: 12px;
+    top: 50%;
+    transform: translateY(-50%);
+    color: var(--text-subtle);
+    font-size: 14px;
+}
+
+.topbar-actions {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+}
+
+.dashboard-body {
+    padding: 32px;
+    flex: 1;
+}
+
+.page-header {
+    margin-bottom: 28px;
+}
+
+.page-title {
+    font-size: var(--font-2xl);
+    font-weight: 800;
+    color: var(--text-main);
+    margin-bottom: 4px;
+}
+
+.page-subtitle {
+    font-size: var(--font-sm);
+    color: var(--text-muted);
+}
+
+/* Mobile Responsive */
+.mobile-menu-toggle {
+    display: none;
+    background: transparent;
+    border: none;
+    font-size: 24px;
+    cursor: pointer;
+    color: var(--text-main);
+}
+
+@media (max-width: 900px) {
+    .dashboard-sidebar {
+        position: fixed;
+        left: -260px;
+    }
+    .dashboard-sidebar.is-open {
+        transform: translateX(260px);
+        box-shadow: var(--shadow-xl);
+    }
+    .mobile-menu-toggle {
+        display: block;
+    }
+    .dashboard-topbar {
+        padding: 0 16px;
+    }
+    .dashboard-body {
+        padding: 20px 16px;
+    }
+}

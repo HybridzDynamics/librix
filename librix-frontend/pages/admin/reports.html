@@ -1,0 +1,288 @@
+<!doctype html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Reports & Analytics | Librix Admin</title>
+    <link rel="icon" type="image/png" href="../../assets/images/favicon.png">
+    <link rel="stylesheet" href="../../assets/css/global.css">
+    <link rel="stylesheet" href="../../assets/css/admin.css">
+</head>
+
+<body>
+    <div class="admin-wrapper">
+        <!-- Sidebar -->
+        <aside class="admin-sidebar" id="sidebar">
+            <div class="admin-sidebar-brand">
+                <img src="../../assets/images/logo.png" alt="Librix Logo">
+                <h2>Librix <span class="badge-admin">LIBRARIAN</span></h2>
+            </div>
+
+            <div class="admin-sidebar-user">
+                <div class="admin-sidebar-avatar" id="admin-avatar">A</div>
+                <div style="overflow: hidden;">
+                    <div class="admin-sidebar-name" id="admin-name">Administrator</div>
+                    <div class="admin-sidebar-role">Library Operations</div>
+                </div>
+            </div>
+
+            <ul class="admin-sidebar-menu">
+                <li class="admin-menu-header">Core Operations</li>
+                <li class="admin-sidebar-item"><a href="dashboard.html"><span class="admin-sidebar-icon">📊</span><span>Overview Dashboard</span></a></li>
+                <li class="admin-sidebar-item"><a href="borrowings.html"><span class="admin-sidebar-icon">🔄</span><span>Circulation & Loans</span></a></li>
+                <li class="admin-sidebar-item"><a href="reservations.html"><span class="admin-sidebar-icon">📌</span><span>Reservations Queue</span></a></li>
+                <li class="admin-sidebar-item"><a href="fines.html"><span class="admin-sidebar-icon">💳</span><span>Fines & Overdue Fees</span></a></li>
+
+                <li class="admin-menu-header">Catalog & Inventory</li>
+                <li class="admin-sidebar-item"><a href="books.html"><span class="admin-sidebar-icon">📚</span><span>Manage Books</span></a></li>
+                <li class="admin-sidebar-item"><a href="authors.html"><span class="admin-sidebar-icon">✍️</span><span>Authors Directory</span></a></li>
+                <li class="admin-sidebar-item"><a href="categories.html"><span class="admin-sidebar-icon">🏷️</span><span>Categories</span></a></li>
+                <li class="admin-sidebar-item"><a href="publishers.html"><span class="admin-sidebar-icon">🏢</span><span>Publishers</span></a></li>
+
+                <li class="admin-menu-header">Administration</li>
+                <li class="admin-sidebar-item"><a href="users.html"><span class="admin-sidebar-icon">👥</span><span>Users & Patrons</span></a></li>
+                <li class="admin-sidebar-item"><a href="reports.html" class="active"><span class="admin-sidebar-icon">📈</span><span>Reports & Analytics</span></a></li>
+                <li class="admin-sidebar-item"><a href="../catalogue.html" target="_blank"><span class="admin-sidebar-icon">↗</span><span>Live Public Site</span></a></li>
+            </ul>
+
+            <div class="admin-sidebar-footer">
+                <button class="btn btn-outline btn-sm" style="width: 100%; border-color: #334155; color: #cbd5e1;" onclick="auth.logout()">
+                    Logout Admin
+                </button>
+            </div>
+        </aside>
+
+        <!-- Main Workspace -->
+        <main class="admin-main">
+            <!-- Topbar -->
+            <header class="admin-topbar">
+                <div style="display: flex; align-items: center; gap: 14px;">
+                    <button class="mobile-menu-toggle" onclick="toggleSidebar()">☰</button>
+                    <span style="font-weight: 700; font-size: var(--font-base);">Reports & Analytics Intelligence</span>
+                </div>
+
+                <div style="display: flex; gap: 10px;">
+                    <button class="btn btn-outline btn-sm" onclick="exportBooksCSV()">
+                        📥 Export Books CSV
+                    </button>
+                    <button class="btn btn-primary btn-sm" onclick="window.print()">
+                        🖨 Print Executive Report
+                    </button>
+                </div>
+            </header>
+
+            <!-- Admin Body -->
+            <div class="admin-body">
+                <div class="page-header">
+                    <h1 class="page-title">Executive Library Performance</h1>
+                    <p class="page-subtitle">Circulation turnaround metrics, inventory utilization health, and financial reconciliation.</p>
+                </div>
+
+                <!-- Report Section 1: Executive Metrics -->
+                <div class="grid grid-3" style="gap: 24px; margin-bottom: 36px;">
+                    <div class="card" style="padding: 24px;">
+                        <h3 style="font-size: var(--font-base); font-weight: 700; margin-bottom: 16px;">Circulation Efficiency</h3>
+                        <div style="display: flex; flex-direction: column; gap: 12px; font-size: var(--font-sm);">
+                            <div style="display: flex; justify-content: space-between;">
+                                <span style="color: var(--text-muted);">Total All-Time Checkouts:</span>
+                                <strong id="rep-total-issues">0</strong>
+                            </div>
+                            <div style="display: flex; justify-content: space-between;">
+                                <span style="color: var(--text-muted);">Currently Active Loans:</span>
+                                <strong id="rep-active-issues" style="color: var(--primary);">0</strong>
+                            </div>
+                            <div style="display: flex; justify-content: space-between;">
+                                <span style="color: var(--text-muted);">Successfully Returned:</span>
+                                <strong id="rep-returned-issues" style="color: var(--success);">0</strong>
+                            </div>
+                            <div style="display: flex; justify-content: space-between;">
+                                <span style="color: var(--text-muted);">Overdue Rate:</span>
+                                <strong id="rep-overdue-rate" style="color: var(--danger);">0%</strong>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="card" style="padding: 24px;">
+                        <h3 style="font-size: var(--font-base); font-weight: 700; margin-bottom: 16px;">Inventory Utilization</h3>
+                        <div style="display: flex; flex-direction: column; gap: 12px; font-size: var(--font-sm);">
+                            <div style="display: flex; justify-content: space-between;">
+                                <span style="color: var(--text-muted);">Unique Book Titles:</span>
+                                <strong id="rep-total-titles">0</strong>
+                            </div>
+                            <div style="display: flex; justify-content: space-between;">
+                                <span style="color: var(--text-muted);">Total Physical Copies:</span>
+                                <strong id="rep-total-copies">0</strong>
+                            </div>
+                            <div style="display: flex; justify-content: space-between;">
+                                <span style="color: var(--text-muted);">Available on Shelves:</span>
+                                <strong id="rep-avail-copies" style="color: var(--success);">0</strong>
+                            </div>
+                            <div style="display: flex; justify-content: space-between;">
+                                <span style="color: var(--text-muted);">Stock Utilization Rate:</span>
+                                <strong id="rep-util-rate" style="color: var(--primary);">0%</strong>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="card" style="padding: 24px;">
+                        <h3 style="font-size: var(--font-base); font-weight: 700; margin-bottom: 16px;">Financial Reconciliation</h3>
+                        <div style="display: flex; flex-direction: column; gap: 12px; font-size: var(--font-sm);">
+                            <div style="display: flex; justify-content: space-between;">
+                                <span style="color: var(--text-muted);">Total Penalties Assessed:</span>
+                                <strong id="rep-fines-total">$0.00</strong>
+                            </div>
+                            <div style="display: flex; justify-content: space-between;">
+                                <span style="color: var(--text-muted);">Collected Fees (Paid):</span>
+                                <strong id="rep-fines-collected" style="color: var(--success);">$0.00</strong>
+                            </div>
+                            <div style="display: flex; justify-content: space-between;">
+                                <span style="color: var(--text-muted);">Outstanding Delinquencies:</span>
+                                <strong id="rep-fines-unpaid" style="color: var(--danger);">$0.00</strong>
+                            </div>
+                            <div style="display: flex; justify-content: space-between;">
+                                <span style="color: var(--text-muted);">Collection Efficiency:</span>
+                                <strong id="rep-fines-rate" style="color: var(--primary);">100%</strong>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Report Section 2: Readability Analytics Breakdown -->
+                <div class="card" style="padding: 28px; margin-bottom: 36px;">
+                    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
+                        <div>
+                            <h3 style="font-size: var(--font-lg); font-weight: 800; color: var(--text-main);">Catalogue Readability Distribution</h3>
+                            <p style="font-size: var(--font-xs); color: var(--text-muted); margin: 2px 0 0;">Flesch-Kincaid automated algorithmic calibration across library collections.</p>
+                        </div>
+                        <span class="badge badge-primary">Flesch Engine v2</span>
+                    </div>
+
+                    <div class="grid grid-4" style="gap: 16px;">
+                        <div style="background: #f8fafc; border: 1px solid var(--border); border-radius: var(--radius-md); padding: 16px; text-align: center;">
+                            <div style="font-size: 24px; font-weight: 800; color: var(--success);">32%</div>
+                            <div style="font-size: var(--font-xs); color: var(--text-muted); margin-top: 4px;">Easy (Grades 5-7)</div>
+                        </div>
+                        <div style="background: #f8fafc; border: 1px solid var(--border); border-radius: var(--radius-md); padding: 16px; text-align: center;">
+                            <div style="font-size: 24px; font-weight: 800; color: var(--primary);">45%</div>
+                            <div style="font-size: var(--font-xs); color: var(--text-muted); margin-top: 4px;">Standard (Grades 8-9)</div>
+                        </div>
+                        <div style="background: #f8fafc; border: 1px solid var(--border); border-radius: var(--radius-md); padding: 16px; text-align: center;">
+                            <div style="font-size: 24px; font-weight: 800; color: var(--warning);">18%</div>
+                            <div style="font-size: var(--font-xs); color: var(--text-muted); margin-top: 4px;">Difficult (Grades 10-12)</div>
+                        </div>
+                        <div style="background: #f8fafc; border: 1px solid var(--border); border-radius: var(--radius-md); padding: 16px; text-align: center;">
+                            <div style="font-size: 24px; font-weight: 800; color: var(--danger);">5%</div>
+                            <div style="font-size: var(--font-xs); color: var(--text-muted); margin-top: 4px;">Collegiate (Advanced)</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <!-- Scripts -->
+    <script src="../../assets/js/api.js"></script>
+    <script src="../../assets/js/utils.js"></script>
+    <script src="../../assets/js/auth.js"></script>
+    <script>
+        if (!auth.requireAdmin()) {}
+
+        const user = auth.getUser();
+        if (user) {
+            document.getElementById('admin-name').textContent = user.name;
+            document.getElementById('admin-avatar').textContent = user.name.charAt(0).toUpperCase();
+        }
+
+        function toggleSidebar() {
+            document.getElementById('sidebar').classList.toggle('is-open');
+        }
+
+        async function loadReportStats() {
+            try {
+                const res = await api.get('/admin/statistics');
+                const s = res.data;
+
+                if (s) {
+                    // Circulation
+                    const totalIssues = (s.issues && s.issues.total_issues) || 0;
+                    const activeIssues = (s.issues && s.issues.currently_issued) || 0;
+                    const returnedIssues = (s.issues && s.issues.returned_issues) || 0;
+                    const overdueIssues = (s.issues && s.issues.overdue_issues) || 0;
+
+                    document.getElementById('rep-total-issues').textContent = totalIssues;
+                    document.getElementById('rep-active-issues').textContent = activeIssues;
+                    document.getElementById('rep-returned-issues').textContent = returnedIssues;
+
+                    const overdueRate = totalIssues > 0 ? Math.round((overdueIssues / totalIssues) * 100) : 0;
+                    document.getElementById('rep-overdue-rate').textContent = `${overdueRate}%`;
+
+                    // Inventory
+                    const titles = (s.books && s.books.total_books) || 0;
+                    const totalCopies = (s.books && s.books.total_copies) || 1;
+                    const availCopies = (s.books && s.books.available_copies) || 0;
+                    const issuedCopies = (s.books && s.books.issued_copies) || 0;
+
+                    document.getElementById('rep-total-titles').textContent = titles;
+                    document.getElementById('rep-total-copies').textContent = totalCopies;
+                    document.getElementById('rep-avail-copies').textContent = availCopies;
+
+                    const utilRate = totalCopies > 0 ? Math.round((issuedCopies / totalCopies) * 100) : 0;
+                    document.getElementById('rep-util-rate').textContent = `${utilRate}%`;
+
+                    // Financial
+                    const unpaidFines = parseFloat((s.fines && s.fines.unpaid_amount) || 0);
+                    const paidFines = parseFloat((s.fines && s.fines.paid_amount) || 0);
+                    const totalFines = unpaidFines + paidFines;
+
+                    document.getElementById('rep-fines-total').textContent = `$${totalFines.toFixed(2)}`;
+                    document.getElementById('rep-fines-collected').textContent = `$${paidFines.toFixed(2)}`;
+                    document.getElementById('rep-fines-unpaid').textContent = `$${unpaidFines.toFixed(2)}`;
+
+                    const collectRate = totalFines > 0 ? Math.round((paidFines / totalFines) * 100) : 100;
+                    document.getElementById('rep-fines-rate').textContent = `${collectRate}%`;
+                }
+
+            } catch (err) {
+                console.error("Failed to load report stats:", err);
+            }
+        }
+
+        async function exportBooksCSV() {
+            try {
+                const res = await api.get('/books', { limit: 100 });
+                const books = res.data && res.data.books ? res.data.books : (Array.isArray(res.data) ? res.data : []);
+
+                if (books.length === 0) {
+                    utils.toast("Notice", "No books in catalog to export.", "info");
+                    return;
+                }
+
+                let csv = 'ID,Title,Author,Category,ISBN,Year,TotalCopies,AvailableCopies\n';
+                books.forEach(b => {
+                    const cleanTitle = `"${(b.title || '').replace(/"/g, '""')}"`;
+                    const cleanAuthor = `"${(b.author_name || '').replace(/"/g, '""')}"`;
+                    csv += `${b.id},${cleanTitle},${cleanAuthor},${b.category || ''},${b.isbn || ''},${b.publication_year || ''},${b.total_copies || 0},${b.available_copies || 0}\n`;
+                });
+
+                const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
+                const url = URL.createObjectURL(blob);
+                const link = document.createElement("a");
+                link.setAttribute("href", url);
+                link.setAttribute("download", `librix_catalog_export_${new Date().toISOString().split('T')[0]}.csv`);
+                document.body.appendChild(link);
+                link.click();
+                document.body.removeChild(link);
+
+                utils.toast("CSV Exported", "Book catalogue exported successfully.", "success");
+
+            } catch (err) {
+                utils.toast("Export Error", err.message, "error");
+            }
+        }
+
+        loadReportStats();
+    </script>
+</body>
+
+</html>

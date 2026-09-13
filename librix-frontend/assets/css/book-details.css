@@ -1,0 +1,157 @@
+/* ==========================================================================
+   LibriX Book Details Styles
+   ========================================================================== */
+
+.book-details-layout {
+    display: grid;
+    grid-template-columns: 340px 1fr;
+    gap: 40px;
+    margin-top: 36px;
+    align-items: start;
+}
+
+@media (max-width: 900px) {
+    .book-details-layout {
+        grid-template-columns: 1fr;
+    }
+}
+
+.book-poster-card {
+    background: #ffffff;
+    border: 1px solid var(--border);
+    border-radius: var(--radius-xl);
+    overflow: hidden;
+    box-shadow: var(--shadow-md);
+    position: sticky;
+    top: 24px;
+}
+
+.book-poster-img-wrap {
+    height: 380px;
+    background: linear-gradient(135deg, #4f46e5 0%, #06b6d4 100%);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    overflow: hidden;
+}
+
+.book-poster-img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+.book-poster-actions {
+    padding: 24px;
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+}
+
+/* Readability Highlight Card */
+.readability-hero-card {
+    background: linear-gradient(135deg, #f8fafc 0%, #eef2ff 100%);
+    border: 1px solid var(--primary-border);
+    border-radius: var(--radius-lg);
+    padding: 24px;
+    margin: 24px 0;
+    box-shadow: var(--shadow-xs);
+}
+
+.readability-hero-grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 16px;
+    margin-top: 16px;
+}
+
+@media (max-width: 640px) {
+    .readability-hero-grid {
+        grid-template-columns: repeat(2, 1fr);
+    }
+}
+
+.readability-stat-box {
+    background: #ffffff;
+    border: 1px solid var(--border);
+    border-radius: var(--radius-md);
+    padding: 14px;
+    text-align: center;
+}
+
+.readability-stat-val {
+    font-size: var(--font-xl);
+    font-weight: 800;
+    color: var(--primary);
+    line-height: 1.2;
+}
+
+.readability-stat-lbl {
+    font-size: var(--font-xs);
+    color: var(--text-muted);
+    margin-top: 4px;
+    font-weight: 500;
+}
+
+/* Review Item */
+.review-item {
+    background: #ffffff;
+    border: 1px solid var(--border);
+    border-radius: var(--radius-md);
+    padding: 18px 20px;
+    margin-bottom: 14px;
+    transition: all var(--transition-fast);
+}
+
+.review-item:hover {
+    border-color: var(--border-hover);
+}
+
+.review-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 8px;
+}
+
+.reviewer-name {
+    font-size: var(--font-sm);
+    font-weight: 700;
+    color: var(--text-main);
+}
+
+.review-date {
+    font-size: var(--font-xs);
+    color: var(--text-subtle);
+}
+
+.review-body {
+    font-size: var(--font-sm);
+    color: var(--text-muted);
+    line-height: 1.6;
+}
+
+/* Star Rating Selector in Review Form */
+.star-rating-select {
+    display: inline-flex;
+    flex-direction: row-reverse;
+    gap: 6px;
+    font-size: 24px;
+    cursor: pointer;
+}
+
+.star-rating-select input {
+    display: none;
+}
+
+.star-rating-select label {
+    color: #cbd5e1;
+    transition: color var(--transition-fast);
+    cursor: pointer;
+}
+
+.star-rating-select label:hover,
+.star-rating-select label:hover ~ label,
+.star-rating-select input:checked ~ label {
+    color: #f59e0b;
+}

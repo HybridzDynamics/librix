@@ -1,0 +1,503 @@
+<!doctype html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Manage Books | Librix Admin</title>
+    <link rel="icon" type="image/png" href="../../assets/images/favicon.png">
+    <link rel="stylesheet" href="../../assets/css/global.css">
+    <link rel="stylesheet" href="../../assets/css/admin.css">
+</head>
+
+<body>
+    <div class="admin-wrapper">
+        <!-- Sidebar -->
+        <aside class="admin-sidebar" id="sidebar">
+            <div class="admin-sidebar-brand">
+                <img src="../../assets/images/logo.png" alt="Librix Logo">
+                <h2>Librix <span class="badge-admin">LIBRARIAN</span></h2>
+            </div>
+
+            <div class="admin-sidebar-user">
+                <div class="admin-sidebar-avatar" id="admin-avatar">A</div>
+                <div style="overflow: hidden;">
+                    <div class="admin-sidebar-name" id="admin-name">Administrator</div>
+                    <div class="admin-sidebar-role">Library Operations</div>
+                </div>
+            </div>
+
+            <ul class="admin-sidebar-menu">
+                <li class="admin-menu-header">Core Operations</li>
+                <li class="admin-sidebar-item">
+                    <a href="dashboard.html">
+                        <span class="admin-sidebar-icon">📊</span>
+                        <span>Overview Dashboard</span>
+                    </a>
+                </li>
+                <li class="admin-sidebar-item">
+                    <a href="borrowings.html">
+                        <span class="admin-sidebar-icon">🔄</span>
+                        <span>Circulation & Loans</span>
+                    </a>
+                </li>
+                <li class="admin-sidebar-item">
+                    <a href="reservations.html">
+                        <span class="admin-sidebar-icon">📌</span>
+                        <span>Reservations Queue</span>
+                    </a>
+                </li>
+                <li class="admin-sidebar-item">
+                    <a href="fines.html">
+                        <span class="admin-sidebar-icon">💳</span>
+                        <span>Fines & Overdue Fees</span>
+                    </a>
+                </li>
+
+                <li class="admin-menu-header">Catalog & Inventory</li>
+                <li class="admin-sidebar-item">
+                    <a href="books.html" class="active">
+                        <span class="admin-sidebar-icon">📚</span>
+                        <span>Manage Books</span>
+                    </a>
+                </li>
+                <li class="admin-sidebar-item">
+                    <a href="authors.html">
+                        <span class="admin-sidebar-icon">✍️</span>
+                        <span>Authors Directory</span>
+                    </a>
+                </li>
+                <li class="admin-sidebar-item">
+                    <a href="categories.html">
+                        <span class="admin-sidebar-icon">🏷️</span>
+                        <span>Categories</span>
+                    </a>
+                </li>
+                <li class="admin-sidebar-item">
+                    <a href="publishers.html">
+                        <span class="admin-sidebar-icon">🏢</span>
+                        <span>Publishers</span>
+                    </a>
+                </li>
+
+                <li class="admin-menu-header">Administration</li>
+                <li class="admin-sidebar-item">
+                    <a href="users.html">
+                        <span class="admin-sidebar-icon">👥</span>
+                        <span>Users & Patrons</span>
+                    </a>
+                </li>
+                <li class="admin-sidebar-item">
+                    <a href="reports.html">
+                        <span class="admin-sidebar-icon">📈</span>
+                        <span>Reports & Analytics</span>
+                    </a>
+                </li>
+                <li class="admin-sidebar-item">
+                    <a href="../catalogue.html" target="_blank">
+                        <span class="admin-sidebar-icon">↗</span>
+                        <span>Live Public Site</span>
+                    </a>
+                </li>
+            </ul>
+
+            <div class="admin-sidebar-footer">
+                <button class="btn btn-outline btn-sm" style="width: 100%; border-color: #334155; color: #cbd5e1;" onclick="auth.logout()">
+                    Logout Admin
+                </button>
+            </div>
+        </aside>
+
+        <!-- Main Workspace -->
+        <main class="admin-main">
+            <!-- Topbar -->
+            <header class="admin-topbar">
+                <div style="display: flex; align-items: center; gap: 14px;">
+                    <button class="mobile-menu-toggle" onclick="toggleSidebar()">☰</button>
+                    <span style="font-weight: 700; font-size: var(--font-base);">Book Catalog Management</span>
+                </div>
+
+                <button class="btn btn-primary btn-sm" onclick="openBookModal()">
+                    + Add New Book
+                </button>
+            </header>
+
+            <!-- Admin Body -->
+            <div class="admin-body">
+                <div class="page-header" style="display: flex; justify-content: space-between; align-items: flex-end; flex-wrap: wrap; gap: 16px;">
+                    <div>
+                        <h1 class="page-title">Library Book Collection</h1>
+                        <p class="page-subtitle">Add new inventory, update physical copies, inspect readability, and edit metadata.</p>
+                    </div>
+                </div>
+
+                <!-- Table Toolbar -->
+                <div class="table-toolbar">
+                    <div class="toolbar-search">
+                        <span class="toolbar-search-icon">🔍</span>
+                        <input type="text" id="admin-book-search" placeholder="Search title, author, ISBN...">
+                    </div>
+                    <div class="toolbar-actions">
+                        <select id="admin-category-filter" class="form-select" style="width: 160px; font-size: var(--font-xs); padding: 8px;">
+                            <option value="">All Categories</option>
+                        </select>
+                        <select id="admin-avail-filter" class="form-select" style="width: 150px; font-size: var(--font-xs); padding: 8px;">
+                            <option value="">All Stock</option>
+                            <option value="available">In Stock</option>
+                            <option value="none">Zero Copies</option>
+                        </select>
+                    </div>
+                </div>
+
+                <!-- Books Table Card -->
+                <div class="table-container-card">
+                    <div id="books-table-wrap">
+                        <div style="padding: 60px; text-align: center;"><div class="spinner"></div></div>
+                    </div>
+                </div>
+
+                <!-- Pagination -->
+                <div id="admin-books-pagination" style="display: flex; justify-content: center; gap: 8px; margin-top: 24px;"></div>
+            </div>
+        </main>
+    </div>
+
+    <!-- Add/Edit Book Modal -->
+    <div id="book-modal" class="modal-backdrop">
+        <div class="modal" style="max-width: 680px;">
+            <div class="modal-header">
+                <h3 class="modal-title" id="book-modal-title">Add New Book</h3>
+                <button class="modal-close">&times;</button>
+            </div>
+            <form id="book-form">
+                <input type="hidden" id="form-book-id">
+                <div class="modal-body">
+                    <div class="form-group">
+                        <label for="book-title-input" class="form-label">Book Title <span class="required">*</span></label>
+                        <input type="text" id="book-title-input" class="form-input" placeholder="e.g. Clean Code" required>
+                    </div>
+
+                    <div class="grid grid-2" style="gap: 16px;">
+                        <div class="form-group">
+                            <label for="book-author-select" class="form-label">Author</label>
+                            <select id="book-author-select" class="form-select">
+                                <option value="">Select an author...</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label for="book-category-select" class="form-label">Category</label>
+                            <select id="book-category-select" class="form-select">
+                                <option value="">Select a category...</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <div class="grid grid-3" style="gap: 16px;">
+                        <div class="form-group">
+                            <label for="book-isbn-input" class="form-label">ISBN</label>
+                            <input type="text" id="book-isbn-input" class="form-input" placeholder="978-0132350884">
+                        </div>
+                        <div class="form-group">
+                            <label for="book-year-input" class="form-label">Publication Year</label>
+                            <input type="number" id="book-year-input" class="form-input" placeholder="2024">
+                        </div>
+                        <div class="form-group">
+                            <label for="book-lang-input" class="form-label">Language</label>
+                            <input type="text" id="book-lang-input" class="form-input" value="English">
+                        </div>
+                    </div>
+
+                    <div class="grid grid-2" style="gap: 16px;">
+                        <div class="form-group">
+                            <label for="book-total-copies" class="form-label">Total Inventory Copies <span class="required">*</span></label>
+                            <input type="number" id="book-total-copies" class="form-input" min="1" value="3" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="book-avail-copies" class="form-label">Available Copies <span class="required">*</span></label>
+                            <input type="number" id="book-avail-copies" class="form-input" min="0" value="3" required>
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="book-cover-input" class="form-label">Cover Image URL (Optional)</label>
+                        <input type="url" id="book-cover-input" class="form-input" placeholder="https://example.com/cover.jpg">
+                    </div>
+
+                    <div class="form-group">
+                        <label for="book-desc-input" class="form-label">Description / Excerpt (Used for Readability Analysis)</label>
+                        <textarea id="book-desc-input" class="form-textarea" rows="3" placeholder="Provide book synopsis or sample chapter text..."></textarea>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-outline btn-sm modal-close">Cancel</button>
+                    <button type="submit" id="save-book-btn" class="btn btn-primary btn-sm">Save Book</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Scripts -->
+    <script src="../../assets/js/api.js"></script>
+    <script src="../../assets/js/utils.js"></script>
+    <script src="../../assets/js/auth.js"></script>
+    <script>
+        if (!auth.requireAdmin()) {}
+
+        const user = auth.getUser();
+        if (user) {
+            document.getElementById('admin-name').textContent = user.name;
+            document.getElementById('admin-avatar').textContent = user.name.charAt(0).toUpperCase();
+        }
+
+        function toggleSidebar() {
+            document.getElementById('sidebar').classList.toggle('is-open');
+        }
+
+        let currentPage = 1;
+        const limit = 12;
+        let authorsList = [];
+        let categoriesList = [];
+
+        // Load auxiliary data
+        async function loadAuxData() {
+            try {
+                const catRes = await api.get('/categories');
+                categoriesList = Array.isArray(catRes.data) ? catRes.data : [];
+                
+                const catSelect = document.getElementById('book-category-select');
+                const catFilter = document.getElementById('admin-category-filter');
+                categoriesList.forEach(c => {
+                    catSelect.innerHTML += `<option value="${c.name}" data-id="${c.id}">${utils.escapeHtml(c.name)}</option>`;
+                    catFilter.innerHTML += `<option value="${c.name}">${utils.escapeHtml(c.name)}</option>`;
+                });
+            } catch (e) {}
+
+            try {
+                const authRes = await api.get('/authors');
+                authorsList = Array.isArray(authRes.data) ? authRes.data : [];
+                const authSelect = document.getElementById('book-author-select');
+                authorsList.forEach(a => {
+                    authSelect.innerHTML += `<option value="${a.id}">${utils.escapeHtml(a.name)}</option>`;
+                });
+            } catch (e) {}
+        }
+
+        // Load Books Table
+        async function loadBooks() {
+            const container = document.getElementById('books-table-wrap');
+            const search = document.getElementById('admin-book-search').value.trim();
+            const category = document.getElementById('admin-category-filter').value;
+            const avail = document.getElementById('admin-avail-filter').value;
+
+            container.innerHTML = `<div style="padding: 60px; text-align: center;"><div class="spinner"></div></div>`;
+
+            try {
+                const res = await api.get('/books', {
+                    page: currentPage,
+                    limit: limit,
+                    search: search,
+                    category: category,
+                    available: avail === 'available' ? 1 : ''
+                });
+
+                const books = res.data && res.data.books ? res.data.books : (Array.isArray(res.data) ? res.data : []);
+                const pagination = res.pagination || (res.data && res.data.pagination) || { total: books.length, total_pages: 1 };
+
+                if (books.length === 0) {
+                    container.innerHTML = `
+                        <div class="empty-state">
+                            <div class="empty-state-icon">📚</div>
+                            <div class="empty-state-title">No books found</div>
+                            <div class="empty-state-desc">No books match your criteria. Add new titles or adjust filters.</div>
+                        </div>
+                    `;
+                    document.getElementById('admin-books-pagination').innerHTML = '';
+                    return;
+                }
+
+                container.innerHTML = `
+                    <div class="table-wrapper" style="border: none;">
+                        <table class="table table-hover">
+                            <thead>
+                                <tr>
+                                    <th>ID</th>
+                                    <th>Title</th>
+                                    <th>Author</th>
+                                    <th>Category</th>
+                                    <th>ISBN</th>
+                                    <th>Copies (Avail / Total)</th>
+                                    <th style="text-align: right;">Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                ${books.map(b => `
+                                    <tr>
+                                        <td>#${b.id}</td>
+                                        <td>
+                                            <a href="../book-details.html?id=${b.id}" target="_blank" style="font-weight: 700; color: var(--text-main);">
+                                                ${utils.escapeHtml(b.title)}
+                                            </a>
+                                        </td>
+                                        <td style="color: var(--text-muted); font-size: var(--font-xs);">${utils.escapeHtml(b.author_name || '—')}</td>
+                                        <td><span class="badge badge-primary">${utils.escapeHtml(b.category || 'General')}</span></td>
+                                        <td style="font-size: var(--font-xs);">${b.isbn || '—'}</td>
+                                        <td>
+                                            <strong style="color: ${b.available_copies > 0 ? 'var(--success)' : 'var(--danger)'};">
+                                                ${b.available_copies}
+                                            </strong>
+                                            <span style="color: var(--text-muted);"> / ${b.total_copies}</span>
+                                        </td>
+                                        <td>
+                                            <div class="table-actions-cell">
+                                                <button class="btn btn-outline btn-sm" onclick='editBook(${JSON.stringify(b).replace(/'/g, "&apos;")})'>Edit</button>
+                                                <button class="btn btn-danger-outline btn-sm" onclick="deleteBook(${b.id}, '${utils.escapeHtml(b.title)}')">Delete</button>
+                                            </div>
+                                        </td>
+                                    </tr>
+                                `).join('')}
+                            </tbody>
+                        </table>
+                    </div>
+                `;
+
+                renderPagination(pagination.page || currentPage, pagination.total_pages || 1);
+
+            } catch (err) {
+                container.innerHTML = `
+                    <div style="padding: 40px; text-align: center; color: var(--danger);">
+                        Failed to retrieve library catalog books.
+                    </div>
+                `;
+            }
+        }
+
+        function renderPagination(current, total) {
+            const container = document.getElementById('admin-books-pagination');
+            if (total <= 1) {
+                container.innerHTML = '';
+                return;
+            }
+
+            let html = '';
+            for (let i = 1; i <= total; i++) {
+                html += `
+                    <button class="btn btn-sm ${i === current ? 'btn-primary' : 'btn-outline'}" onclick="goToPage(${i})">
+                        ${i}
+                    </button>
+                `;
+            }
+            container.innerHTML = html;
+        }
+
+        function goToPage(p) {
+            currentPage = p;
+            loadBooks();
+        }
+
+        // Modal Handlers
+        function openBookModal(book = null) {
+            document.getElementById('form-book-id').value = book ? book.id : '';
+            document.getElementById('book-modal-title').textContent = book ? `Edit Book #${book.id}` : 'Add New Book';
+
+            document.getElementById('book-title-input').value = book ? book.title : '';
+            document.getElementById('book-author-select').value = book && book.author_id ? book.author_id : '';
+            document.getElementById('book-category-select').value = book && book.category ? book.category : '';
+            document.getElementById('book-isbn-input').value = book && book.isbn ? book.isbn : '';
+            document.getElementById('book-year-input').value = book && book.publication_year ? book.publication_year : '';
+            document.getElementById('book-lang-input').value = book && book.language ? book.language : 'English';
+            document.getElementById('book-total-copies').value = book ? book.total_copies : 3;
+            document.getElementById('book-avail-copies').value = book ? book.available_copies : 3;
+            document.getElementById('book-cover-input').value = book && book.cover_image ? book.cover_image : '';
+            document.getElementById('book-desc-input').value = book && book.description ? book.description : '';
+
+            utils.modal('book-modal').open();
+        }
+
+        function editBook(book) {
+            openBookModal(book);
+        }
+
+        async function deleteBook(id, title) {
+            if (confirm(`Are you sure you want to delete "${title}" (#${id})? This action cannot be undone.`)) {
+                try {
+                    await api.delete(`/books/${id}`);
+                    utils.toast("Book Deleted", `Deleted "${title}".`, "success");
+                    loadBooks();
+                } catch (err) {
+                    utils.toast("Delete Failed", err.message, "error");
+                }
+            }
+        }
+
+        // Form Submit
+        document.getElementById('book-form').addEventListener('submit', async function(e) {
+            e.preventDefault();
+            const id = document.getElementById('form-book-id').value;
+            const isEdit = !!id;
+
+            const authorSelect = document.getElementById('book-author-select');
+            const categorySelect = document.getElementById('book-category-select');
+
+            const payload = {
+                title: document.getElementById('book-title-input').value.trim(),
+                author_id: authorSelect.value ? parseInt(authorSelect.value, 10) : null,
+                category: categorySelect.value || null,
+                isbn: document.getElementById('book-isbn-input').value.trim() || null,
+                publication_year: document.getElementById('book-year-input').value ? parseInt(document.getElementById('book-year-input').value, 10) : null,
+                language: document.getElementById('book-lang-input').value.trim() || 'English',
+                total_copies: parseInt(document.getElementById('book-total-copies').value, 10),
+                available_copies: parseInt(document.getElementById('book-avail-copies').value, 10),
+                cover_image: document.getElementById('book-cover-input').value.trim() || null,
+                description: document.getElementById('book-desc-input').value.trim() || null
+            };
+
+            const btn = document.getElementById('save-book-btn');
+            btn.disabled = true;
+
+            try {
+                if (isEdit) {
+                    await api.put(`/books/${id}`, payload);
+                    utils.toast("Book Updated", `Updated "${payload.title}".`, "success");
+                } else {
+                    await api.post('/books', payload);
+                    utils.toast("Book Created", `Added "${payload.title}" to catalog.`, "success");
+                }
+
+                utils.modal('book-modal').close();
+                loadBooks();
+
+            } catch (err) {
+                utils.toast("Save Error", err.message, "error");
+            } finally {
+                btn.disabled = false;
+            }
+        });
+
+        // Filter events
+        document.getElementById('admin-book-search').addEventListener('input', utils.debounce(() => {
+            currentPage = 1;
+            loadBooks();
+        }, 350));
+
+        document.getElementById('admin-category-filter').addEventListener('change', () => {
+            currentPage = 1;
+            loadBooks();
+        });
+
+        document.getElementById('admin-avail-filter').addEventListener('change', () => {
+            currentPage = 1;
+            loadBooks();
+        });
+
+        // URL action check
+        const urlParams = new URLSearchParams(window.location.search);
+        if (urlParams.get('action') === 'new') {
+            setTimeout(openBookModal, 400);
+        }
+
+        loadAuxData();
+        loadBooks();
+    </script>
+</body>
+
+</html>

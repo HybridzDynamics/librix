@@ -1,0 +1,153 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>My Favorites | LibriX</title>
+    <link rel="icon" type="image/png" href="../../assets/images/favicon.png">
+    <link rel="stylesheet" href="../../assets/css/global.css">
+    <link rel="stylesheet" href="../../assets/css/dashboard.css">
+    <link rel="stylesheet" href="../../assets/css/catalogue.css">
+    <script src="../../assets/js/icons.js"></script>
+</head>
+<body>
+    <div class="dashboard-wrapper">
+        <aside class="dashboard-sidebar" id="sidebar">
+            <div class="sidebar-brand"><img src="../../assets/images/logo.png" alt="LibriX Logo"><h2>LibriX</h2></div>
+            <div class="sidebar-user">
+                <div class="sidebar-avatar" id="user-avatar">U</div>
+                <div class="sidebar-user-info">
+                    <div class="sidebar-user-name" id="user-name-display">Loading...</div>
+                    <div class="sidebar-user-role">Patron Account</div>
+                </div>
+            </div>
+            <ul class="sidebar-menu">
+                <li class="sidebar-item"><a href="dashboard.html"><span class="sidebar-icon"><i data-lucide="layout-dashboard" data-size="18"></i></span><span>Dashboard</span></a></li>
+                <li class="sidebar-item"><a href="my-books.html"><span class="sidebar-icon"><i data-lucide="book" data-size="18"></i></span><span>My Borrowed Books</span></a></li>
+                <li class="sidebar-item"><a href="history.html"><span class="sidebar-icon"><i data-lucide="clock" data-size="18"></i></span><span>Borrowing History</span></a></li>
+                <li class="sidebar-item"><a href="reservations.html"><span class="sidebar-icon"><i data-lucide="bookmark" data-size="18"></i></span><span>Reservations</span></a></li>
+                <li class="sidebar-item"><a href="favorites.html" class="active"><span class="sidebar-icon"><i data-lucide="heart" data-size="18"></i></span><span>My Favorites</span></a></li>
+                <li class="sidebar-item"><a href="notifications.html"><span class="sidebar-icon"><i data-lucide="bell" data-size="18"></i></span><span>Notifications</span></a></li>
+                <li class="sidebar-item"><a href="profile.html"><span class="sidebar-icon"><i data-lucide="settings" data-size="18"></i></span><span>Profile &amp; Settings</span></a></li>
+                <li class="sidebar-item" style="margin-top:12px;border-top:1px solid var(--border);padding-top:12px;"><a href="../catalogue.html"><span class="sidebar-icon"><i data-lucide="search" data-size="18"></i></span><span>Explore Catalogue</span></a></li>
+            </ul>
+            <div class="sidebar-footer">
+                <button class="btn btn-outline btn-sm" style="width:100%;display:flex;align-items:center;justify-content:center;gap:8px;border-color:var(--border);" onclick="auth.logout()"><i data-lucide="log-out" data-size="16"></i> Sign Out</button>
+            </div>
+        </aside>
+
+        <main class="dashboard-main">
+            <header class="dashboard-topbar">
+                <div style="display:flex;align-items:center;gap:14px;">
+                    <button class="mobile-menu-toggle" onclick="toggleSidebar()" style="display:flex;align-items:center;justify-content:center;"><i data-lucide="menu" data-size="22"></i></button>
+                    <span style="font-weight:700;font-size:var(--font-base);">My Saved Favorites</span>
+                </div>
+                <div class="topbar-actions">
+                    <a href="../catalogue.html" class="btn btn-primary btn-sm" style="display:flex;align-items:center;gap:6px;"><i data-lucide="search" data-size="16"></i> Browse Catalogue</a>
+                </div>
+            </header>
+
+            <div class="dashboard-body">
+                <div class="page-header" style="display:flex;justify-content:space-between;align-items:flex-end;flex-wrap:wrap;gap:12px;">
+                    <div>
+                        <h1 class="page-title">Personal Reading Wishlist</h1>
+                        <p class="page-subtitle">Books you've saved for future reading and study.</p>
+                    </div>
+                    <div id="favorites-count-badge"></div>
+                </div>
+                <div id="favorites-container">
+                    <div style="padding:60px;text-align:center;"><div class="spinner"></div></div>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <script src="../../assets/js/api.js"></script>
+    <script src="../../assets/js/utils.js"></script>
+    <script src="../../assets/js/auth.js"></script>
+    <script>
+        if (!auth.requireAuth()) {}
+        const user = auth.getUser();
+        if (user) {
+            document.getElementById('user-name-display').textContent = user.name;
+            document.getElementById('user-avatar').textContent = user.name.charAt(0).toUpperCase();
+        }
+        function toggleSidebar() { document.getElementById('sidebar').classList.toggle('is-open'); }
+
+        const heartFilledSvg = `<svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="currentColor" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M19 14c1.49-1.46 3-3.21 3-5.5A5.5 5.5 0 0 0 16.5 3c-1.76 0-3 .5-4.5 2-1.5-1.5-2.74-2-4.5-2A5.5 5.5 0 0 0 2 8.5c0 2.3 1.5 4.05 3 5.5l7 7Z"/></svg>`;
+        const trashSvg = `<svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 6h18"/><path d="M19 6v14c0 1-1 2-2 2H7c-1 0-2-1-2-2V6"/><path d="M8 6V4c0-1 1-2 2-2h4c1 0 2 1 2 2v2"/></svg>`;
+        const bookSvg = `<svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M4 19.5v-15A2.5 2.5 0 0 1 6.5 2H20v20H6.5a2.5 2.5 0 0 1-2.5-2.5Z"/><path d="M6 2v20"/></svg>`;
+
+        async function loadFavorites() {
+            const container = document.getElementById('favorites-container');
+            const badgeContainer = document.getElementById('favorites-count-badge');
+            container.innerHTML = `<div style="padding:60px;text-align:center;"><div class="spinner"></div></div>`;
+            try {
+                const res = await api.get('/favorites');
+                const favorites = Array.isArray(res.data) ? res.data : (res.data && res.data.data ? res.data.data : []);
+                badgeContainer.innerHTML = `<span class="badge badge-primary">${favorites.length} Saved Titles</span>`;
+
+                if (favorites.length === 0) {
+                    container.innerHTML = `
+                        <div class="card empty-state" style="padding:60px 20px;">
+                            <div class="empty-state-icon"><svg xmlns="http://www.w3.org/2000/svg" width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M19 14c1.49-1.46 3-3.21 3-5.5A5.5 5.5 0 0 0 16.5 3c-1.76 0-3 .5-4.5 2-1.5-1.5-2.74-2-4.5-2A5.5 5.5 0 0 0 2 8.5c0 2.3 1.5 4.05 3 5.5l7 7Z"/></svg></div>
+                            <div class="empty-state-title">No Favorites Saved Yet</div>
+                            <div class="empty-state-desc">While browsing the catalogue, click the heart icon to curate your personal reading list.</div>
+                            <a href="../catalogue.html" class="btn btn-primary" style="margin-top:14px;">Browse Catalogue</a>
+                        </div>`;
+                    return;
+                }
+
+                container.innerHTML = `
+                    <div class="grid grid-3" style="gap:24px;">
+                        ${favorites.map(b => {
+                            const isAvailable = (b.available_copies > 0);
+                            const cover = b.cover_image
+                                ? `<img src="${b.cover_image}" alt="${utils.escapeHtml(b.title)}" class="book-cover-img">`
+                                : `<div class="book-cover-fallback" style="display:flex;align-items:center;justify-content:center;color:var(--text-muted);">${bookSvg}</div>`;
+                            return `
+                                <div class="book-card-item">
+                                    <div class="book-cover-wrap">
+                                        ${cover}
+                                        <button class="book-fav-btn is-active" title="Remove from favorites"
+                                            onclick="removeFavorite(${b.book_id}, '${utils.escapeHtml(b.title)}')">
+                                            ${heartFilledSvg}
+                                        </button>
+                                    </div>
+                                    <div class="book-card-body">
+                                        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px;">
+                                            <span class="badge badge-primary">${utils.escapeHtml(b.category || 'General')}</span>
+                                            ${isAvailable ? `<span class="badge badge-success">${b.available_copies} Available</span>` : `<span class="badge badge-danger">Out of Stock</span>`}
+                                        </div>
+                                        <h3 class="book-title" title="${utils.escapeHtml(b.title)}">${utils.escapeHtml(b.title)}</h3>
+                                        <div class="book-author">By ${utils.escapeHtml(b.author_name || 'Unknown Author')}</div>
+                                        <div style="margin-top:auto;display:flex;gap:8px;">
+                                            <a href="../book-details.html?id=${b.book_id}" class="btn btn-outline btn-sm" style="flex:1;">Details &amp; Scores</a>
+                                            <button class="btn btn-outline btn-sm" style="color:var(--danger);border-color:var(--danger);display:flex;align-items:center;gap:4px;"
+                                                onclick="removeFavorite(${b.book_id}, '${utils.escapeHtml(b.title)}')" title="Remove">
+                                                ${trashSvg}
+                                            </button>
+                                        </div>
+                                    </div>
+                                </div>`;
+                        }).join('')}
+                    </div>`;
+            } catch (err) {
+                container.innerHTML = `<div style="padding:40px;text-align:center;color:var(--danger);">Failed to load saved favorites.</div>`;
+            }
+        }
+
+        async function removeFavorite(bookId, title) {
+            try {
+                await api.post('/favorites', { book_id: bookId });
+                utils.toast("Removed", `Removed "${title}" from your favorites list.`, "info");
+                loadFavorites();
+            } catch (err) {
+                utils.toast("Error", err.message, "error");
+            }
+        }
+
+        loadFavorites();
+    </script>
+</body>
+</html>

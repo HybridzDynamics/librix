@@ -1,0 +1,278 @@
+/* ==========================================================================
+   LibriX Admin Portal Shared Layout Styles
+   ========================================================================== */
+
+.admin-wrapper {
+    display: flex;
+    min-height: 100vh;
+    background-color: #f1f5f9;
+}
+
+/* Admin Dark Sidebar */
+.admin-sidebar {
+    width: 270px;
+    background-color: #0f172a;
+    color: #e2e8f0;
+    display: flex;
+    flex-direction: column;
+    flex-shrink: 0;
+    position: sticky;
+    top: 0;
+    height: 100vh;
+    z-index: 100;
+    transition: transform var(--transition-base);
+}
+
+.admin-sidebar-brand {
+    padding: 24px;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    border-bottom: 1px solid #1e293b;
+}
+
+.admin-sidebar-brand img {
+    width: 34px;
+    height: 34px;
+}
+
+.admin-sidebar-brand h2 {
+    font-size: var(--font-lg);
+    font-weight: 800;
+    color: #ffffff;
+    margin: 0;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.admin-sidebar-brand .badge-admin {
+    background: #4f46e5;
+    color: #ffffff;
+    font-size: 10px;
+    padding: 2px 6px;
+    border-radius: var(--radius-sm);
+    font-weight: 700;
+}
+
+.admin-sidebar-user {
+    padding: 16px 24px;
+    border-bottom: 1px solid #1e293b;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    background: #1e293b;
+}
+
+.admin-sidebar-avatar {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    background: #4f46e5;
+    color: #ffffff;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: 800;
+    font-size: var(--font-base);
+    flex-shrink: 0;
+}
+
+.admin-sidebar-name {
+    font-size: var(--font-sm);
+    font-weight: 700;
+    color: #ffffff;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.admin-sidebar-role {
+    font-size: var(--font-xs);
+    color: #94a3b8;
+}
+
+.admin-sidebar-menu {
+    padding: 16px 12px;
+    list-style: none;
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+    flex: 1;
+    overflow-y: auto;
+}
+
+.admin-menu-header {
+    font-size: 11px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    color: #64748b;
+    padding: 12px 14px 4px;
+}
+
+.admin-sidebar-item a {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 10px 14px;
+    border-radius: var(--radius-md);
+    font-size: var(--font-sm);
+    font-weight: 500;
+    color: #94a3b8;
+    transition: all var(--transition-fast);
+    text-decoration: none;
+}
+
+.admin-sidebar-item a:hover {
+    background-color: #1e293b;
+    color: #ffffff;
+}
+
+.admin-sidebar-item a.active {
+    background-color: #4f46e5;
+    color: #ffffff;
+    font-weight: 600;
+}
+
+.admin-sidebar-icon {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 20px;
+    height: 20px;
+    flex-shrink: 0;
+}
+.admin-sidebar-icon svg {
+    width: 18px;
+    height: 18px;
+}
+
+.admin-sidebar-footer {
+    padding: 16px 20px;
+    border-top: 1px solid #1e293b;
+}
+
+/* Admin Main Area */
+.admin-main {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    min-width: 0;
+}
+
+.admin-topbar {
+    height: 70px;
+    background-color: #ffffff;
+    border-bottom: 1px solid var(--border);
+    padding: 0 32px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    position: sticky;
+    top: 0;
+    z-index: 90;
+}
+
+.admin-body {
+    padding: 32px;
+    flex: 1;
+}
+
+/* Data Table Toolbar */
+.table-toolbar {
+    background: #ffffff;
+    border: 1px solid var(--border);
+    border-radius: var(--radius-lg) var(--radius-lg) 0 0;
+    padding: 16px 20px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    gap: 14px;
+}
+
+.toolbar-search {
+    position: relative;
+    width: 280px;
+}
+
+.toolbar-search input {
+    width: 100%;
+    padding: 8px 12px 8px 34px;
+    border: 1px solid var(--border);
+    border-radius: var(--radius-md);
+    font-size: var(--font-sm);
+    outline: none;
+}
+
+.toolbar-search-icon {
+    position: absolute;
+    left: 10px;
+    top: 50%;
+    transform: translateY(-50%);
+    font-size: 13px;
+    color: var(--text-subtle);
+}
+
+.toolbar-actions {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.table-container-card {
+    background: #ffffff;
+    border: 1px solid var(--border);
+    border-top: none;
+    border-radius: 0 0 var(--radius-lg) var(--radius-lg);
+    box-shadow: var(--shadow-xs);
+    overflow: hidden;
+}
+
+/* Action button row inside table cells */
+.table-actions-cell {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    justify-content: flex-end;
+}
+
+/* Charts Card Container */
+.chart-container {
+    background: #ffffff;
+    border: 1px solid var(--border);
+    border-radius: var(--radius-lg);
+    padding: 24px;
+    box-shadow: var(--shadow-xs);
+}
+
+.chart-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 20px;
+}
+
+.chart-title {
+    font-size: var(--font-base);
+    font-weight: 700;
+    color: var(--text-main);
+}
+
+@media (max-width: 900px) {
+    .admin-sidebar {
+        position: fixed;
+        left: -270px;
+    }
+    .admin-sidebar.is-open {
+        transform: translateX(270px);
+        box-shadow: var(--shadow-xl);
+    }
+    .admin-topbar {
+        padding: 0 16px;
+    }
+    .admin-body {
+        padding: 20px 16px;
+    }
+}

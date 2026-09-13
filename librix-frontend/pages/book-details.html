@@ -1,0 +1,468 @@
+<!doctype html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Book Details | Librix</title>
+    <meta name="description" content="View comprehensive book details, inventory availability, community ratings, and smart readability grade analysis on LibriX.">
+    <link rel="icon" type="image/png" href="../assets/images/favicon.png">
+    <link rel="stylesheet" href="../assets/css/global.css">
+    <link rel="stylesheet" href="../assets/css/style.css">
+    <link rel="stylesheet" href="../assets/css/book-details.css">
+</head>
+
+<body>
+    <!-- Navigation Bar -->
+    <nav id="nav-bar">
+        <div class="nav-brand">
+            <a href="../index.html" style="display: flex; align-items: center; gap: 10px; text-decoration: none;">
+                <img src="../assets/images/logo.png" alt="Librix Logo" id="logo">
+                <h1 style="margin: 0;">Librix</h1>
+            </a>
+        </div>
+        <div class="nav-links">
+            <a href="../index.html">Home</a>
+            <a href="catalogue.html" class="active">Catalogue</a>
+            <a href="about.html">About</a>
+            <a href="contact.html">Contact</a>
+            <a href="status.html">System Status</a>
+        </div>
+        <div class="nav-auth" id="nav-auth-container">
+            <a href="login.html" class="btn btn-outline btn-sm">Login</a>
+            <a href="register.html" class="btn btn-primary btn-sm">Sign Up</a>
+        </div>
+    </nav>
+
+    <!-- Main Container -->
+    <main class="container" style="padding-bottom: 80px;">
+        <!-- Breadcrumb & Back -->
+        <div style="margin-top: 24px;">
+            <a href="catalogue.html" class="btn btn-outline btn-sm" style="display: inline-flex; align-items: center; gap: 6px;">
+                ← Back to Catalogue
+            </a>
+        </div>
+
+        <div id="loading-spinner" style="text-align: center; padding: 100px 0;">
+            <div class="spinner spinner-lg"></div>
+            <p style="margin-top: 16px; color: var(--text-muted);">Loading book details and readability analytics...</p>
+        </div>
+
+        <div id="book-content" class="book-details-layout" style="display: none;">
+            <!-- Left Poster Column -->
+            <div class="book-poster-card">
+                <div class="book-poster-img-wrap" id="poster-wrap">
+                    <div id="poster-fallback" style="font-size: 80px; color: #ffffff;">📖</div>
+                </div>
+                <div class="book-poster-actions">
+                    <div id="stock-badge-container"></div>
+                    <button id="main-action-btn" class="btn btn-primary btn-lg" style="width: 100%;">
+                        Borrow This Book
+                    </button>
+                    <button id="favorite-btn" class="btn btn-outline" style="width: 100%;">
+                        ♡ Add to Favorites
+                    </button>
+                </div>
+            </div>
+
+            <!-- Right Details Column -->
+            <div>
+                <div style="display: flex; gap: 8px; align-items: center; margin-bottom: 12px; flex-wrap: wrap;">
+                    <span id="book-category" class="badge badge-primary">Category</span>
+                    <span id="book-language" class="badge badge-neutral">English</span>
+                    <span id="book-year" class="badge badge-neutral">2024</span>
+                </div>
+
+                <h1 id="book-title" style="font-size: var(--font-3xl); font-weight: 800; color: var(--text-main); margin-bottom: 8px; line-height: 1.25;">
+                    Book Title
+                </h1>
+                
+                <p id="book-author" style="font-size: var(--font-md); color: var(--text-muted); margin-bottom: 16px;">
+                    By Author Name
+                </p>
+
+                <!-- Average Rating Header -->
+                <div style="display: flex; align-items: center; gap: 12px; margin-bottom: 24px;">
+                    <div id="book-stars"></div>
+                    <span id="reviews-count-header" style="font-size: var(--font-sm); color: var(--text-muted);"></span>
+                </div>
+
+                <!-- SMART READABILITY ANALYSIS CARD -->
+                <div class="readability-hero-card">
+                    <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 10px;">
+                        <div>
+                            <span class="badge badge-primary" style="font-size: 11px;">ALGORITHMIC ANALYSIS</span>
+                            <h3 style="font-size: var(--font-lg); font-weight: 700; margin-top: 4px; color: var(--text-main);">
+                                Smart Readability Breakdown
+                            </h3>
+                        </div>
+                        <div id="readability-badge-wrap"></div>
+                    </div>
+
+                    <div class="readability-hero-grid">
+                        <div class="readability-stat-box">
+                            <div class="readability-stat-val" id="stat-reading-ease">--</div>
+                            <div class="readability-stat-lbl">Reading Ease (0-100)</div>
+                        </div>
+                        <div class="readability-stat-box">
+                            <div class="readability-stat-val" id="stat-grade-level">--</div>
+                            <div class="readability-stat-lbl">Kincaid Grade Level</div>
+                        </div>
+                        <div class="readability-stat-box">
+                            <div class="readability-stat-val" id="stat-reading-time">--</div>
+                            <div class="readability-stat-lbl">Est. Reading Time</div>
+                        </div>
+                        <div class="readability-stat-box">
+                            <div class="readability-stat-val" id="stat-word-count">--</div>
+                            <div class="readability-stat-lbl">Analyzed Words</div>
+                        </div>
+                    </div>
+
+                    <p style="font-size: var(--font-xs); color: var(--text-muted); margin-top: 14px; margin-bottom: 0;">
+                        💡 <strong>Understanding the score:</strong> Higher Reading Ease (80+) means simpler, faster reading. Lower scores indicate rich, scholarly or technical vocabulary.
+                    </p>
+                </div>
+
+                <!-- Book Description -->
+                <div style="margin-bottom: 32px;">
+                    <h3 style="font-size: var(--font-lg); font-weight: 700; margin-bottom: 10px;">About This Book</h3>
+                    <div id="book-description" style="font-size: var(--font-sm); line-height: 1.7; color: var(--text-muted); white-space: pre-line;">
+                        No description provided for this book.
+                    </div>
+                </div>
+
+                <!-- Book Metadata Table -->
+                <div class="card" style="margin-bottom: 40px; padding: 20px;">
+                    <h4 style="font-size: var(--font-base); font-weight: 700; margin-bottom: 14px;">Publication & Inventory Details</h4>
+                    <div class="grid grid-2" style="font-size: var(--font-sm); gap: 14px;">
+                        <div><strong style="color: var(--text-muted);">ISBN:</strong> <span id="meta-isbn">--</span></div>
+                        <div><strong style="color: var(--text-muted);">Publisher:</strong> <span id="meta-publisher">--</span></div>
+                        <div><strong style="color: var(--text-muted);">Language:</strong> <span id="meta-language">--</span></div>
+                        <div><strong style="color: var(--text-muted);">Total Inventory:</strong> <span id="meta-copies">--</span></div>
+                    </div>
+                </div>
+
+                <!-- Reviews & Ratings Section -->
+                <section id="reviews-section" style="border-top: 1px solid var(--border); padding-top: 36px;">
+                    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 24px; flex-wrap: wrap; gap: 12px;">
+                        <div>
+                            <h3 style="font-size: var(--font-xl); font-weight: 800;">Reader Reviews</h3>
+                            <p style="font-size: var(--font-sm); color: var(--text-muted); margin: 0;">What fellow library patrons think of this book</p>
+                        </div>
+                        <button id="write-review-btn" class="btn btn-outline btn-sm">
+                            ✍ Write a Review
+                        </button>
+                    </div>
+
+                    <!-- Review Form (Hidden by default or toggled) -->
+                    <div id="review-form-card" class="card" style="display: none; padding: 24px; margin-bottom: 24px; background: #fafbfc;">
+                        <h4 style="font-size: var(--font-base); font-weight: 700; margin-bottom: 12px;">Your Review & Rating</h4>
+                        <form id="review-form">
+                            <div class="form-group">
+                                <label class="form-label">Rating <span class="required">*</span></label>
+                                <div class="star-rating-select">
+                                    <input type="radio" id="star5" name="rating" value="5"><label for="star5" title="5 stars">★</label>
+                                    <input type="radio" id="star4" name="rating" value="4"><label for="star4" title="4 stars">★</label>
+                                    <input type="radio" id="star3" name="rating" value="3"><label for="star3" title="3 stars">★</label>
+                                    <input type="radio" id="star2" name="rating" value="2"><label for="star2" title="2 stars">★</label>
+                                    <input type="radio" id="star1" name="rating" value="1"><label for="star1" title="1 star">★</label>
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <label for="review-text" class="form-label">Your Review (Optional)</label>
+                                <textarea id="review-text" class="form-textarea" rows="3" placeholder="Share your key takeaways, favorite parts, or readability thoughts..."></textarea>
+                            </div>
+                            <div style="display: flex; gap: 10px; justify-content: flex-end;">
+                                <button type="button" class="btn btn-outline btn-sm" onclick="toggleReviewForm()">Cancel</button>
+                                <button type="submit" id="submit-review-btn" class="btn btn-primary btn-sm">Submit Review</button>
+                            </div>
+                        </form>
+                    </div>
+
+                    <!-- Reviews List -->
+                    <div id="reviews-list">
+                        <div style="text-align: center; padding: 30px 0; color: var(--text-muted);">
+                            No reviews yet. Be the first to review this book!
+                        </div>
+                    </div>
+                </section>
+            </div>
+        </div>
+    </main>
+
+    <!-- Footer -->
+    <footer style="background: #0f172a; color: #94a3b8; padding: 40px 0 20px; border-top: 1px solid #1e293b;">
+        <div class="container" style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 16px; font-size: var(--font-sm);">
+            <div style="display: flex; align-items: center; gap: 8px;">
+                <img src="../assets/images/logo.png" alt="Librix Logo" style="width: 24px; height: 24px;">
+                <span style="color: #fff; font-weight: 700;">Librix</span>
+                <span>&copy; 2026 All rights reserved.</span>
+            </div>
+            <div style="display: flex; gap: 16px;">
+                <a href="about.html" style="color: #94a3b8;">About</a>
+                <a href="contact.html" style="color: #94a3b8;">Contact</a>
+                <a href="status.html" style="color: #94a3b8;">Status</a>
+            </div>
+        </div>
+    </footer>
+
+    <!-- Scripts -->
+    <script src="../assets/js/api.js"></script>
+    <script src="../assets/js/utils.js"></script>
+    <script src="../assets/js/auth.js"></script>
+    <script>
+        const urlParams = new URLSearchParams(window.location.search);
+        const bookId = urlParams.get('id');
+        let currentBook = null;
+        let isFavorited = false;
+
+        if (!bookId) {
+            alert('Book ID missing.');
+            window.location.href = 'catalogue.html';
+        }
+
+        async function initPage() {
+            try {
+                // Fetch book info
+                const bookRes = await api.get(`/books/${bookId}`);
+                currentBook = bookRes.data;
+
+                renderBookDetails(currentBook);
+
+                // Fetch readability analysis
+                loadReadability(bookId);
+
+                // Fetch reviews
+                loadReviews(bookId);
+
+                document.getElementById('loading-spinner').style.display = 'none';
+                document.getElementById('book-content').style.display = 'grid';
+
+            } catch (err) {
+                document.getElementById('loading-spinner').innerHTML = `
+                    <div style="color: var(--danger); font-size: 18px; font-weight: 700;">Book Not Found</div>
+                    <p style="color: var(--text-muted); margin-top: 8px;">The requested book could not be loaded.</p>
+                    <a href="catalogue.html" class="btn btn-outline btn-sm" style="margin-top: 16px;">Return to Catalogue</a>
+                `;
+            }
+        }
+
+        function renderBookDetails(book) {
+            document.title = `${book.title} | Librix`;
+
+            document.getElementById('book-title').textContent = book.title;
+            document.getElementById('book-author').textContent = `By ${book.author_name || 'Unknown Author'}`;
+            document.getElementById('book-category').textContent = book.category || 'General';
+            document.getElementById('book-language').textContent = book.language || 'English';
+            document.getElementById('book-year').textContent = book.publication_year || 'N/A';
+            
+            if (book.description) {
+                document.getElementById('book-description').textContent = book.description;
+            }
+
+            // Meta table
+            document.getElementById('meta-isbn').textContent = book.isbn || 'N/A';
+            document.getElementById('meta-publisher').textContent = book.publisher || (book.publisher_name || 'N/A');
+            document.getElementById('meta-language').textContent = book.language || 'English';
+            document.getElementById('meta-copies').textContent = `${book.available_copies} available of ${book.total_copies} total`;
+
+            // Cover
+            const posterWrap = document.getElementById('poster-wrap');
+            if (book.cover_image) {
+                posterWrap.innerHTML = `<img src="${book.cover_image}" alt="${utils.escapeHtml(book.title)}" class="book-poster-img">`;
+            }
+
+            // Availability & Action Button
+            const stockContainer = document.getElementById('stock-badge-container');
+            const actionBtn = document.getElementById('main-action-btn');
+
+            if (book.available_copies > 0) {
+                stockContainer.innerHTML = `<span class="badge badge-success" style="font-size: 13px; width: 100%; justify-content: center; padding: 6px;">✓ In Stock (${book.available_copies} Copies Ready)</span>`;
+                actionBtn.textContent = 'Borrow This Book';
+                actionBtn.className = 'btn btn-primary btn-lg';
+                actionBtn.onclick = handleBorrow;
+            } else {
+                stockContainer.innerHTML = `<span class="badge badge-danger" style="font-size: 13px; width: 100%; justify-content: center; padding: 6px;">⚠ All Copies Checked Out</span>`;
+                actionBtn.textContent = 'Place a Reservation';
+                actionBtn.className = 'btn btn-secondary btn-lg';
+                actionBtn.onclick = handleReserve;
+            }
+
+            // Favorites Button
+            const favBtn = document.getElementById('favorite-btn');
+            favBtn.onclick = handleToggleFavorite;
+        }
+
+        async function loadReadability(id) {
+            try {
+                const res = await api.get(`/readability?book_id=${id}`);
+                const r = res.data;
+                if (r) {
+                    document.getElementById('stat-reading-ease').textContent = r.flesch_reading_ease || '--';
+                    document.getElementById('stat-grade-level').textContent = r.flesch_kincaid_grade ? `Grade ${r.flesch_kincaid_grade}` : '--';
+                    
+                    const minutes = r.estimated_reading_minutes || 0;
+                    if (minutes > 60) {
+                        const hrs = Math.floor(minutes / 60);
+                        const mins = minutes % 60;
+                        document.getElementById('stat-reading-time').textContent = `${hrs}h ${mins}m`;
+                    } else {
+                        document.getElementById('stat-reading-time').textContent = `${minutes} mins`;
+                    }
+
+                    document.getElementById('stat-word-count').textContent = (r.word_count || 0).toLocaleString();
+                    document.getElementById('readability-badge-wrap').innerHTML = utils.getReadabilityBadge(r.difficulty_level, r.flesch_reading_ease);
+                }
+            } catch (err) {
+                document.getElementById('readability-badge-wrap').innerHTML = `<span class="badge badge-neutral">Standard Readability</span>`;
+            }
+        }
+
+        async function loadReviews(id) {
+            try {
+                const res = await api.get(`/reviews?book_id=${id}`);
+                const reviews = res.data && res.data.reviews ? res.data.reviews : [];
+                const avg = res.data && res.data.average_rating ? res.data.average_rating : 0;
+                const total = res.data && res.data.total_reviews ? res.data.total_reviews : reviews.length;
+
+                document.getElementById('book-stars').innerHTML = utils.renderStars(avg);
+                document.getElementById('reviews-count-header').textContent = `${total} patron reviews`;
+
+                const list = document.getElementById('reviews-list');
+                if (reviews.length === 0) {
+                    list.innerHTML = `<div style="text-align: center; padding: 30px 0; color: var(--text-muted);">No reviews yet. Be the first to share your review!</div>`;
+                    return;
+                }
+
+                list.innerHTML = reviews.map(rev => `
+                    <div class="review-item">
+                        <div class="review-header">
+                            <div>
+                                <span class="reviewer-name">${utils.escapeHtml(rev.user_name || 'Library Patron')}</span>
+                                <div style="margin-top: 2px;">${utils.renderStars(rev.rating)}</div>
+                            </div>
+                            <span class="review-date">${utils.timeAgo(rev.created_at)}</span>
+                        </div>
+                        ${rev.review_text ? `<div class="review-body">${utils.escapeHtml(rev.review_text)}</div>` : ''}
+                    </div>
+                `).join('');
+
+            } catch (err) {
+                // Ignore reviews error
+            }
+        }
+
+        // Borrow handler
+        async function handleBorrow() {
+            if (!auth.isLoggedIn()) {
+                utils.toast("Authentication Required", "Please log in to borrow library books.", "warning");
+                setTimeout(() => window.location.href = `login.html?redirect=${encodeURIComponent(window.location.href)}`, 1200);
+                return;
+            }
+
+            if (confirm(`Confirm borrowing "${currentBook.title}" for 14 days?`)) {
+                try {
+                    await api.post('/library/issue', { book_id: currentBook.id });
+                    utils.toast("Book Borrowed Successfully", "You can now view this in your My Books dashboard.", "success");
+                    setTimeout(() => window.location.href = 'user/my-books.html', 1200);
+                } catch (err) {
+                    utils.toast("Borrowing Error", err.message, "error");
+                }
+            }
+        }
+
+        // Reserve handler
+        async function handleReserve() {
+            if (!auth.isLoggedIn()) {
+                utils.toast("Authentication Required", "Please log in to reserve books.", "warning");
+                setTimeout(() => window.location.href = `login.html?redirect=${encodeURIComponent(window.location.href)}`, 1200);
+                return;
+            }
+
+            if (confirm(`Place a reservation on "${currentBook.title}"?`)) {
+                try {
+                    await api.post('/library/reserve', { book_id: currentBook.id });
+                    utils.toast("Reservation Confirmed", "We will notify you immediately once a copy is returned.", "success");
+                    setTimeout(() => window.location.href = 'user/reservations.html', 1200);
+                } catch (err) {
+                    utils.toast("Reservation Error", err.message, "error");
+                }
+            }
+        }
+
+        // Toggle Favorite
+        async function handleToggleFavorite() {
+            if (!auth.isLoggedIn()) {
+                utils.toast("Authentication Required", "Please log in to save favorites.", "warning");
+                return;
+            }
+            try {
+                const res = await api.post('/favorites', { book_id: currentBook.id });
+                const favBtn = document.getElementById('favorite-btn');
+                if (res.data && res.data.favorited) {
+                    favBtn.textContent = '♥ Favorited';
+                    favBtn.className = 'btn btn-secondary';
+                    utils.toast("Saved", res.message, "success");
+                } else {
+                    favBtn.textContent = '♡ Add to Favorites';
+                    favBtn.className = 'btn btn-outline';
+                    utils.toast("Removed", res.message, "info");
+                }
+            } catch (err) {
+                utils.toast("Error", err.message, "error");
+            }
+        }
+
+        // Toggle review form
+        function toggleReviewForm() {
+            const formCard = document.getElementById('review-form-card');
+            formCard.style.display = formCard.style.display === 'none' ? 'block' : 'none';
+        }
+
+        document.getElementById('write-review-btn').addEventListener('click', () => {
+            if (!auth.isLoggedIn()) {
+                utils.toast("Login Required", "Please sign in to post a book review.", "warning");
+                setTimeout(() => window.location.href = `login.html?redirect=${encodeURIComponent(window.location.href)}`, 1200);
+                return;
+            }
+            toggleReviewForm();
+        });
+
+        // Submit Review
+        document.getElementById('review-form').addEventListener('submit', async function(e) {
+            e.preventDefault();
+            const ratingInput = document.querySelector('input[name="rating"]:checked');
+            if (!ratingInput) {
+                utils.toast("Rating Required", "Please select a star rating between 1 and 5.", "warning");
+                return;
+            }
+
+            const rating = parseInt(ratingInput.value, 10);
+            const reviewText = document.getElementById('review-text').value.trim();
+
+            const submitBtn = document.getElementById('submit-review-btn');
+            submitBtn.disabled = true;
+
+            try {
+                await api.post('/reviews', {
+                    book_id: currentBook.id,
+                    rating: rating,
+                    review_text: reviewText
+                });
+
+                utils.toast("Review Submitted", "Thank you for reviewing this book!", "success");
+                toggleReviewForm();
+                loadReviews(currentBook.id);
+
+            } catch (err) {
+                utils.toast("Review Failed", err.message, "error");
+            } finally {
+                submitBtn.disabled = false;
+            }
+        });
+
+        initPage();
+    </script>
+</body>
+
+</html>

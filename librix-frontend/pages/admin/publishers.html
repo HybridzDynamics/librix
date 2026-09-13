@@ -1,0 +1,152 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Publishers | LibriX Admin</title>
+    <link rel="icon" type="image/png" href="../../assets/images/favicon.png">
+    <link rel="stylesheet" href="../../assets/css/global.css">
+    <link rel="stylesheet" href="../../assets/css/admin.css">
+    <script src="../../assets/js/icons.js"></script>
+</head>
+<body>
+    <div class="admin-wrapper">
+        <aside class="admin-sidebar" id="sidebar">
+            <div class="admin-sidebar-brand"><img src="../../assets/images/logo.png" alt="LibriX Logo"><h2>LibriX <span class="badge-admin">LIBRARIAN</span></h2></div>
+            <div class="admin-sidebar-user">
+                <div class="admin-sidebar-avatar" id="admin-avatar">A</div>
+                <div style="overflow:hidden;"><div class="admin-sidebar-name" id="admin-name">Administrator</div><div class="admin-sidebar-role">Library Operations</div></div>
+            </div>
+            <ul class="admin-sidebar-menu">
+                <li class="admin-menu-header">Core Operations</li>
+                <li class="admin-sidebar-item"><a href="dashboard.html"><span class="admin-sidebar-icon"><i data-lucide="layout-dashboard" data-size="18"></i></span><span>Overview Dashboard</span></a></li>
+                <li class="admin-sidebar-item"><a href="borrowings.html"><span class="admin-sidebar-icon"><i data-lucide="refresh-cw" data-size="18"></i></span><span>Circulation &amp; Loans</span></a></li>
+                <li class="admin-sidebar-item"><a href="reservations.html"><span class="admin-sidebar-icon"><i data-lucide="bookmark" data-size="18"></i></span><span>Reservations Queue</span></a></li>
+                <li class="admin-sidebar-item"><a href="fines.html"><span class="admin-sidebar-icon"><i data-lucide="credit-card" data-size="18"></i></span><span>Fines &amp; Overdue Fees</span></a></li>
+                <li class="admin-menu-header">Catalog &amp; Inventory</li>
+                <li class="admin-sidebar-item"><a href="books.html"><span class="admin-sidebar-icon"><i data-lucide="book" data-size="18"></i></span><span>Manage Books</span></a></li>
+                <li class="admin-sidebar-item"><a href="authors.html"><span class="admin-sidebar-icon"><i data-lucide="pen-line" data-size="18"></i></span><span>Authors Directory</span></a></li>
+                <li class="admin-sidebar-item"><a href="categories.html"><span class="admin-sidebar-icon"><i data-lucide="tag" data-size="18"></i></span><span>Categories</span></a></li>
+                <li class="admin-sidebar-item"><a href="publishers.html" class="active"><span class="admin-sidebar-icon"><i data-lucide="building" data-size="18"></i></span><span>Publishers</span></a></li>
+                <li class="admin-menu-header">Administration</li>
+                <li class="admin-sidebar-item"><a href="users.html"><span class="admin-sidebar-icon"><i data-lucide="users" data-size="18"></i></span><span>Users &amp; Patrons</span></a></li>
+                <li class="admin-sidebar-item"><a href="reports.html"><span class="admin-sidebar-icon"><i data-lucide="bar-chart-2" data-size="18"></i></span><span>Reports &amp; Analytics</span></a></li>
+                <li class="admin-sidebar-item"><a href="../catalogue.html" target="_blank"><span class="admin-sidebar-icon"><i data-lucide="external-link" data-size="18"></i></span><span>Live Public Site</span></a></li>
+            </ul>
+            <div class="admin-sidebar-footer">
+                <button class="btn btn-sm" style="width:100%;display:flex;align-items:center;justify-content:center;gap:8px;border:1px solid #334155;color:#cbd5e1;background:transparent;" onclick="auth.logout()"><i data-lucide="log-out" data-size="16"></i> Logout Admin</button>
+            </div>
+        </aside>
+
+        <main class="admin-main">
+            <header class="admin-topbar">
+                <div style="display:flex;align-items:center;gap:14px;">
+                    <button class="mobile-menu-toggle" onclick="toggleSidebar()" style="display:flex;align-items:center;justify-content:center;"><i data-lucide="menu" data-size="22"></i></button>
+                    <span style="font-weight:700;font-size:var(--font-base);">Publishers &amp; Presses</span>
+                </div>
+                <button class="btn btn-primary btn-sm" style="display:flex;align-items:center;gap:6px;" onclick="openPublisherModal()"><i data-lucide="plus" data-size="16"></i> Add New Publisher</button>
+            </header>
+            <div class="admin-body">
+                <div class="page-header">
+                    <h1 class="page-title">Publishing Houses &amp; Distributors</h1>
+                    <p class="page-subtitle">Manage imprint information, publisher contact websites, and book volume attribution.</p>
+                </div>
+                <div class="card">
+                    <div id="publishers-table-wrap"><div style="padding:60px;text-align:center;"><div class="spinner"></div></div></div>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <div id="publisher-modal" class="modal-backdrop">
+        <div class="modal">
+            <div class="modal-header"><h3 class="modal-title" id="pub-modal-title">Add New Publisher</h3><button class="modal-close">&times;</button></div>
+            <form id="publisher-form">
+                <input type="hidden" id="publisher-id">
+                <div class="modal-body">
+                    <div class="form-group"><label for="pub-name-input" class="form-label">Publisher Name <span class="required">*</span></label><input type="text" id="pub-name-input" class="form-input" placeholder="e.g. Penguin Random House" required></div>
+                    <div class="form-group"><label for="pub-address-input" class="form-label">Headquarters Address</label><input type="text" id="pub-address-input" class="form-input" placeholder="New York, NY, USA"></div>
+                    <div class="form-group"><label for="pub-web-input" class="form-label">Official Website URL</label><input type="url" id="pub-web-input" class="form-input" placeholder="https://example.com"></div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-outline btn-sm modal-close">Cancel</button>
+                    <button type="submit" id="save-publisher-btn" class="btn btn-primary btn-sm">Save Publisher</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <script src="../../assets/js/api.js"></script>
+    <script src="../../assets/js/utils.js"></script>
+    <script src="../../assets/js/auth.js"></script>
+    <script>
+        if (!auth.requireAdmin()) {}
+        const user = auth.getUser();
+        if (user) { document.getElementById('admin-name').textContent = user.name; document.getElementById('admin-avatar').textContent = user.name.charAt(0).toUpperCase(); }
+        function toggleSidebar() { document.getElementById('sidebar').classList.toggle('is-open'); }
+
+        async function loadPublishers() {
+            const container = document.getElementById('publishers-table-wrap');
+            container.innerHTML = `<div style="padding:60px;text-align:center;"><div class="spinner"></div></div>`;
+            try {
+                const res = await api.get('/publishers');
+                const publishers = Array.isArray(res.data) ? res.data : [];
+                if (publishers.length === 0) {
+                    container.innerHTML = `<div class="empty-state"><div class="empty-state-icon"><svg xmlns="http://www.w3.org/2000/svg" width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><rect width="16" height="20" x="4" y="2" rx="2" ry="2"/><path d="M9 22v-4h6v4"/><path d="M8 6h.01"/><path d="M16 6h.01"/><path d="M12 6h.01"/><path d="M12 10h.01"/><path d="M12 14h.01"/><path d="M16 10h.01"/><path d="M16 14h.01"/><path d="M8 10h.01"/><path d="M8 14h.01"/></svg></div><div class="empty-state-title">No publishers registered</div><div class="empty-state-desc">Click '+ Add New Publisher' to add publishing houses.</div></div>`;
+                    return;
+                }
+                container.innerHTML = `
+                    <div class="table-wrapper" style="border:none;">
+                        <table class="table table-hover">
+                            <thead><tr><th>ID</th><th>Publisher Name</th><th>Headquarters</th><th>Website</th><th>Books</th><th style="text-align:right;">Actions</th></tr></thead>
+                            <tbody>${publishers.map(p => `<tr>
+                                <td>#${p.id}</td>
+                                <td><strong>${utils.escapeHtml(p.name)}</strong></td>
+                                <td style="font-size:var(--font-xs);color:var(--text-muted);">${utils.escapeHtml(p.address || '—')}</td>
+                                <td>${p.website ? `<a href="${utils.escapeHtml(p.website)}" target="_blank" style="font-size:var(--font-xs);">${utils.escapeHtml(p.website)}</a>` : '—'}</td>
+                                <td><span class="badge badge-primary">${p.total_books || 0} Books</span></td>
+                                <td><div class="table-actions-cell">
+                                    <button class="btn btn-outline btn-sm" onclick='openPublisherModal(${JSON.stringify(p).replace(/'/g, "&apos;")})'>Edit</button>
+                                    <button class="btn btn-outline btn-sm" style="color:var(--danger);border-color:var(--danger);" onclick="deletePublisher(${p.id}, '${utils.escapeHtml(p.name)}')">Delete</button>
+                                </div></td>
+                            </tr>`).join('')}</tbody>
+                        </table>
+                    </div>`;
+            } catch (err) { container.innerHTML = `<div style="padding:40px;text-align:center;color:var(--danger);">Failed to retrieve publishers.</div>`; }
+        }
+
+        function openPublisherModal(pub = null) {
+            document.getElementById('publisher-id').value = pub ? pub.id : '';
+            document.getElementById('pub-modal-title').textContent = pub ? `Edit Publisher #${pub.id}` : 'Add New Publisher';
+            document.getElementById('pub-name-input').value = pub ? pub.name : '';
+            document.getElementById('pub-address-input').value = pub && pub.address ? pub.address : '';
+            document.getElementById('pub-web-input').value = pub && pub.website ? pub.website : '';
+            utils.modal('publisher-modal').open();
+        }
+
+        async function deletePublisher(id, name) {
+            if (confirm(`Delete publisher "${name}"? Linked catalog titles will remain.`)) {
+                try { await api.delete(`/publishers/${id}`); utils.toast("Publisher Deleted", `Removed "${name}".`, "success"); loadPublishers(); }
+                catch (err) { utils.toast("Delete Failed", err.message, "error"); }
+            }
+        }
+
+        document.getElementById('publisher-form').addEventListener('submit', async function(e) {
+            e.preventDefault();
+            const id = document.getElementById('publisher-id').value;
+            const name = document.getElementById('pub-name-input').value.trim();
+            const address = document.getElementById('pub-address-input').value.trim();
+            const website = document.getElementById('pub-web-input').value.trim();
+            const btn = document.getElementById('save-publisher-btn');
+            btn.disabled = true;
+            try {
+                if (id) { await api.put(`/publishers/${id}`, { name, address, website }); utils.toast("Publisher Updated", `Updated "${name}".`, "success"); }
+                else { await api.post('/publishers', { name, address, website }); utils.toast("Publisher Added", `Added "${name}".`, "success"); }
+                utils.modal('publisher-modal').close(); loadPublishers();
+            } catch (err) { utils.toast("Save Failed", err.message, "error"); }
+            finally { btn.disabled = false; }
+        });
+        loadPublishers();
+    </script>
+</body>
+</html>

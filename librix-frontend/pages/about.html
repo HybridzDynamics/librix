@@ -1,0 +1,146 @@
+<!doctype html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>About LibriX – Smart Library Management & Digital Reading System</title>
+    <meta name="description" content="Learn about LibriX, the modern library platform that unites digital inventory with algorithmic readability analysis.">
+    <link rel="icon" type="image/png" href="../assets/images/favicon.png">
+    <link rel="stylesheet" href="../assets/css/global.css">
+    <link rel="stylesheet" href="../assets/css/style.css">
+</head>
+
+<body>
+    <!-- Navigation Bar -->
+    <nav id="nav-bar">
+        <div class="nav-brand">
+            <a href="../index.html" style="display: flex; align-items: center; gap: 10px; text-decoration: none;">
+                <img src="../assets/images/logo.png" alt="Librix Logo" id="logo">
+                <h1 style="margin: 0;">Librix</h1>
+            </a>
+        </div>
+        <div class="nav-links">
+            <a href="../index.html">Home</a>
+            <a href="catalogue.html">Catalogue</a>
+            <a href="about.html" class="active">About</a>
+            <a href="contact.html">Contact</a>
+            <a href="status.html">System Status</a>
+        </div>
+        <div class="nav-auth" id="nav-auth-container">
+            <a href="login.html" class="btn btn-outline btn-sm">Login</a>
+            <a href="register.html" class="btn btn-primary btn-sm">Sign Up</a>
+        </div>
+    </nav>
+
+    <!-- Header -->
+    <header style="background: linear-gradient(135deg, #1e1b4b 0%, #312e81 50%, #4338ca 100%); color: #ffffff; padding: 70px 0 50px;">
+        <div class="container-narrow" style="text-align: center;">
+            <span class="badge badge-primary" style="background: rgba(255,255,255,0.15); color: #fff; border: 1px solid rgba(255,255,255,0.3); margin-bottom: 14px;">OUR VISION</span>
+            <h1 style="font-size: var(--font-3xl); font-weight: 800; color: #ffffff; margin-bottom: 14px;">Transforming How Communities Read</h1>
+            <p style="font-size: var(--font-md); opacity: 0.9; line-height: 1.6;">
+                LibriX was created to modernize fragmented library operations and empower readers with transparent reading analytics.
+            </p>
+        </div>
+    </header>
+
+    <!-- Main Content -->
+    <main class="container" style="padding: 60px 24px 80px;">
+        <!-- The Problem & Solution -->
+        <div class="grid grid-2" style="margin-bottom: 70px; align-items: center; gap: 48px;">
+            <div>
+                <span class="badge badge-primary" style="margin-bottom: 12px;">THE PROBLEM</span>
+                <h2 style="font-size: var(--font-2xl); font-weight: 800; color: var(--text-main); margin-bottom: 16px;">The Challenge of Traditional Libraries</h2>
+                <p style="color: var(--text-muted); line-height: 1.7; margin-bottom: 16px;">
+                    Manual record keeping, scattered catalogs, and lack of real-time inventory make it exhausting for readers to locate books and difficult for administrators to track due dates, handle fines, and prevent stock loss.
+                </p>
+                <p style="color: var(--text-muted); line-height: 1.7;">
+                    Furthermore, readers often pick books that are either too elementary or overly dense because standard catalog cards provide no objective measure of reading difficulty or expected time commitment.
+                </p>
+            </div>
+            <div class="card" style="padding: 32px; background: linear-gradient(135deg, #f8fafc 0%, #eff6ff 100%); border-left: 4px solid var(--primary);">
+                <span class="badge badge-success" style="margin-bottom: 12px;">THE LIBRIX SOLUTION</span>
+                <h3 style="font-size: var(--font-xl); font-weight: 800; color: var(--text-main); margin-bottom: 14px;">Smart Intelligence Meets Circulation</h3>
+                <p style="color: var(--text-muted); line-height: 1.7; margin-bottom: 16px;">
+                    LibriX unifies all core library operations—catalogue search, single-click borrowings, digital reservations, automated renewals, fine ledgers, and patron reviews—into one clean web application.
+                </p>
+                <div style="display: flex; flex-direction: column; gap: 10px; font-size: var(--font-sm); color: var(--text-main); font-weight: 500;">
+                    <div>✓ Automated Flesch-Kincaid Reading Complexity Indexing</div>
+                    <div>✓ Estimated Reading Pace Calculation in Hours & Minutes</div>
+                    <div>✓ Real-Time Copy Availability & Instant Reservation Queues</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- How Readability Works -->
+        <div class="card" style="padding: 40px; margin-bottom: 70px; background: #ffffff;">
+            <div style="text-align: center; max-width: 680px; margin: 0 auto 36px;">
+                <span class="badge badge-primary" style="margin-bottom: 8px;">ALGORITHMIC INSIGHT</span>
+                <h2 style="font-size: var(--font-2xl); font-weight: 800;">How the Readability Engine Works</h2>
+                <p style="color: var(--text-muted); font-size: var(--font-sm);">
+                    LibriX analyzes text patterns using proven linguistic formulas to give you objective reading metrics.
+                </p>
+            </div>
+
+            <div class="grid grid-3" style="gap: 24px;">
+                <div style="background: #f8fafc; border: 1px solid var(--border); border-radius: var(--radius-lg); padding: 24px;">
+                    <div style="font-size: 32px; margin-bottom: 12px;">📐</div>
+                    <h3 style="font-size: var(--font-base); font-weight: 700; margin-bottom: 8px;">Flesch Reading Ease</h3>
+                    <p style="font-size: var(--font-xs); color: var(--text-muted); line-height: 1.6;">
+                        Calculates a score between 0 and 100 based on average sentence length and syllables per word. 90-100 is comic-strip simple; 30-50 is academic and collegiate.
+                    </p>
+                </div>
+                <div style="background: #f8fafc; border: 1px solid var(--border); border-radius: var(--radius-lg); padding: 24px;">
+                    <div style="font-size: 32px; margin-bottom: 12px;">🎓</div>
+                    <h3 style="font-size: var(--font-base); font-weight: 700; margin-bottom: 8px;">Flesch-Kincaid Grade</h3>
+                    <p style="font-size: var(--font-xs); color: var(--text-muted); line-height: 1.6;">
+                        Translates syllable density and sentence complexity into a US grade reading level (e.g., Grade 8.2), making it simple for educators and students to calibrate.
+                    </p>
+                </div>
+                <div style="background: #f8fafc; border: 1px solid var(--border); border-radius: var(--radius-lg); padding: 24px;">
+                    <div style="font-size: 32px; margin-bottom: 12px;">⏱️</div>
+                    <h3 style="font-size: var(--font-base); font-weight: 700; margin-bottom: 8px;">Reading Pace Projection</h3>
+                    <p style="font-size: var(--font-xs); color: var(--text-muted); line-height: 1.6;">
+                        Computes precise reading completion time based on 200 words-per-minute average adult silent comprehension rates, allowing readers to plan their schedule.
+                    </p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Tech Stack -->
+        <div style="text-align: center;">
+            <span class="badge badge-neutral" style="margin-bottom: 12px;">ARCHITECTURE</span>
+            <h2 style="font-size: var(--font-xl); font-weight: 800; margin-bottom: 24px;">Built with Reliable & Standard Technologies</h2>
+            <div style="display: flex; justify-content: center; gap: 20px; flex-wrap: wrap;">
+                <span class="badge badge-primary" style="padding: 8px 18px; font-size: 14px;">PHP 8.2+ Backend</span>
+                <span class="badge badge-info" style="padding: 8px 18px; font-size: 14px;">MySQL Database & Foreign Keys</span>
+                <span class="badge badge-success" style="padding: 8px 18px; font-size: 14px;">Vanilla CSS3 Custom Properties</span>
+                <span class="badge badge-warning" style="padding: 8px 18px; font-size: 14px;">Modern ES6+ JavaScript</span>
+                <span class="badge badge-primary" style="padding: 8px 18px; font-size: 14px;">RESTful JSON APIs</span>
+            </div>
+        </div>
+    </main>
+
+    <!-- Footer -->
+    <footer style="background: #0f172a; color: #94a3b8; padding: 40px 0 20px; border-top: 1px solid #1e293b;">
+        <div class="container" style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 16px; font-size: var(--font-sm);">
+            <div style="display: flex; align-items: center; gap: 8px;">
+                <img src="../assets/images/logo.png" alt="Librix Logo" style="width: 24px; height: 24px;">
+                <span style="color: #fff; font-weight: 700;">Librix</span>
+                <span>&copy; 2026 All rights reserved.</span>
+            </div>
+            <div style="display: flex; gap: 16px;">
+                <a href="catalogue.html" style="color: #94a3b8;">Catalogue</a>
+                <a href="contact.html" style="color: #94a3b8;">Contact</a>
+                <a href="status.html" style="color: #94a3b8;">Status</a>
+            </div>
+        </div>
+    </footer>
+
+    <!-- Scripts -->
+    <script src="../assets/js/api.js"></script>
+    <script src="../assets/js/utils.js"></script>
+    <script src="../assets/js/auth.js"></script>
+</body>
+
+</html>

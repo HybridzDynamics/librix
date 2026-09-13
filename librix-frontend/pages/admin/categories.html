@@ -1,0 +1,175 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Categories | LibriX Admin</title>
+    <link rel="icon" type="image/png" href="../../assets/images/favicon.png">
+    <link rel="stylesheet" href="../../assets/css/global.css">
+    <link rel="stylesheet" href="../../assets/css/admin.css">
+    <script src="../../assets/js/icons.js"></script>
+</head>
+<body>
+    <div class="admin-wrapper">
+        <aside class="admin-sidebar" id="sidebar">
+            <div class="admin-sidebar-brand"><img src="../../assets/images/logo.png" alt="LibriX Logo"><h2>LibriX <span class="badge-admin">LIBRARIAN</span></h2></div>
+            <div class="admin-sidebar-user">
+                <div class="admin-sidebar-avatar" id="admin-avatar">A</div>
+                <div style="overflow:hidden;"><div class="admin-sidebar-name" id="admin-name">Administrator</div><div class="admin-sidebar-role">Library Operations</div></div>
+            </div>
+            <ul class="admin-sidebar-menu">
+                <li class="admin-menu-header">Core Operations</li>
+                <li class="admin-sidebar-item"><a href="dashboard.html"><span class="admin-sidebar-icon"><i data-lucide="layout-dashboard" data-size="18"></i></span><span>Overview Dashboard</span></a></li>
+                <li class="admin-sidebar-item"><a href="borrowings.html"><span class="admin-sidebar-icon"><i data-lucide="refresh-cw" data-size="18"></i></span><span>Circulation &amp; Loans</span></a></li>
+                <li class="admin-sidebar-item"><a href="reservations.html"><span class="admin-sidebar-icon"><i data-lucide="bookmark" data-size="18"></i></span><span>Reservations Queue</span></a></li>
+                <li class="admin-sidebar-item"><a href="fines.html"><span class="admin-sidebar-icon"><i data-lucide="credit-card" data-size="18"></i></span><span>Fines &amp; Overdue Fees</span></a></li>
+                <li class="admin-menu-header">Catalog &amp; Inventory</li>
+                <li class="admin-sidebar-item"><a href="books.html"><span class="admin-sidebar-icon"><i data-lucide="book" data-size="18"></i></span><span>Manage Books</span></a></li>
+                <li class="admin-sidebar-item"><a href="authors.html"><span class="admin-sidebar-icon"><i data-lucide="pen-line" data-size="18"></i></span><span>Authors Directory</span></a></li>
+                <li class="admin-sidebar-item"><a href="categories.html" class="active"><span class="admin-sidebar-icon"><i data-lucide="tag" data-size="18"></i></span><span>Categories</span></a></li>
+                <li class="admin-sidebar-item"><a href="publishers.html"><span class="admin-sidebar-icon"><i data-lucide="building" data-size="18"></i></span><span>Publishers</span></a></li>
+                <li class="admin-menu-header">Administration</li>
+                <li class="admin-sidebar-item"><a href="users.html"><span class="admin-sidebar-icon"><i data-lucide="users" data-size="18"></i></span><span>Users &amp; Patrons</span></a></li>
+                <li class="admin-sidebar-item"><a href="reports.html"><span class="admin-sidebar-icon"><i data-lucide="bar-chart-2" data-size="18"></i></span><span>Reports &amp; Analytics</span></a></li>
+                <li class="admin-sidebar-item"><a href="../catalogue.html" target="_blank"><span class="admin-sidebar-icon"><i data-lucide="external-link" data-size="18"></i></span><span>Live Public Site</span></a></li>
+            </ul>
+            <div class="admin-sidebar-footer">
+                <button class="btn btn-sm" style="width:100%;display:flex;align-items:center;justify-content:center;gap:8px;border:1px solid #334155;color:#cbd5e1;background:transparent;" onclick="auth.logout()"><i data-lucide="log-out" data-size="16"></i> Logout Admin</button>
+            </div>
+        </aside>
+
+        <main class="admin-main">
+            <header class="admin-topbar">
+                <div style="display:flex;align-items:center;gap:14px;">
+                    <button class="mobile-menu-toggle" onclick="toggleSidebar()" style="display:flex;align-items:center;justify-content:center;"><i data-lucide="menu" data-size="22"></i></button>
+                    <span style="font-weight:700;font-size:var(--font-base);">Book Categories Taxonomy</span>
+                </div>
+                <button class="btn btn-primary btn-sm" style="display:flex;align-items:center;gap:6px;" onclick="openCategoryModal()"><i data-lucide="plus" data-size="16"></i> Add New Category</button>
+            </header>
+
+            <div class="admin-body">
+                <div class="page-header">
+                    <h1 class="page-title">Genres &amp; Categories</h1>
+                    <p class="page-subtitle">Organize and group library titles by subject areas and literary genres.</p>
+                </div>
+                <div class="card">
+                    <div id="categories-table-wrap">
+                        <div style="padding:60px;text-align:center;"><div class="spinner"></div></div>
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <!-- Modal -->
+    <div id="category-modal" class="modal-backdrop">
+        <div class="modal">
+            <div class="modal-header">
+                <h3 class="modal-title" id="cat-modal-title">Add New Category</h3>
+                <button class="modal-close">&times;</button>
+            </div>
+            <form id="category-form">
+                <input type="hidden" id="category-id">
+                <div class="modal-body">
+                    <div class="form-group">
+                        <label for="cat-name-input" class="form-label">Category Name <span class="required">*</span></label>
+                        <input type="text" id="cat-name-input" class="form-input" placeholder="e.g. Science Fiction" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="cat-desc-input" class="form-label">Description</label>
+                        <textarea id="cat-desc-input" class="form-textarea" rows="3" placeholder="Category definition or scope..."></textarea>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-outline btn-sm modal-close">Cancel</button>
+                    <button type="submit" id="save-category-btn" class="btn btn-primary btn-sm">Save Category</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <script src="../../assets/js/api.js"></script>
+    <script src="../../assets/js/utils.js"></script>
+    <script src="../../assets/js/auth.js"></script>
+    <script>
+        if (!auth.requireAdmin()) {}
+        const user = auth.getUser();
+        if (user) { document.getElementById('admin-name').textContent = user.name; document.getElementById('admin-avatar').textContent = user.name.charAt(0).toUpperCase(); }
+        function toggleSidebar() { document.getElementById('sidebar').classList.toggle('is-open'); }
+
+        async function loadCategories() {
+            const container = document.getElementById('categories-table-wrap');
+            container.innerHTML = `<div style="padding:60px;text-align:center;"><div class="spinner"></div></div>`;
+            try {
+                const res = await api.get('/categories');
+                const categories = Array.isArray(res.data) ? res.data : [];
+                if (categories.length === 0) {
+                    container.innerHTML = `<div class="empty-state"><div class="empty-state-icon"><svg xmlns="http://www.w3.org/2000/svg" width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2H2v10l9.29 9.29c.94.94 2.48.94 3.42 0l6.58-6.58c.94-.94.94-2.48 0-3.42L12 2Z"/><path d="M7 7h.01"/></svg></div><div class="empty-state-title">No categories created</div><div class="empty-state-desc">Click '+ Add New Category' to create taxonomy groupings.</div></div>`;
+                    return;
+                }
+                container.innerHTML = `
+                    <div class="table-wrapper" style="border:none;">
+                        <table class="table table-hover">
+                            <thead><tr><th>ID</th><th>Category Name</th><th>Description</th><th>Total Books</th><th style="text-align:right;">Actions</th></tr></thead>
+                            <tbody>
+                                ${categories.map(c => `<tr>
+                                    <td>#${c.id}</td>
+                                    <td><strong>${utils.escapeHtml(c.name)}</strong></td>
+                                    <td style="font-size:var(--font-xs);color:var(--text-muted);">${utils.escapeHtml(c.description || '—')}</td>
+                                    <td><span class="badge badge-primary">${c.total_books || 0} Books</span></td>
+                                    <td><div class="table-actions-cell">
+                                        <button class="btn btn-outline btn-sm" onclick='openCategoryModal(${JSON.stringify(c).replace(/'/g, "&apos;")})'>Edit</button>
+                                        <button class="btn btn-outline btn-sm" style="color:var(--danger);border-color:var(--danger);" onclick="deleteCategory(${c.id}, '${utils.escapeHtml(c.name)}')">Delete</button>
+                                    </div></td>
+                                </tr>`).join('')}
+                            </tbody>
+                        </table>
+                    </div>`;
+            } catch (err) {
+                container.innerHTML = `<div style="padding:40px;text-align:center;color:var(--danger);">Failed to retrieve categories.</div>`;
+            }
+        }
+
+        function openCategoryModal(cat = null) {
+            document.getElementById('category-id').value = cat ? cat.id : '';
+            document.getElementById('cat-modal-title').textContent = cat ? `Edit Category #${cat.id}` : 'Add New Category';
+            document.getElementById('cat-name-input').value = cat ? cat.name : '';
+            document.getElementById('cat-desc-input').value = cat && cat.description ? cat.description : '';
+            utils.modal('category-modal').open();
+        }
+
+        async function deleteCategory(id, name) {
+            if (confirm(`Delete category "${name}"? Books in this category will become unassigned.`)) {
+                try {
+                    await api.delete(`/categories/${id}`);
+                    utils.toast("Category Deleted", `Removed "${name}".`, "success");
+                    loadCategories();
+                } catch (err) { utils.toast("Delete Failed", err.message, "error"); }
+            }
+        }
+
+        document.getElementById('category-form').addEventListener('submit', async function(e) {
+            e.preventDefault();
+            const id = document.getElementById('category-id').value;
+            const name = document.getElementById('cat-name-input').value.trim();
+            const desc = document.getElementById('cat-desc-input').value.trim();
+            const btn = document.getElementById('save-category-btn');
+            btn.disabled = true;
+            try {
+                if (id) {
+                    await api.put(`/categories/${id}`, { name, description: desc });
+                    utils.toast("Category Updated", `Updated "${name}".`, "success");
+                } else {
+                    await api.post('/categories', { name, description: desc });
+                    utils.toast("Category Added", `Added "${name}".`, "success");
+                }
+                utils.modal('category-modal').close();
+                loadCategories();
+            } catch (err) { utils.toast("Save Failed", err.message, "error"); }
+            finally { btn.disabled = false; }
+        });
+
+        loadCategories();
+    </script>
+</body>
+</html>

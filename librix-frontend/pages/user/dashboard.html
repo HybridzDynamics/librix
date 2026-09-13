@@ -1,0 +1,368 @@
+<!doctype html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>User Dashboard | LibriX</title>
+    <link rel="icon" type="image/png" href="../../assets/images/favicon.png">
+    <link rel="stylesheet" href="../../assets/css/global.css">
+    <link rel="stylesheet" href="../../assets/css/dashboard.css">
+    <script src="../../assets/js/icons.js"></script>
+</head>
+
+<body>
+    <div class="dashboard-wrapper">
+        <!-- Sidebar -->
+        <aside class="dashboard-sidebar" id="sidebar">
+            <div class="sidebar-brand">
+                <img src="../../assets/images/logo.png" alt="LibriX Logo">
+                <h2>LibriX</h2>
+            </div>
+
+            <div class="sidebar-user">
+                <div class="sidebar-avatar" id="user-avatar">U</div>
+                <div class="sidebar-user-info">
+                    <div class="sidebar-user-name" id="user-name-display">Loading...</div>
+                    <div class="sidebar-user-role">Patron Account</div>
+                </div>
+            </div>
+
+            <ul class="sidebar-menu">
+                <li class="sidebar-item">
+                    <a href="dashboard.html" class="active">
+                        <span class="sidebar-icon"><i data-lucide="layout-dashboard" data-size="18"></i></span>
+                        <span>Dashboard</span>
+                    </a>
+                </li>
+                <li class="sidebar-item">
+                    <a href="my-books.html">
+                        <span class="sidebar-icon"><i data-lucide="book" data-size="18"></i></span>
+                        <span>My Borrowed Books</span>
+                    </a>
+                </li>
+                <li class="sidebar-item">
+                    <a href="history.html">
+                        <span class="sidebar-icon"><i data-lucide="clock" data-size="18"></i></span>
+                        <span>Borrowing History</span>
+                    </a>
+                </li>
+                <li class="sidebar-item">
+                    <a href="reservations.html">
+                        <span class="sidebar-icon"><i data-lucide="bookmark" data-size="18"></i></span>
+                        <span>Reservations</span>
+                    </a>
+                </li>
+                <li class="sidebar-item">
+                    <a href="favorites.html">
+                        <span class="sidebar-icon"><i data-lucide="heart" data-size="18"></i></span>
+                        <span>My Favorites</span>
+                    </a>
+                </li>
+                <li class="sidebar-item">
+                    <a href="notifications.html">
+                        <span class="sidebar-icon"><i data-lucide="bell" data-size="18"></i></span>
+                        <span>Notifications</span>
+                        <span id="sidebar-unread-badge" class="badge badge-danger" style="margin-left: auto; display: none; font-size: 10px; padding: 1px 6px;">0</span>
+                    </a>
+                </li>
+                <li class="sidebar-item">
+                    <a href="profile.html">
+                        <span class="sidebar-icon"><i data-lucide="settings" data-size="18"></i></span>
+                        <span>Profile &amp; Settings</span>
+                    </a>
+                </li>
+                <li class="sidebar-item" style="margin-top: 12px; border-top: 1px solid var(--border); padding-top: 12px;">
+                    <a href="../catalogue.html">
+                        <span class="sidebar-icon"><i data-lucide="search" data-size="18"></i></span>
+                        <span>Explore Catalogue</span>
+                    </a>
+                </li>
+            </ul>
+
+            <div class="sidebar-footer">
+                <button class="btn btn-outline btn-sm" style="width: 100%; display: flex; align-items: center; justify-content: center; gap: 8px; border-color: var(--border);" onclick="auth.logout()">
+                    <i data-lucide="log-out" data-size="16"></i> Sign Out
+                </button>
+            </div>
+        </aside>
+
+        <!-- Main Area -->
+        <main class="dashboard-main">
+            <!-- Topbar -->
+            <header class="dashboard-topbar">
+                <div style="display: flex; align-items: center; gap: 14px;">
+                    <button class="mobile-menu-toggle" onclick="toggleSidebar()" style="display:flex;align-items:center;justify-content:center;">
+                        <i data-lucide="menu" data-size="22"></i>
+                    </button>
+                    <div style="font-weight: 700; font-size: var(--font-base);" id="greeting-text">
+                        Welcome back!
+                    </div>
+                </div>
+
+                <div class="topbar-actions">
+                    <a href="notifications.html" class="btn btn-outline btn-icon" style="position: relative;" title="Notifications">
+                        <i data-lucide="bell" data-size="18"></i>
+                        <span id="topbar-unread-dot" style="position: absolute; top: 4px; right: 4px; width: 8px; height: 8px; border-radius: 50%; background: var(--danger); display: none;"></span>
+                    </a>
+                    <a href="../catalogue.html" class="btn btn-primary btn-sm" style="display:flex;align-items:center;gap:6px;">
+                        <i data-lucide="plus" data-size="16"></i> Browse Books
+                    </a>
+                </div>
+            </header>
+
+            <!-- Body -->
+            <div class="dashboard-body">
+                <div class="page-header">
+                    <h1 class="page-title">Patron Overview</h1>
+                    <p class="page-subtitle">Track your current loans, book return deadlines, reading history, and reservations.</p>
+                </div>
+
+                <!-- 4 Stat Cards -->
+                <div class="grid grid-4" style="margin-bottom: 32px;">
+                    <div class="stat-card">
+                        <div class="stat-icon stat-icon-primary">
+                            <i data-lucide="book-open" data-size="24"></i>
+                        </div>
+                        <div>
+                            <div class="stat-value" id="stat-current-count">0</div>
+                            <div class="stat-label">Currently Borrowed</div>
+                        </div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-icon stat-icon-warning">
+                            <i data-lucide="bookmark" data-size="24"></i>
+                        </div>
+                        <div>
+                            <div class="stat-value" id="stat-reservations-count">0</div>
+                            <div class="stat-label">Active Reservations</div>
+                        </div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-icon stat-icon-success">
+                            <i data-lucide="check-circle" data-size="24"></i>
+                        </div>
+                        <div>
+                            <div class="stat-value" id="stat-read-count">0</div>
+                            <div class="stat-label">Total Books Read</div>
+                        </div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-icon stat-icon-danger">
+                            <i data-lucide="credit-card" data-size="24"></i>
+                        </div>
+                        <div>
+                            <div class="stat-value" id="stat-fines-total">$0.00</div>
+                            <div class="stat-label">Unpaid Overdue Fines</div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Two Column Layout: Current Books & Notifications -->
+                <div class="grid grid-3" style="gap: 28px; align-items: start;">
+                    <!-- Currently Issued Books (2 Cols) -->
+                    <div class="card" style="grid-column: span 2;">
+                        <div class="card-header">
+                            <span class="card-title" style="font-size: var(--font-base);">Currently Checked Out</span>
+                            <a href="my-books.html" class="btn btn-outline btn-sm">View All &amp; Renew</a>
+                        </div>
+                        <div id="current-books-container">
+                            <div style="padding: 30px; text-align: center;">
+                                <div class="spinner"></div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Right Column: Recent Notifications & Quick Links -->
+                    <div style="display: flex; flex-direction: column; gap: 24px;">
+                        <!-- Notifications Preview -->
+                        <div class="card">
+                            <div class="card-header">
+                                <span class="card-title" style="font-size: var(--font-base);">Recent Alerts</span>
+                                <a href="notifications.html" style="font-size: var(--font-xs);">See all</a>
+                            </div>
+                            <div id="recent-notifications-list" style="padding: 12px 16px;">
+                                <div style="font-size: var(--font-xs); color: var(--text-muted); text-align: center; padding: 20px 0;">
+                                    Loading alerts...
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Readability Quick Tip -->
+                        <div class="card" style="padding: 20px; background: linear-gradient(135deg, #eef2ff 0%, #f0fdf4 100%); border-color: var(--primary-border);">
+                            <span class="badge badge-primary" style="margin-bottom: 8px;">SMART TIP</span>
+                            <h4 style="font-size: var(--font-sm); font-weight: 700; margin-bottom: 6px;">Reading Level Optimization</h4>
+                            <p style="font-size: var(--font-xs); color: var(--text-muted); line-height: 1.6; margin: 0;">
+                                Look for the <strong>Reading Ease</strong> badge on book cards. Books with scores of 70-80 can be finished 40% faster on average.
+                            </p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <!-- Scripts -->
+    <script src="../../assets/js/api.js"></script>
+    <script src="../../assets/js/utils.js"></script>
+    <script src="../../assets/js/auth.js"></script>
+    <script>
+        // Protect Route
+        if (!auth.requireAuth()) { /* redirect handled */ }
+
+        const user = auth.getUser();
+        if (user) {
+            document.getElementById('user-name-display').textContent = user.name;
+            document.getElementById('user-avatar').textContent = user.name.charAt(0).toUpperCase();
+            document.getElementById('greeting-text').textContent = `Hello, ${user.name.split(' ')[0]}!`;
+        }
+
+        function toggleSidebar() {
+            document.getElementById('sidebar').classList.toggle('is-open');
+        }
+
+        // Re-process icons in dynamically inserted HTML
+        function applyIcons(root) {
+            if (window.lucide) lucide.createIcons(root || document);
+        }
+
+        async function loadDashboardData() {
+            try {
+                const res = await api.get('/library/my-books');
+                const data = res.data;
+
+                const currentlyIssued = data.currently_issued || [];
+                const history = data.history || [];
+                const reservations = data.reservations || [];
+                const fines = data.fines || [];
+
+                document.getElementById('stat-current-count').textContent = currentlyIssued.length;
+                document.getElementById('stat-read-count').textContent = history.length;
+                document.getElementById('stat-reservations-count').textContent = reservations.length;
+
+                const unpaidFines = fines.filter(f => f.status === 'unpaid');
+                const totalFines = unpaidFines.reduce((sum, f) => sum + parseFloat(f.amount || 0), 0);
+                document.getElementById('stat-fines-total').textContent = `$${totalFines.toFixed(2)}`;
+
+                renderCurrentBooks(currentlyIssued);
+
+            } catch (err) {
+                document.getElementById('current-books-container').innerHTML = `
+                    <div style="padding: 24px; text-align: center; color: var(--danger); font-size: var(--font-sm);">
+                        Could not load borrowing data.
+                    </div>
+                `;
+            }
+
+            // Fetch notifications
+            try {
+                const notifRes = await api.get('/notifications', { limit: 4 });
+                const notifs = notifRes.data && notifRes.data.notifications ? notifRes.data.notifications : [];
+                const unread = notifRes.data ? notifRes.data.unread_count : 0;
+
+                if (unread > 0) {
+                    const sbBadge = document.getElementById('sidebar-unread-badge');
+                    sbBadge.textContent = unread;
+                    sbBadge.style.display = 'inline-block';
+                    document.getElementById('topbar-unread-dot').style.display = 'block';
+                }
+
+                renderRecentNotifications(notifs);
+
+            } catch (e) { /* ignore */ }
+        }
+
+        function renderCurrentBooks(books) {
+            const container = document.getElementById('current-books-container');
+            if (books.length === 0) {
+                container.innerHTML = `
+                    <div class="empty-state" style="padding: 40px 20px;">
+                        <div class="empty-state-icon"><svg xmlns="http://www.w3.org/2000/svg" width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M4 19.5v-15A2.5 2.5 0 0 1 6.5 2H20v20H6.5a2.5 2.5 0 0 1-2.5-2.5Z"/><path d="M6 2v20"/></svg></div>
+                        <div class="empty-state-title">No books currently checked out</div>
+                        <div class="empty-state-desc">You have no active loans. Discover thousands of great books in our digital catalogue.</div>
+                        <a href="../catalogue.html" class="btn btn-primary btn-sm">Explore Catalogue</a>
+                    </div>
+                `;
+                return;
+            }
+
+            container.innerHTML = `
+                <div class="table-wrapper" style="border: none;">
+                    <table class="table table-hover">
+                        <thead>
+                            <tr>
+                                <th>Book Title</th>
+                                <th>Issued Date</th>
+                                <th>Due Date</th>
+                                <th>Status</th>
+                                <th style="text-align: right;">Action</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            ${books.map(b => {
+                                const isOverdue = b.status === 'overdue' || (new Date(b.due_date) < new Date());
+                                const statusBadge = isOverdue
+                                    ? '<span class="badge badge-danger">Overdue</span>'
+                                    : '<span class="badge badge-success">On Loan</span>';
+                                return `
+                                    <tr>
+                                        <td>
+                                            <strong style="display: block; font-size: var(--font-sm);">${utils.escapeHtml(b.title)}</strong>
+                                            <span style="font-size: var(--font-xs); color: var(--text-muted);">${utils.escapeHtml(b.author_name || '')}</span>
+                                        </td>
+                                        <td>${utils.formatDate(b.issued_at)}</td>
+                                        <td style="font-weight: 600; color: ${isOverdue ? 'var(--danger)' : 'var(--text-main)'};">
+                                            ${utils.formatDate(b.due_date)}
+                                        </td>
+                                        <td>${statusBadge}</td>
+                                        <td style="text-align: right;">
+                                            <button class="btn btn-outline btn-sm" onclick="returnBook(${b.issue_id}, '${utils.escapeHtml(b.title)}')">
+                                                Return
+                                            </button>
+                                        </td>
+                                    </tr>
+                                `;
+                            }).join('')}
+                        </tbody>
+                    </table>
+                </div>
+            `;
+        }
+
+        function renderRecentNotifications(notifs) {
+            const container = document.getElementById('recent-notifications-list');
+            if (notifs.length === 0) {
+                container.innerHTML = `<div style="font-size: var(--font-xs); color: var(--text-muted); text-align: center; padding: 16px 0;">No new notifications.</div>`;
+                return;
+            }
+
+            const bellSvg = `<svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 8a6 6 0 0 1 12 0c0 7 3 9 3 9H3s3-2 3-9"/><path d="M10.3 21a1.94 1.94 0 0 0 3.4 0"/></svg>`;
+
+            container.innerHTML = notifs.map(n => `
+                <div style="padding: 10px 0; border-bottom: 1px solid #f1f5f9; display: flex; gap: 10px; align-items: flex-start;">
+                    <span style="color: var(--primary); margin-top: 2px;">${bellSvg}</span>
+                    <div style="flex: 1;">
+                        <strong style="font-size: var(--font-xs); display: block; color: var(--text-main);">${utils.escapeHtml(n.title)}</strong>
+                        <p style="font-size: 11px; color: var(--text-muted); margin: 2px 0 0;">${utils.escapeHtml(n.message)}</p>
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        async function returnBook(issueId, title) {
+            if (confirm(`Confirm returning "${title}" to the library?`)) {
+                try {
+                    await api.post('/library/return', { issue_id: issueId });
+                    utils.toast("Book Returned", `"${title}" was successfully checked back in.`, "success");
+                    loadDashboardData();
+                } catch (err) {
+                    utils.toast("Return Error", err.message, "error");
+                }
+            }
+        }
+
+        loadDashboardData();
+    </script>
+</body>
+
+</html>

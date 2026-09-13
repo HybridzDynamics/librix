@@ -1,0 +1,253 @@
+<!doctype html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Create Account | Librix</title>
+    <link rel="icon" type="image/png" href="../assets/images/favicon.png">
+    <link rel="stylesheet" href="../assets/css/global.css">
+    <link rel="stylesheet" href="../assets/css/login.css">
+</head>
+
+<body>
+    <main class="login-page">
+        <div class="login-container">
+            <!-- Brand -->
+            <div class="login-brand">
+                <img src="../assets/images/logo.png" alt="Librix Logo">
+                <h1>Librix</h1>
+            </div>
+
+            <!-- Register Card -->
+            <div class="login-card">
+                <div class="login-header">
+                    <h2>Join Librix Today</h2>
+                    <p>Unlock thousands of digital books and smart readability analytics.</p>
+                </div>
+
+                <!-- Registration Form -->
+                <form id="register-form" class="login-form" novalidate>
+                    <div id="alert-box" style="display: none; padding: 10px 14px; margin-bottom: 16px; border-radius: var(--radius-md); font-size: var(--font-sm);"></div>
+
+                    <!-- Full Name -->
+                    <div class="form-group">
+                        <label for="name" class="form-label">Full Name <span class="required">*</span></label>
+                        <input
+                            type="text"
+                            id="name"
+                            name="name"
+                            class="form-input"
+                            placeholder="John Doe"
+                            autocomplete="name"
+                            required
+                        >
+                        <div class="form-error" id="name-error"></div>
+                    </div>
+
+                    <!-- Email -->
+                    <div class="form-group">
+                        <label for="email" class="form-label">Email Address <span class="required">*</span></label>
+                        <input
+                            type="email"
+                            id="email"
+                            name="email"
+                            class="form-input"
+                            placeholder="you@example.com"
+                            autocomplete="email"
+                            required
+                        >
+                        <div class="form-error" id="email-error"></div>
+                    </div>
+
+                    <!-- Password -->
+                    <div class="form-group">
+                        <label for="password" class="form-label">Password <span class="required">*</span></label>
+                        <div class="password-input">
+                            <input
+                                type="password"
+                                id="password"
+                                name="password"
+                                class="form-input"
+                                placeholder="At least 6 characters"
+                                autocomplete="new-password"
+                                required
+                            >
+                            <button
+                                type="button"
+                                class="toggle-password"
+                                id="togglePassword"
+                                aria-label="Show password"
+                            >
+                                <svg id="eyeIcon" xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                    <path d="M2.062 12.348a1 1 0 0 1 0-.696 10.75 10.75 0 0 1 19.876 0 1 1 0 0 1 0 .696 10.75 10.75 0 0 1-19.876 0"/>
+                                    <circle cx="12" cy="12" r="3"/>
+                                </svg>
+                            </button>
+                        </div>
+                        <div class="form-error" id="password-error"></div>
+                    </div>
+
+                    <!-- Confirm Password -->
+                    <div class="form-group">
+                        <label for="confirm-password" class="form-label">Confirm Password <span class="required">*</span></label>
+                        <input
+                            type="password"
+                            id="confirm-password"
+                            name="confirm_password"
+                            class="form-input"
+                            placeholder="Re-enter your password"
+                            autocomplete="new-password"
+                            required
+                        >
+                        <div class="form-error" id="confirm-password-error"></div>
+                    </div>
+
+                    <!-- Terms -->
+                    <div class="remember-row" style="margin-bottom: 20px;">
+                        <label class="form-checkbox-label">
+                            <input type="checkbox" id="terms" name="terms" class="form-checkbox" required>
+                            <span>I agree to the Library Terms & Reading Guidelines</span>
+                        </label>
+                    </div>
+
+                    <!-- Submit Button -->
+                    <button type="submit" id="submit-btn" class="login-submit btn-primary">
+                        <span>Create Account</span>
+                    </button>
+                </form>
+
+                <div class="divider">
+                    <span>ALREADY A MEMBER?</span>
+                </div>
+
+                <div class="register-section">
+                    <p>Have an account already?</p>
+                    <a href="login.html">Sign in here</a>
+                </div>
+            </div>
+
+            <!-- Back Home -->
+            <a href="../index.html" class="back-home">← Back to Home</a>
+        </div>
+    </main>
+
+    <!-- Footer -->
+    <footer class="login-footer">
+        <p>&copy; 2026 Librix. All rights reserved.</p>
+    </footer>
+
+    <!-- Scripts -->
+    <script src="../assets/js/api.js"></script>
+    <script src="../assets/js/utils.js"></script>
+    <script src="../assets/js/auth.js"></script>
+    <script>
+        // Toggle password
+        const passwordInput = document.getElementById("password");
+        const togglePassword = document.getElementById("togglePassword");
+        const eyeIcon = document.getElementById("eyeIcon");
+
+        togglePassword.addEventListener("click", function () {
+            if (passwordInput.type === "password") {
+                passwordInput.type = "text";
+                eyeIcon.innerHTML = `<path d="M3 3l18 18"/><path d="M10.58 10.58a2 2 0 0 0 2.83 2.83"/><path d="M9.88 5.08A10.43 10.43 0 0 1 12 5c5 0 8.73 4.11 9.94 6.5a1 1 0 0 1 0 1 2.5 4.5 0 0 1-1.42 1.65"/><path d="M6.61 6.61A10.43 10.43 0 0 0 2.06 11.5a1 1 0 0 0 0 .99C3.27 14.89 7 19 12 19a10.43 10.43 0 0 0 5.39-1.61"/>`;
+            } else {
+                passwordInput.type = "password";
+                eyeIcon.innerHTML = `<path d="M2.062 12.348a1 1 0 0 1 0-.696 10.75 10.75 0 0 1 19.876 0 1 1 0 0 1 0 .696 10.75 10.75 0 0 1-19.876 0"/><circle cx="12" cy="12" r="3"/>`;
+            }
+        });
+
+        // Form Submission
+        const form = document.getElementById("register-form");
+        const submitBtn = document.getElementById("submit-btn");
+        const alertBox = document.getElementById("alert-box");
+
+        function clearErrors() {
+            document.querySelectorAll(".form-error").forEach(el => el.textContent = "");
+            document.querySelectorAll(".form-input").forEach(el => el.classList.remove("is-invalid"));
+            alertBox.style.display = "none";
+        }
+
+        form.addEventListener("submit", async function(e) {
+            e.preventDefault();
+            clearErrors();
+
+            const name = document.getElementById("name").value.trim();
+            const email = document.getElementById("email").value.trim();
+            const password = document.getElementById("password").value;
+            const confirmPassword = document.getElementById("confirm-password").value;
+            const terms = document.getElementById("terms").checked;
+
+            let hasError = false;
+
+            if (!name) {
+                document.getElementById("name-error").textContent = "Name is required";
+                document.getElementById("name").classList.add("is-invalid");
+                hasError = true;
+            }
+
+            if (!email) {
+                document.getElementById("email-error").textContent = "Email is required";
+                document.getElementById("email").classList.add("is-invalid");
+                hasError = true;
+            } else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
+                document.getElementById("email-error").textContent = "Please enter a valid email address";
+                document.getElementById("email").classList.add("is-invalid");
+                hasError = true;
+            }
+
+            if (!password || password.length < 6) {
+                document.getElementById("password-error").textContent = "Password must be at least 6 characters";
+                document.getElementById("password").classList.add("is-invalid");
+                hasError = true;
+            }
+
+            if (password !== confirmPassword) {
+                document.getElementById("confirm-password-error").textContent = "Passwords do not match";
+                document.getElementById("confirm-password").classList.add("is-invalid");
+                hasError = true;
+            }
+
+            if (!terms) {
+                alertBox.style.display = "block";
+                alertBox.style.backgroundColor = "var(--warning-light)";
+                alertBox.style.color = "var(--warning-text)";
+                alertBox.style.border = "1px solid var(--warning-border)";
+                alertBox.textContent = "Please accept the Library Terms & Reading Guidelines";
+                hasError = true;
+            }
+
+            if (hasError) return;
+
+            // Submit
+            submitBtn.disabled = true;
+            submitBtn.innerHTML = '<span class="spinner spinner-sm spinner-white"></span> Creating account...';
+
+            try {
+                const res = await auth.register(name, email, password);
+                utils.toast("Account Created", "Welcome to Librix! Redirecting...", "success");
+
+                setTimeout(() => {
+                    window.location.href = "user/dashboard.html";
+                }, 1000);
+
+            } catch (err) {
+                submitBtn.disabled = false;
+                submitBtn.innerHTML = '<span>Create Account</span>';
+
+                alertBox.style.display = "block";
+                alertBox.style.backgroundColor = "var(--danger-light)";
+                alertBox.style.color = "var(--danger-text)";
+                alertBox.style.border = "1px solid var(--danger-border)";
+                alertBox.textContent = err.message || "Failed to register. Please try again.";
+
+                if (err.errors) {
+                    if (err.errors.name) document.getElementById("name-error").textContent = err.errors.name;
+                    if (err.errors.email) document.getElementById("email-error").textContent = err.errors.email;
+                    if (err.errors.password) document.getElementById("password-error").textContent = err.errors.password;
+                }
+            }
+        });
+    </script>
+</body>
+</html>
