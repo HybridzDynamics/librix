@@ -2,24 +2,24 @@
 
 // Configuration
 
-require_once __DIR__ . "/../../../config/config.php";
-require_once __DIR__ . "/../../../config/database.php";
-require_once __DIR__ . "/../../../helpers/response.php";
-require_once __DIR__ . "/../../../helpers/validation.php";
-require_once __DIR__ . "/../../../helpers/functions.php";
+require __DIR__ . "/../../../config/config.php";
+require __DIR__ . "/../../../config/database.php";
+require __DIR__ . "/../../../helpers/response.php";
+require __DIR__ . "/../../../helpers/validation.php";
+require __DIR__ . "/../../../helpers/functions.php";
 
 
 // Request Method
 
 if ($_SERVER["REQUEST_METHOD"] !== "GET") {
-    MethodNotAllowedResponse(["GET"]);
+    methodNotAllowedResponse(["GET"]);
 }
 
 
 // Parameters
 
-$Page = ValidatePageNumber($_GET["page"] ?? 1);
-$Limit = ValidatePageLimit($_GET["limit"] ?? DEFAULT_PAGE_SIZE, DEFAULT_PAGE_SIZE, MAX_PAGE_SIZE);
+$Page = validatePageNumber($_GET["page"] ?? 1);
+$Limit = validatePageLimit($_GET["limit"] ?? DEFAULT_PAGE_SIZE, DEFAULT_PAGE_SIZE, MAX_PAGE_SIZE);
 $Offset = ($Page - 1) * $Limit;
 
 $ServiceParam = isset($_GET["service"]) ? trim($_GET["service"]) : null;
@@ -31,7 +31,7 @@ $Bindings = [];
 
 if ($ServiceParam !== null && $ServiceParam !== "") {
     if (!in_array($ServiceParam, $AllowedServices, true)) {
-        ErrorResponse("Invalid service name. Allowed: " . implode(", ", $AllowedServices), 422);
+        errorResponse("Invalid service name. Allowed: " . implode(", ", $AllowedServices), 422);
     }
     $WhereClause = "WHERE service = ?";
     $Bindings[] = $ServiceParam;
@@ -47,7 +47,7 @@ try {
     $Total = (int)($CountStmt->fetchColumn() ?: 0);
 
 } catch (PDOException $e) {
-    ErrorResponse("Unable to retrieve status history", 500);
+    errorResponse("Unable to retrieve status history", 500);
 }
 
 
@@ -84,13 +84,13 @@ try {
     }
 
 } catch (PDOException $e) {
-    ErrorResponse("Unable to retrieve status history", 500);
+    errorResponse("Unable to retrieve status history", 500);
 }
 
 
 // Response
 
-PaginatedResponse(
+paginatedResponse(
     $History,
     $Page,
     $Limit,

@@ -2,29 +2,29 @@
 
 // Configuration
 
-require_once __DIR__ . "/../../../config/config.php";
-require_once __DIR__ . "/../../../config/database.php";
-require_once __DIR__ . "/../../../helpers/response.php";
-require_once __DIR__ . "/../../../helpers/validation.php";
-require_once __DIR__ . "/../../../helpers/functions.php";
-require_once __DIR__ . "/../../../middleware/auth.php";
+require __DIR__ . "/../../../config/config.php";
+require __DIR__ . "/../../../config/database.php";
+require __DIR__ . "/../../../helpers/response.php";
+require __DIR__ . "/../../../helpers/validation.php";
+require __DIR__ . "/../../../helpers/functions.php";
+require __DIR__ . "/../../../middleware/auth.php";
 
 
 // Request Method
 
 if ($_SERVER["REQUEST_METHOD"] !== "POST") {
-    MethodNotAllowedResponse(["POST"]);
+    methodNotAllowedResponse(["POST"]);
 }
 
 
 // Authentication
 
-$User = RequireAuth();
+$User = requireAuth();
 
 
 // Request Data
 
-$RequestData = GetJsonInput();
+$RequestData = getJsonInput();
 
 $ReservationId = $RequestData["reservation_id"] ?? null;
 $BookId = $RequestData["book_id"] ?? null;
@@ -33,7 +33,7 @@ $BookId = $RequestData["book_id"] ?? null;
 // Validation
 
 if ($ReservationId === null && $BookId === null) {
-    ErrorResponse("Either reservation_id or book_id is required", 400);
+    errorResponse("Either reservation_id or book_id is required", 400);
 }
 
 $UserId = (int)$User["id"];
@@ -44,10 +44,10 @@ $IsAdmin = ($User["role"] === "admin");
 
 try {
     if ($ReservationId !== null) {
-        $IdError = ValidatePositiveInteger($ReservationId, "Reservation ID");
+        $IdError = validatePositiveInteger($ReservationId, "Reservation ID");
 
         if ($IdError !== null) {
-            ErrorResponse($IdError, 400);
+            errorResponse($IdError, 400);
         }
 
         $Stmt = $pdo->prepare(
@@ -60,10 +60,10 @@ try {
         $Stmt->execute([(int)$ReservationId]);
 
     } else {
-        $BookIdError = ValidatePositiveInteger($BookId, "Book ID");
+        $BookIdError = validatePositiveInteger($BookId, "Book ID");
 
         if ($BookIdError !== null) {
-            ErrorResponse($BookIdError, 400);
+            errorResponse($BookIdError, 400);
         }
 
         $Stmt = $pdo->prepare(
@@ -80,19 +80,19 @@ try {
     $Reservation = $Stmt->fetch();
 
 } catch (PDOException $e) {
-    ErrorResponse("Database error", 500);
+    errorResponse("Database error", 500);
 }
 
 if (!$Reservation) {
-    NotFoundResponse("Reservation not found");
+    notFoundResponse("Reservation not found");
 }
 
 if (!$IsAdmin && (int)$Reservation["user_id"] !== $UserId) {
-    ForbiddenResponse("You can only cancel your own reservations");
+    forbiddenResponse("You can only cancel your own reservations");
 }
 
 if ($Reservation["status"] !== "active") {
-    ErrorResponse("Reservation is already " . $Reservation["status"], 400);
+    errorResponse("Reservation is already " . $Reservation["status"], 400);
 }
 
 $TargetReservationId = (int)$Reservation["id"];
@@ -110,13 +110,13 @@ try {
     $Stmt->execute([$TargetReservationId]);
 
 } catch (PDOException $e) {
-    ErrorResponse("Unable to cancel reservation", 500);
+    errorResponse("Unable to cancel reservation", 500);
 }
 
 
 // Response
 
-SuccessResponse(
+successResponse(
     [
         "reservation_id" => $TargetReservationId,
         "status" => "cancelled"

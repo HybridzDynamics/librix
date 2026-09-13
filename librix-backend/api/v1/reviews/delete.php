@@ -2,24 +2,24 @@
 
 // Configuration
 
-require_once __DIR__ . "/../../../config/config.php";
-require_once __DIR__ . "/../../../config/database.php";
-require_once __DIR__ . "/../../../helpers/response.php";
-require_once __DIR__ . "/../../../helpers/validation.php";
-require_once __DIR__ . "/../../../helpers/functions.php";
-require_once __DIR__ . "/../../../middleware/auth.php";
+require __DIR__ . "/../../../config/config.php";
+require __DIR__ . "/../../../config/database.php";
+require __DIR__ . "/../../../helpers/response.php";
+require __DIR__ . "/../../../helpers/validation.php";
+require __DIR__ . "/../../../helpers/functions.php";
+require __DIR__ . "/../../../middleware/auth.php";
 
 
 // Request Method
 
 if ($_SERVER["REQUEST_METHOD"] !== "DELETE") {
-    MethodNotAllowedResponse(["DELETE"]);
+    methodNotAllowedResponse(["DELETE"]);
 }
 
 
 // Authentication
 
-$User = RequireAuth();
+$User = requireAuth();
 $UserId = (int)$User["id"];
 $IsAdmin = ($User["role"] === "admin");
 
@@ -29,13 +29,13 @@ $IsAdmin = ($User["role"] === "admin");
 $ReviewId = $reviewId ?? ($parts[3] ?? ($_GET["id"] ?? null));
 
 if ($ReviewId === null) {
-    $Input = GetJsonInput();
+    $Input = getJsonInput();
     $ReviewId = $Input["id"] ?? null;
 }
 
-$IdError = ValidatePositiveInteger($ReviewId, "Review ID");
+$IdError = validatePositiveInteger($ReviewId, "Review ID");
 if ($IdError !== null) {
-    ErrorResponse($IdError, 400);
+    errorResponse($IdError, 400);
 }
 
 $ReviewId = (int)$ReviewId;
@@ -49,24 +49,24 @@ try {
     $Review = $Stmt->fetch();
 
     if (!$Review) {
-        NotFoundResponse("Review not found");
+        notFoundResponse("Review not found");
     }
 
     // Permission check: user can only delete their own review unless admin
     if (!$IsAdmin && (int)$Review["user_id"] !== $UserId) {
-        ForbiddenResponse("You are not authorized to delete this review");
+        forbiddenResponse("You are not authorized to delete this review");
     }
 
     // Delete Review
     $DelStmt = $pdo->prepare("DELETE FROM reviews WHERE id = ?");
     $DelStmt->execute([$ReviewId]);
 
-    LogAudit($UserId, "delete_review", "reviews", $ReviewId, "Review #{$ReviewId} deleted");
+    logAudit($UserId, "delete_review", "reviews", $ReviewId, "Review #{$ReviewId} deleted");
 
-    SuccessResponse(null, "Review deleted successfully");
+    successResponse(null, "Review deleted successfully");
 
 } catch (PDOException $e) {
-    ErrorResponse("Database error", 500);
+    errorResponse("Database error", 500);
 }
 
 ?>

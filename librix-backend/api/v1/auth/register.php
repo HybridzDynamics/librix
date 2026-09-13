@@ -2,34 +2,34 @@
 
 // Configuration
 
-require_once __DIR__ . "/../../../config/config.php";
-require_once __DIR__ . "/../../../config/database.php";
-require_once __DIR__ . "/../../../helpers/response.php";
-require_once __DIR__ . "/../../../helpers/validation.php";
-require_once __DIR__ . "/../../../helpers/functions.php";
+require __DIR__ . "/../../../config/config.php";
+require __DIR__ . "/../../../config/database.php";
+require __DIR__ . "/../../../helpers/response.php";
+require __DIR__ . "/../../../helpers/validation.php";
+require __DIR__ . "/../../../helpers/functions.php";
 
 
 // Request Method
 
 if ($_SERVER["REQUEST_METHOD"] !== "POST") {
-    MethodNotAllowedResponse(["POST"]);
+    methodNotAllowedResponse(["POST"]);
 }
 
 
 // Rate Limiting
 
-$ClientIp = GetClientIp();
+$ClientIp = getClientIp();
 $RateLimitKey = "register_" . $ClientIp;
-$RetryAfter = CheckRateLimit($RateLimitKey, RATE_LIMIT_AUTH_MAX, RATE_LIMIT_WINDOW_SECONDS);
+$RetryAfter = checkRateLimit($RateLimitKey, RATE_LIMIT_AUTH_MAX, RATE_LIMIT_WINDOW_SECONDS);
 
 if ($RetryAfter > 0) {
-    TooManyRequestsResponse("Too many registration attempts. Please try again later.", $RetryAfter);
+    tooManyRequestsResponse("Too many registration attempts. Please try again later.", $RetryAfter);
 }
 
 
 // Request Data
 
-$RequestData = GetJsonInput();
+$RequestData = getJsonInput();
 
 $UserName = trim($RequestData["name"] ?? "");
 $UserEmail = trim($RequestData["email"] ?? "");
@@ -40,44 +40,44 @@ $Password = $RequestData["password"] ?? "";
 
 $Errors = [];
 
-$NameError = Required($UserName, "Name");
+$NameError = required($UserName, "Name");
 
 if ($NameError !== null) {
     $Errors["name"] = $NameError;
 } else {
-    $NameError = MinLength($UserName, 2, "Name");
+    $NameError = minLength($UserName, 2, "Name");
 
     if ($NameError !== null) {
         $Errors["name"] = $NameError;
     }
 }
 
-$EmailError = Required($UserEmail, "Email");
+$EmailError = required($UserEmail, "Email");
 
 if ($EmailError !== null) {
     $Errors["email"] = $EmailError;
 } else {
-    $EmailError = ValidateEmail($UserEmail);
+    $EmailError = validateEmail($UserEmail);
 
     if ($EmailError !== null) {
         $Errors["email"] = $EmailError;
     }
 }
 
-$PasswordError = Required($Password, "Password");
+$PasswordError = required($Password, "Password");
 
 if ($PasswordError !== null) {
     $Errors["password"] = $PasswordError;
 } else {
-    $PasswordError = MinLength($Password, 8, "Password");
+    $PasswordError = minLength($Password, 8, "Password");
 
     if ($PasswordError !== null) {
         $Errors["password"] = $PasswordError;
     }
 }
 
-if (HasValidationErrors($Errors)) {
-    ValidationErrorResponse($Errors);
+if (hasValidationErrors($Errors)) {
+    ValidationerrorResponse($Errors);
 }
 
 
@@ -93,11 +93,11 @@ try {
     $ExistingUser = $Stmt->fetch();
 
 } catch (PDOException $e) {
-    ErrorResponse("Database error", 500);
+    errorResponse("Database error", 500);
 }
 
 if ($ExistingUser) {
-    ErrorResponse("Email is already registered", 409);
+    errorResponse("Email is already registered", 409);
 }
 
 
@@ -132,7 +132,7 @@ try {
     $UserId = (int)$pdo->lastInsertId();
 
     if (EMAIL_VERIFICATION_ENABLED) {
-        $VerificationToken = GenerateToken(32);
+        $VerificationToken = generateToken(32);
         $ExpiresAt = date("Y-m-d H:i:s", strtotime("+24 hours"));
 
         $Stmt = $pdo->prepare(
@@ -150,13 +150,13 @@ try {
 
     $pdo->commit();
 
-    LogAudit($UserId, "user_registered", "users", $UserId, "User registered with email $UserEmail");
+    logAudit($UserId, "user_registered", "users", $UserId, "User registered with email $UserEmail");
 
 } catch (PDOException $e) {
     if ($pdo->inTransaction()) {
         $pdo->rollBack();
     }
-    ErrorResponse("Unable to create account", 500);
+    errorResponse("Unable to create account", 500);
 }
 
 
@@ -175,13 +175,13 @@ try {
     $User = $Stmt->fetch();
 
 } catch (PDOException $e) {
-    ErrorResponse("Unable to retrieve account", 500);
+    errorResponse("Unable to retrieve account", 500);
 }
 
 
 // Registration Response
 
-SuccessResponse(
+successResponse(
     [
         "user" => [
             "id" => (int)$User["id"],

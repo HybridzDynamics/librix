@@ -2,21 +2,21 @@
 
 // Authentication Middleware
 
-require_once __DIR__ . "/../config/database.php";
-require_once __DIR__ . "/../helpers/response.php";
-require_once __DIR__ . "/../helpers/functions.php";
+require __DIR__ . "/../config/database.php";
+require __DIR__ . "/../helpers/response.php";
+require __DIR__ . "/../helpers/functions.php";
 
 
 // Require Authentication
 
-function RequireAuth()
+function requireAuth()
 {
     global $pdo;
 
-    $Token = GetAuthorizationToken();
+    $Token = getAuthorizationToken();
 
     if (!$Token) {
-        UnauthorizedResponse("Authorization token is required");
+        unauthorizedResponse("Authorization token is required");
     }
 
 
@@ -43,14 +43,14 @@ function RequireAuth()
         $User = $Stmt->fetch();
 
     } catch (PDOException $e) {
-        ErrorResponse("Database error", 500);
+        errorResponse("Database error", 500);
     }
 
 
     // Check Token
 
     if (!$User) {
-        UnauthorizedResponse("Invalid authentication token");
+        unauthorizedResponse("Invalid authentication token");
     }
 
 
@@ -67,17 +67,17 @@ function RequireAuth()
             $Stmt->execute([$Token]);
 
         } catch (PDOException $e) {
-            ErrorResponse("Database error", 500);
+            errorResponse("Database error", 500);
         }
 
-        UnauthorizedResponse("Authentication token has expired");
+        unauthorizedResponse("Authentication token has expired");
     }
 
 
     // Check User Status
 
     if ($User["status"] !== "active") {
-        UnauthorizedResponse("User account is not active");
+        unauthorizedResponse("User account is not active");
     }
 
 

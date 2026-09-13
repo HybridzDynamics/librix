@@ -2,12 +2,12 @@
 
 // Configuration
 
-require_once __DIR__ . "/config/config.php";
-require_once __DIR__ . "/helpers/response.php";
-require_once __DIR__ . "/helpers/validation.php";
-require_once __DIR__ . "/helpers/functions.php";
-require_once __DIR__ . "/middleware/auth.php";
-require_once __DIR__ . "/middleware/admin.php";
+require __DIR__ . "/config/config.php";
+require __DIR__ . "/helpers/response.php";
+require __DIR__ . "/helpers/validation.php";
+require __DIR__ . "/helpers/functions.php";
+require __DIR__ . "/middleware/auth.php";
+require __DIR__ . "/middleware/admin.php";
 
 
 // Headers
@@ -91,7 +91,7 @@ if (
     $parts[1] === API_VERSION &&
     $parts[2] === "health"
 ) {
-    require_once __DIR__ . "/api/v1/health.php";
+    require __DIR__ . "/api/v1/health.php";
 }
 
 
@@ -108,35 +108,35 @@ if (
 
         switch ($route) {
             case "login":
-                require_once __DIR__ . "/api/v1/auth/login.php";
+                require __DIR__ . "/api/v1/auth/login.php";
                 break;
 
             case "register":
-                require_once __DIR__ . "/api/v1/auth/register.php";
+                require __DIR__ . "/api/v1/auth/register.php";
                 break;
 
             case "logout":
-                require_once __DIR__ . "/api/v1/auth/logout.php";
+                require __DIR__ . "/api/v1/auth/logout.php";
                 break;
 
             case "session":
-                require_once __DIR__ . "/api/v1/auth/session.php";
+                require __DIR__ . "/api/v1/auth/session.php";
                 break;
 
             case "forgot-password":
-                require_once __DIR__ . "/api/v1/auth/forgot-password.php";
+                require __DIR__ . "/api/v1/auth/forgot-password.php";
                 break;
 
             case "reset-password":
-                require_once __DIR__ . "/api/v1/auth/reset-password.php";
+                require __DIR__ . "/api/v1/auth/reset-password.php";
                 break;
 
             case "verify-email":
-                require_once __DIR__ . "/api/v1/auth/verify-email.php";
+                require __DIR__ . "/api/v1/auth/verify-email.php";
                 break;
 
             case "resend-verification":
-                require_once __DIR__ . "/api/v1/auth/resend-verification.php";
+                require __DIR__ . "/api/v1/auth/resend-verification.php";
                 break;
 
             default:
@@ -159,23 +159,23 @@ if (
     $bookId = $parts[3] ?? null;
 
     if ($method === "GET" && $bookId === null) {
-        require_once __DIR__ . "/api/v1/books/get.php";
+        require __DIR__ . "/api/v1/books/get.php";
     }
 
     if ($method === "POST" && $bookId === null) {
-        require_once __DIR__ . "/api/v1/books/create.php";
+        require __DIR__ . "/api/v1/books/create.php";
     }
 
     if ($method === "GET" && $bookId !== null) {
-        require_once __DIR__ . "/api/v1/books/get.php";
+        require __DIR__ . "/api/v1/books/get.php";
     }
 
     if ($method === "PUT" && $bookId !== null) {
-        require_once __DIR__ . "/api/v1/books/update.php";
+        require __DIR__ . "/api/v1/books/update.php";
     }
 
     if ($method === "DELETE" && $bookId !== null) {
-        require_once __DIR__ . "/api/v1/books/delete.php";
+        require __DIR__ . "/api/v1/books/delete.php";
     }
 
     methodNotAllowedResponse([
@@ -198,19 +198,19 @@ if (
     $authorId = $parts[3] ?? null;
 
     if ($method === "GET") {
-        require_once __DIR__ . "/api/v1/authors/get.php";
+        require __DIR__ . "/api/v1/authors/get.php";
     }
 
     if ($method === "POST" && $authorId === null) {
-        require_once __DIR__ . "/api/v1/authors/create.php";
+        require __DIR__ . "/api/v1/authors/create.php";
     }
 
     if ($method === "PUT" && $authorId !== null) {
-        require_once __DIR__ . "/api/v1/authors/update.php";
+        require __DIR__ . "/api/v1/authors/update.php";
     }
 
     if ($method === "DELETE" && $authorId !== null) {
-        require_once __DIR__ . "/api/v1/authors/delete.php";
+        require __DIR__ . "/api/v1/authors/delete.php";
     }
 
     methodNotAllowedResponse([
@@ -233,19 +233,19 @@ if (
     $categoryId = $parts[3] ?? null;
 
     if ($method === "GET") {
-        require_once __DIR__ . "/api/v1/categories/get.php";
+        require __DIR__ . "/api/v1/categories/get.php";
     }
 
     if ($method === "POST" && $categoryId === null) {
-        require_once __DIR__ . "/api/v1/categories/create.php";
+        require __DIR__ . "/api/v1/categories/create.php";
     }
 
     if ($method === "PUT" && $categoryId !== null) {
-        require_once __DIR__ . "/api/v1/categories/update.php";
+        require __DIR__ . "/api/v1/categories/update.php";
     }
 
     if ($method === "DELETE" && $categoryId !== null) {
-        require_once __DIR__ . "/api/v1/categories/delete.php";
+        require __DIR__ . "/api/v1/categories/delete.php";
     }
 
     methodNotAllowedResponse([
@@ -268,19 +268,19 @@ if (
     $publisherId = $parts[3] ?? null;
 
     if ($method === "GET") {
-        require_once __DIR__ . "/api/v1/publishers/get.php";
+        require __DIR__ . "/api/v1/publishers/get.php";
     }
 
     if ($method === "POST" && $publisherId === null) {
-        require_once __DIR__ . "/api/v1/publishers/create.php";
+        require __DIR__ . "/api/v1/publishers/create.php";
     }
 
     if ($method === "PUT" && $publisherId !== null) {
-        require_once __DIR__ . "/api/v1/publishers/update.php";
+        require __DIR__ . "/api/v1/publishers/update.php";
     }
 
     if ($method === "DELETE" && $publisherId !== null) {
-        require_once __DIR__ . "/api/v1/publishers/delete.php";
+        require __DIR__ . "/api/v1/publishers/delete.php";
     }
 
     methodNotAllowedResponse([
@@ -303,15 +303,15 @@ if (
     $reviewId = $parts[3] ?? null;
 
     if ($method === "GET") {
-        require_once __DIR__ . "/api/v1/reviews/get.php";
+        require __DIR__ . "/api/v1/reviews/get.php";
     }
 
     if ($method === "POST") {
-        require_once __DIR__ . "/api/v1/reviews/create.php";
+        require __DIR__ . "/api/v1/reviews/create.php";
     }
 
     if ($method === "DELETE") {
-        require_once __DIR__ . "/api/v1/reviews/delete.php";
+        require __DIR__ . "/api/v1/reviews/delete.php";
     }
 
     methodNotAllowedResponse([
@@ -331,11 +331,11 @@ if (
     $parts[2] === "favorites"
 ) {
     if ($method === "GET") {
-        require_once __DIR__ . "/api/v1/favorites/get.php";
+        require __DIR__ . "/api/v1/favorites/get.php";
     }
 
     if ($method === "POST") {
-        require_once __DIR__ . "/api/v1/favorites/toggle.php";
+        require __DIR__ . "/api/v1/favorites/toggle.php";
     }
 
     methodNotAllowedResponse([
@@ -354,11 +354,11 @@ if (
     $parts[2] === "notifications"
 ) {
     if ($method === "GET") {
-        require_once __DIR__ . "/api/v1/notifications/get.php";
+        require __DIR__ . "/api/v1/notifications/get.php";
     }
 
     if ($method === "PUT" || $method === "POST") {
-        require_once __DIR__ . "/api/v1/notifications/read.php";
+        require __DIR__ . "/api/v1/notifications/read.php";
     }
 
     methodNotAllowedResponse([
@@ -378,11 +378,11 @@ if (
     $parts[2] === "readability"
 ) {
     if ($method === "GET") {
-        require_once __DIR__ . "/api/v1/readability/get.php";
+        require __DIR__ . "/api/v1/readability/get.php";
     }
 
     if ($method === "POST") {
-        require_once __DIR__ . "/api/v1/readability/analyze.php";
+        require __DIR__ . "/api/v1/readability/analyze.php";
     }
 
     methodNotAllowedResponse([
@@ -400,33 +400,33 @@ if (
     $parts[1] === API_VERSION &&
     $parts[2] === "library"
 ) {
-    switch ($parts[3]) {
+    switch $GLOBALS["parts"][3] {
         case "issue":
-            require_once __DIR__ . "/api/v1/library/issue.php";
+            require __DIR__ . "/api/v1/library/issue.php";
             break;
 
         case "return":
-            require_once __DIR__ . "/api/v1/library/return.php";
+            require __DIR__ . "/api/v1/library/return.php";
             break;
 
         case "reserve":
-            require_once __DIR__ . "/api/v1/library/reserve.php";
+            require __DIR__ . "/api/v1/library/reserve.php";
             break;
 
         case "cancel-reservation":
-            require_once __DIR__ . "/api/v1/library/cancel-reservation.php";
+            require __DIR__ . "/api/v1/library/cancel-reservation.php";
             break;
 
         case "my-books":
-            require_once __DIR__ . "/api/v1/library/my-books.php";
+            require __DIR__ . "/api/v1/library/my-books.php";
             break;
 
         case "renew":
-            require_once __DIR__ . "/api/v1/library/renew.php";
+            require __DIR__ . "/api/v1/library/renew.php";
             break;
 
         case "history":
-            require_once __DIR__ . "/api/v1/library/history.php";
+            require __DIR__ . "/api/v1/library/history.php";
             break;
 
         default:
@@ -443,13 +443,13 @@ if (
     $parts[1] === API_VERSION &&
     $parts[2] === "users"
 ) {
-    switch ($parts[3]) {
+    switch $GLOBALS["parts"][3] {
         case "profile":
-            require_once __DIR__ . "/api/v1/users/profile.php";
+            require __DIR__ . "/api/v1/users/profile.php";
             break;
 
         case "update":
-            require_once __DIR__ . "/api/v1/users/update.php";
+            require __DIR__ . "/api/v1/users/update.php";
             break;
 
         default:
@@ -469,28 +469,28 @@ if (
     $statusSubRoute = $parts[3] ?? null;
 
     if ($statusSubRoute === null) {
-        require_once __DIR__ . "/api/v1/status/status.php";
+        require __DIR__ . "/api/v1/status/status.php";
     }
 
     switch ($statusSubRoute) {
         case "services":
-            require_once __DIR__ . "/api/v1/status/services.php";
+            require __DIR__ . "/api/v1/status/services.php";
             break;
 
         case "incidents":
-            require_once __DIR__ . "/api/v1/status/incidents.php";
+            require __DIR__ . "/api/v1/status/incidents.php";
             break;
 
         case "uptime":
-            require_once __DIR__ . "/api/v1/status/uptime.php";
+            require __DIR__ . "/api/v1/status/uptime.php";
             break;
 
         case "history":
-            require_once __DIR__ . "/api/v1/status/history.php";
+            require __DIR__ . "/api/v1/status/history.php";
             break;
 
         case "maintenance":
-            require_once __DIR__ . "/api/v1/status/maintenance.php";
+            require __DIR__ . "/api/v1/status/maintenance.php";
             break;
 
         default:
@@ -507,37 +507,37 @@ if (
     $parts[1] === API_VERSION &&
     $parts[2] === "admin"
 ) {
-    switch ($parts[3]) {
+    switch $GLOBALS["parts"][3] {
         case "users":
-            require_once __DIR__ . "/api/v1/admin/users.php";
+            require __DIR__ . "/api/v1/admin/users.php";
             break;
 
         case "books":
-            require_once __DIR__ . "/api/v1/admin/books.php";
+            require __DIR__ . "/api/v1/admin/books.php";
             break;
 
         case "statistics":
-            require_once __DIR__ . "/api/v1/admin/statistics.php";
+            require __DIR__ . "/api/v1/admin/statistics.php";
             break;
 
         case "issues":
-            require_once __DIR__ . "/api/v1/admin/issues.php";
+            require __DIR__ . "/api/v1/admin/issues.php";
             break;
 
         case "reservations":
-            require_once __DIR__ . "/api/v1/admin/reservations.php";
+            require __DIR__ . "/api/v1/admin/reservations.php";
             break;
 
         case "fines":
-            require_once __DIR__ . "/api/v1/admin/fines.php";
+            require __DIR__ . "/api/v1/admin/fines.php";
             break;
 
         case "status":
             $adminStatusSub = $parts[4] ?? null;
             if ($adminStatusSub === "incidents") {
-                require_once __DIR__ . "/api/v1/admin/status/incidents.php";
+                require __DIR__ . "/api/v1/admin/status/incidents.php";
             } elseif ($adminStatusSub === "maintenance") {
-                require_once __DIR__ . "/api/v1/admin/status/maintenance.php";
+                require __DIR__ . "/api/v1/admin/status/maintenance.php";
             } else {
                 notFoundResponse("Admin status route not found");
             }

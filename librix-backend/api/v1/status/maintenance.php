@@ -2,16 +2,16 @@
 
 // Configuration
 
-require_once __DIR__ . "/../../../config/config.php";
-require_once __DIR__ . "/../../../config/database.php";
-require_once __DIR__ . "/../../../helpers/response.php";
-require_once __DIR__ . "/../../../helpers/functions.php";
+require __DIR__ . "/../../../config/config.php";
+require __DIR__ . "/../../../config/database.php";
+require __DIR__ . "/../../../helpers/response.php";
+require __DIR__ . "/../../../helpers/functions.php";
 
 
 // Request Method
 
 if ($_SERVER["REQUEST_METHOD"] !== "GET") {
-    MethodNotAllowedResponse(["GET"]);
+    methodNotAllowedResponse(["GET"]);
 }
 
 
@@ -43,12 +43,12 @@ try {
     }
 
 } catch (PDOException $e) {
-    ErrorResponse("Unable to retrieve maintenance schedule", 500);
+    errorResponse("Unable to retrieve maintenance schedule", 500);
 }
 
 
 // Response
 
-SuccessResponse($Windows);
+successResponse($Windows);
 
 ?>

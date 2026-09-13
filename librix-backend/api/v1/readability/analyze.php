@@ -2,46 +2,46 @@
 
 // Configuration
 
-require_once __DIR__ . "/../../../config/config.php";
-require_once __DIR__ . "/../../../config/database.php";
-require_once __DIR__ . "/../../../helpers/response.php";
-require_once __DIR__ . "/../../../helpers/validation.php";
-require_once __DIR__ . "/../../../helpers/functions.php";
-require_once __DIR__ . "/../../../helpers/readability.php";
-require_once __DIR__ . "/../../../middleware/auth.php";
+require __DIR__ . "/../../../config/config.php";
+require __DIR__ . "/../../../config/database.php";
+require __DIR__ . "/../../../helpers/response.php";
+require __DIR__ . "/../../../helpers/validation.php";
+require __DIR__ . "/../../../helpers/functions.php";
+require __DIR__ . "/../../../helpers/readability.php";
+require __DIR__ . "/../../../middleware/auth.php";
 
 
 // Request Method
 
 if ($_SERVER["REQUEST_METHOD"] !== "POST") {
-    MethodNotAllowedResponse(["POST"]);
+    methodNotAllowedResponse(["POST"]);
 }
 
 
 // Authentication (requires auth, preferably admin or authenticated user)
 
-$User = RequireAuth();
+$User = requireAuth();
 $UserId = (int)$User["id"];
 
 
 // Request Data
 
-$Input = GetJsonInput();
+$Input = getJsonInput();
 $BookId = $Input["book_id"] ?? null;
 $Text = $Input["text"] ?? null;
 
 
 // Validation
 
-$IdError = ValidatePositiveInteger($BookId, "Book ID");
+$IdError = validatePositiveInteger($BookId, "Book ID");
 if ($IdError !== null) {
-    ErrorResponse($IdError, 400);
+    errorResponse($IdError, 400);
 }
 
 $BookId = (int)$BookId;
 
 if (empty($Text) || !is_string($Text)) {
-    ErrorResponse("Sample text is required for readability analysis", 400);
+    errorResponse("Sample text is required for readability analysis", 400);
 }
 
 
@@ -53,7 +53,7 @@ try {
     $Book = $BookStmt->fetch();
 
     if (!$Book) {
-        NotFoundResponse("Book not found");
+        notFoundResponse("Book not found");
     }
 
     // Run Analysis
@@ -92,12 +92,12 @@ try {
     $Analysis["book_id"] = $BookId;
     $Analysis["book_title"] = $Book["title"];
 
-    LogAudit($UserId, "analyze_readability", "readability_analysis", $BookId, "Analyzed readability for book #{$BookId}");
+    logAudit($UserId, "analyze_readability", "readability_analysis", $BookId, "Analyzed readability for book #{$BookId}");
 
-    SuccessResponse($Analysis, "Readability analysis completed successfully", 200);
+    successResponse($Analysis, "Readability analysis completed successfully", 200);
 
 } catch (PDOException $e) {
-    ErrorResponse("Database error", 500);
+    errorResponse("Database error", 500);
 }
 
 ?>

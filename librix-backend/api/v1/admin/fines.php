@@ -2,19 +2,19 @@
 
 // Configuration
 
-require_once __DIR__ . "/../../../config/config.php";
-require_once __DIR__ . "/../../../config/database.php";
-require_once __DIR__ . "/../../../helpers/response.php";
-require_once __DIR__ . "/../../../helpers/validation.php";
-require_once __DIR__ . "/../../../helpers/functions.php";
-require_once __DIR__ . "/../../../middleware/auth.php";
-require_once __DIR__ . "/../../../middleware/admin.php";
+require __DIR__ . "/../../../config/config.php";
+require __DIR__ . "/../../../config/database.php";
+require __DIR__ . "/../../../helpers/response.php";
+require __DIR__ . "/../../../helpers/validation.php";
+require __DIR__ . "/../../../helpers/functions.php";
+require __DIR__ . "/../../../middleware/auth.php";
+require __DIR__ . "/../../../middleware/admin.php";
 
 
 // Authentication
 
-$AdminUser = RequireAuth();
-RequireAdmin($AdminUser);
+$AdminUser = requireAuth();
+requireAdmin($AdminUser);
 
 
 // Request Method
@@ -26,14 +26,14 @@ $Method = $_SERVER["REQUEST_METHOD"];
 
 if ($Method === "PUT" || $Method === "PATCH") {
 
-    $RequestData = GetJsonInput();
+    $RequestData = getJsonInput();
 
     $FineId = $parts[4] ?? ($RequestData["fine_id"] ?? null);
 
-    $IdError = ValidatePositiveInteger($FineId, "Fine ID");
+    $IdError = validatePositiveInteger($FineId, "Fine ID");
 
     if ($IdError !== null) {
-        ErrorResponse($IdError, 400);
+        errorResponse($IdError, 400);
     }
 
     $FineId = (int)$FineId;
@@ -42,7 +42,7 @@ if ($Method === "PUT" || $Method === "PATCH") {
     $AllowedStatuses = ["unpaid", "paid", "waived"];
 
     if (!in_array($NewStatus, $AllowedStatuses, true)) {
-        ErrorResponse("Invalid fine status. Allowed: " . implode(", ", $AllowedStatuses), 422);
+        errorResponse("Invalid fine status. Allowed: " . implode(", ", $AllowedStatuses), 422);
     }
 
     // Verify Fine Exists
@@ -52,11 +52,11 @@ if ($Method === "PUT" || $Method === "PATCH") {
         $ExistingFine = $Stmt->fetch();
 
     } catch (PDOException $e) {
-        ErrorResponse("Database error", 500);
+        errorResponse("Database error", 500);
     }
 
     if (!$ExistingFine) {
-        NotFoundResponse("Fine not found");
+        notFoundResponse("Fine not found");
     }
 
     $PaidAt = ($NewStatus === "paid") ? date("Y-m-d H:i:s") : null;
@@ -75,7 +75,7 @@ if ($Method === "PUT" || $Method === "PATCH") {
             $FineId
         ]);
 
-        LogAudit(
+        logAudit(
             (int)$AdminUser["id"],
             "fine_status_updated",
             "fines",
@@ -84,10 +84,10 @@ if ($Method === "PUT" || $Method === "PATCH") {
         );
 
     } catch (PDOException $e) {
-        ErrorResponse("Unable to update fine status", 500);
+        errorResponse("Unable to update fine status", 500);
     }
 
-    SuccessResponse([
+    successResponse([
         "id" => $FineId,
         "status" => $NewStatus,
         "paid_at" => $PaidAt
@@ -99,8 +99,8 @@ if ($Method === "PUT" || $Method === "PATCH") {
 
 if ($Method === "GET") {
 
-    $Page = ValidatePageNumber($_GET["page"] ?? 1);
-    $Limit = ValidatePageLimit($_GET["limit"] ?? DEFAULT_PAGE_SIZE, DEFAULT_PAGE_SIZE, MAX_PAGE_SIZE);
+    $Page = validatePageNumber($_GET["page"] ?? 1);
+    $Limit = validatePageLimit($_GET["limit"] ?? DEFAULT_PAGE_SIZE, DEFAULT_PAGE_SIZE, MAX_PAGE_SIZE);
     $Offset = ($Page - 1) * $Limit;
 
     $Status = isset($_GET["status"]) ? trim($_GET["status"]) : null;
@@ -122,7 +122,7 @@ if ($Method === "GET") {
         $Total = (int)($CountStmt->fetchColumn() ?: 0);
 
     } catch (PDOException $e) {
-        ErrorResponse("Database error", 500);
+        errorResponse("Database error", 500);
     }
 
     // Fetch Fines
@@ -168,10 +168,10 @@ if ($Method === "GET") {
         }
 
     } catch (PDOException $e) {
-        ErrorResponse("Database error", 500);
+        errorResponse("Database error", 500);
     }
 
-    PaginatedResponse(
+    paginatedResponse(
         $Fines,
         $Page,
         $Limit,
@@ -179,6 +179,6 @@ if ($Method === "GET") {
     );
 }
 
-MethodNotAllowedResponse(["GET", "PUT", "PATCH"]);
+methodNotAllowedResponse(["GET", "PUT", "PATCH"]);
 
 ?>

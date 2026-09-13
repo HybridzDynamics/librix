@@ -2,19 +2,19 @@
 
 // Admin Middleware
 
-require_once __DIR__ . "/../helpers/response.php";
+require __DIR__ . "/../helpers/response.php";
 
 
 // Require Admin
 
-function RequireAdmin($User)
+function requireAdmin($User)
 {
     if (!$User) {
-        UnauthorizedResponse("Authentication required");
+        unauthorizedResponse("Authentication required");
     }
 
     if (!isset($User["role"]) || $User["role"] !== "admin") {
-        ForbiddenResponse("Admin access required");
+        forbiddenResponse("Admin access required");
     }
 
     return true;

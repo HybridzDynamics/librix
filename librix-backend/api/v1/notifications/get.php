@@ -2,23 +2,23 @@
 
 // Configuration
 
-require_once __DIR__ . "/../../../config/config.php";
-require_once __DIR__ . "/../../../config/database.php";
-require_once __DIR__ . "/../../../helpers/response.php";
-require_once __DIR__ . "/../../../helpers/functions.php";
-require_once __DIR__ . "/../../../middleware/auth.php";
+require __DIR__ . "/../../../config/config.php";
+require __DIR__ . "/../../../config/database.php";
+require __DIR__ . "/../../../helpers/response.php";
+require __DIR__ . "/../../../helpers/functions.php";
+require __DIR__ . "/../../../middleware/auth.php";
 
 
 // Request Method
 
 if ($_SERVER["REQUEST_METHOD"] !== "GET") {
-    MethodNotAllowedResponse(["GET"]);
+    methodNotAllowedResponse(["GET"]);
 }
 
 
 // Authentication
 
-$User = RequireAuth();
+$User = requireAuth();
 $UserId = (int)$User["id"];
 
 
@@ -74,7 +74,7 @@ try {
 
     $TotalPages = $Limit > 0 ? (int)ceil($Total / $Limit) : 1;
 
-    SuccessResponse([
+    successResponse([
         "notifications" => $Notifications,
         "unread_count" => $UnreadCount,
         "pagination" => [
@@ -86,7 +86,7 @@ try {
     ]);
 
 } catch (PDOException $e) {
-    ErrorResponse("Database error", 500);
+    errorResponse("Database error", 500);
 }
 
 ?>

@@ -2,36 +2,36 @@
 
 // Configuration
 
-require_once __DIR__ . "/../../../config/config.php";
-require_once __DIR__ . "/../../../config/database.php";
-require_once __DIR__ . "/../../../helpers/response.php";
-require_once __DIR__ . "/../../../helpers/validation.php";
-require_once __DIR__ . "/../../../helpers/functions.php";
-require_once __DIR__ . "/../../../middleware/auth.php";
-require_once __DIR__ . "/../../../middleware/admin.php";
+require __DIR__ . "/../../../config/config.php";
+require __DIR__ . "/../../../config/database.php";
+require __DIR__ . "/../../../helpers/response.php";
+require __DIR__ . "/../../../helpers/validation.php";
+require __DIR__ . "/../../../helpers/functions.php";
+require __DIR__ . "/../../../middleware/auth.php";
+require __DIR__ . "/../../../middleware/admin.php";
 
 
 // Request Method
 
 if ($_SERVER["REQUEST_METHOD"] !== "PUT") {
-    MethodNotAllowedResponse(["PUT"]);
+    methodNotAllowedResponse(["PUT"]);
 }
 
 
 // Authentication
 
-$User = RequireAuth();
-RequireAdmin($User);
+$User = requireAuth();
+requireAdmin($User);
 
 
 // Request Data
 
-$AuthorId = $authorId ?? ($parts[3] ?? null);
+$AuthorId = $_GET["id"] ?? null;
 
-$IdError = ValidatePositiveInteger($AuthorId, "Author ID");
+$IdError = validatePositiveInteger($AuthorId, "Author ID");
 
 if ($IdError !== null) {
-    ErrorResponse($IdError, 400);
+    errorResponse($IdError, 400);
 }
 
 $AuthorId = (int)$AuthorId;
@@ -45,14 +45,14 @@ try {
     $ExistingAuthor = $Stmt->fetch();
 
 } catch (PDOException $e) {
-    ErrorResponse("Database error", 500);
+    errorResponse("Database error", 500);
 }
 
 if (!$ExistingAuthor) {
-    NotFoundResponse("Author not found");
+    notFoundResponse("Author not found");
 }
 
-$RequestData = GetJsonInput();
+$RequestData = getJsonInput();
 
 $Name = array_key_exists("name", $RequestData) ? trim($RequestData["name"]) : $ExistingAuthor["name"];
 $Biography = array_key_exists("biography", $RequestData) ? (trim((string)$RequestData["biography"]) ?: null) : $ExistingAuthor["biography"];
@@ -62,17 +62,17 @@ $Biography = array_key_exists("biography", $RequestData) ? (trim((string)$Reques
 
 $Errors = [];
 
-$NameError = Required($Name, "Name");
+$NameError = required($Name, "Name");
 
 if ($NameError !== null) {
     $Errors["name"] = $NameError;
 } else {
-    $NameError = MinLength($Name, 2, "Name");
+    $NameError = minLength($Name, 2, "Name");
 
     if ($NameError !== null) {
         $Errors["name"] = $NameError;
     } else {
-        $NameError = MaxLength($Name, 150, "Name");
+        $NameError = maxLength($Name, 150, "Name");
 
         if ($NameError !== null) {
             $Errors["name"] = $NameError;
@@ -80,8 +80,8 @@ if ($NameError !== null) {
     }
 }
 
-if (HasValidationErrors($Errors)) {
-    ValidationErrorResponse($Errors);
+if (hasValidationErrors($Errors)) {
+    ValidationerrorResponse($Errors);
 }
 
 
@@ -102,7 +102,7 @@ try {
     ]);
 
 } catch (PDOException $e) {
-    ErrorResponse("Unable to update author", 500);
+    errorResponse("Unable to update author", 500);
 }
 
 
@@ -121,18 +121,18 @@ try {
     $UpdatedAuthor = $Stmt->fetch();
 
 } catch (PDOException $e) {
-    ErrorResponse("Unable to retrieve updated author", 500);
+    errorResponse("Unable to retrieve updated author", 500);
 }
 
 
 // Audit Log
 
-LogAudit((int)$User["id"], "author_updated", "authors", $AuthorId, "Updated author '$Name'");
+logAudit((int)$User["id"], "author_updated", "authors", $AuthorId, "Updated author '$Name'");
 
 
 // Response
 
-SuccessResponse(
+successResponse(
     $UpdatedAuthor,
     "Author updated successfully"
 );

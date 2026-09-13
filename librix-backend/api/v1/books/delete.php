@@ -2,36 +2,36 @@
 
 // Configuration
 
-require_once __DIR__ . "/../../../config/config.php";
-require_once __DIR__ . "/../../../config/database.php";
-require_once __DIR__ . "/../../../helpers/response.php";
-require_once __DIR__ . "/../../../helpers/validation.php";
-require_once __DIR__ . "/../../../helpers/functions.php";
-require_once __DIR__ . "/../../../middleware/auth.php";
-require_once __DIR__ . "/../../../middleware/admin.php";
+require __DIR__ . "/../../../config/config.php";
+require __DIR__ . "/../../../config/database.php";
+require __DIR__ . "/../../../helpers/response.php";
+require __DIR__ . "/../../../helpers/validation.php";
+require __DIR__ . "/../../../helpers/functions.php";
+require __DIR__ . "/../../../middleware/auth.php";
+require __DIR__ . "/../../../middleware/admin.php";
 
 
 // Request Method
 
 if ($_SERVER["REQUEST_METHOD"] !== "DELETE") {
-    MethodNotAllowedResponse(["DELETE"]);
+    methodNotAllowedResponse(["DELETE"]);
 }
 
 
 // Authentication
 
-$User = RequireAuth();
-RequireAdmin($User);
+$User = requireAuth();
+requireAdmin($User);
 
 
 // Request Data
 
 $BookId = $bookId ?? ($parts[3] ?? null);
 
-$IdError = ValidatePositiveInteger($BookId, "Book ID");
+$IdError = validatePositiveInteger($BookId, "Book ID");
 
 if ($IdError !== null) {
-    ErrorResponse($IdError, 400);
+    errorResponse($IdError, 400);
 }
 
 $BookId = (int)$BookId;
@@ -45,11 +45,11 @@ try {
     $ExistingBook = $Stmt->fetch();
 
 } catch (PDOException $e) {
-    ErrorResponse("Database error", 500);
+    errorResponse("Database error", 500);
 }
 
 if (!$ExistingBook) {
-    NotFoundResponse("Book not found");
+    notFoundResponse("Book not found");
 }
 
 
@@ -66,11 +66,11 @@ try {
     $ActiveIssues = $Stmt->fetch();
 
     if ($ActiveIssues && (int)$ActiveIssues["active_count"] > 0) {
-        ErrorResponse("Cannot delete book while copies are currently issued to users", 400);
+        errorResponse("Cannot delete book while copies are currently issued to users", 400);
     }
 
 } catch (PDOException $e) {
-    ErrorResponse("Database error", 500);
+    errorResponse("Database error", 500);
 }
 
 
@@ -80,16 +80,16 @@ try {
     $Stmt = $pdo->prepare("DELETE FROM books WHERE id = ?");
     $Stmt->execute([$BookId]);
 
-    LogAudit((int)$User["id"], "book_deleted", "books", $BookId, "Deleted book '{$ExistingBook['title']}'");
+    logAudit((int)$User["id"], "book_deleted", "books", $BookId, "Deleted book '{$ExistingBook['title']}'");
 
 } catch (PDOException $e) {
-    ErrorResponse("Unable to delete book", 500);
+    errorResponse("Unable to delete book", 500);
 }
 
 
 // Response
 
-SuccessResponse(
+successResponse(
     [
         "id" => $BookId,
         "title" => $ExistingBook["title"]

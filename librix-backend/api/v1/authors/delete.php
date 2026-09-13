@@ -2,36 +2,36 @@
 
 // Configuration
 
-require_once __DIR__ . "/../../../config/config.php";
-require_once __DIR__ . "/../../../config/database.php";
-require_once __DIR__ . "/../../../helpers/response.php";
-require_once __DIR__ . "/../../../helpers/validation.php";
-require_once __DIR__ . "/../../../helpers/functions.php";
-require_once __DIR__ . "/../../../middleware/auth.php";
-require_once __DIR__ . "/../../../middleware/admin.php";
+require __DIR__ . "/../../../config/config.php";
+require __DIR__ . "/../../../config/database.php";
+require __DIR__ . "/../../../helpers/response.php";
+require __DIR__ . "/../../../helpers/validation.php";
+require __DIR__ . "/../../../helpers/functions.php";
+require __DIR__ . "/../../../middleware/auth.php";
+require __DIR__ . "/../../../middleware/admin.php";
 
 
 // Request Method
 
 if ($_SERVER["REQUEST_METHOD"] !== "DELETE") {
-    MethodNotAllowedResponse(["DELETE"]);
+    methodNotAllowedResponse(["DELETE"]);
 }
 
 
 // Authentication
 
-$User = RequireAuth();
-RequireAdmin($User);
+$User = requireAuth();
+requireAdmin($User);
 
 
 // Request Data
 
-$AuthorId = $authorId ?? ($parts[3] ?? null);
+$AuthorId = $GLOBALS["authorId"] ?? ($parts[3] ?? null);
 
-$IdError = ValidatePositiveInteger($AuthorId, "Author ID");
+$IdError = validatePositiveInteger($AuthorId, "Author ID");
 
 if ($IdError !== null) {
-    ErrorResponse($IdError, 400);
+    errorResponse($IdError, 400);
 }
 
 $AuthorId = (int)$AuthorId;
@@ -45,11 +45,11 @@ try {
     $ExistingAuthor = $Stmt->fetch();
 
 } catch (PDOException $e) {
-    ErrorResponse("Database error", 500);
+    errorResponse("Database error", 500);
 }
 
 if (!$ExistingAuthor) {
-    NotFoundResponse("Author not found");
+    notFoundResponse("Author not found");
 }
 
 
@@ -59,16 +59,16 @@ try {
     $Stmt = $pdo->prepare("DELETE FROM authors WHERE id = ?");
     $Stmt->execute([$AuthorId]);
 
-    LogAudit((int)$User["id"], "author_deleted", "authors", $AuthorId, "Deleted author '{$ExistingAuthor['name']}'");
+    logAudit((int)$User["id"], "author_deleted", "authors", $AuthorId, "Deleted author '{$ExistingAuthor['name']}'");
 
 } catch (PDOException $e) {
-    ErrorResponse("Unable to delete author", 500);
+    errorResponse("Unable to delete author", 500);
 }
 
 
 // Response
 
-SuccessResponse(
+successResponse(
     [
         "id" => $AuthorId,
         "name" => $ExistingAuthor["name"]

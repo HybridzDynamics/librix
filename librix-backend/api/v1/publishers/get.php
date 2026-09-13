@@ -2,31 +2,31 @@
 
 // Configuration
 
-require_once __DIR__ . "/../../../config/config.php";
-require_once __DIR__ . "/../../../config/database.php";
-require_once __DIR__ . "/../../../helpers/response.php";
-require_once __DIR__ . "/../../../helpers/validation.php";
-require_once __DIR__ . "/../../../helpers/functions.php";
+require __DIR__ . "/../../../config/config.php";
+require __DIR__ . "/../../../config/database.php";
+require __DIR__ . "/../../../helpers/response.php";
+require __DIR__ . "/../../../helpers/validation.php";
+require __DIR__ . "/../../../helpers/functions.php";
 
 
 // Request Method
 
 if ($_SERVER["REQUEST_METHOD"] !== "GET") {
-    MethodNotAllowedResponse(["GET"]);
+    methodNotAllowedResponse(["GET"]);
 }
 
 
 // Request Data
 
-$PublisherId = $publisherId ?? ($parts[3] ?? null);
+$PublisherId = $_GET["id"] ?? null;
 
 
 // Single Publisher
 
 if ($PublisherId !== null) {
-    $IdError = ValidatePositiveInteger($PublisherId, "Publisher ID");
+    $IdError = validatePositiveInteger($PublisherId, "Publisher ID");
     if ($IdError !== null) {
-        ErrorResponse($IdError, 400);
+        errorResponse($IdError, 400);
     }
 
     try {
@@ -49,16 +49,16 @@ if ($PublisherId !== null) {
         $Publisher = $Stmt->fetch();
 
         if (!$Publisher) {
-            NotFoundResponse("Publisher not found");
+            notFoundResponse("Publisher not found");
         }
 
         $Publisher["id"] = (int)$Publisher["id"];
         $Publisher["total_books"] = (int)$Publisher["total_books"];
 
-        SuccessResponse($Publisher);
+        successResponse($Publisher);
 
     } catch (PDOException $e) {
-        ErrorResponse("Database error", 500);
+        errorResponse("Database error", 500);
     }
 }
 
@@ -88,10 +88,10 @@ try {
         $Item["total_books"] = (int)$Item["total_books"];
     }
 
-    SuccessResponse($Publishers);
+    successResponse($Publishers);
 
 } catch (PDOException $e) {
-    ErrorResponse("Database error", 500);
+    errorResponse("Database error", 500);
 }
 
 ?>

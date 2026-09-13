@@ -2,7 +2,7 @@
 
 // Success Response
 
-function SuccessResponse($Data = [], $Message = null, $StatusCode = 200)
+function successResponse($Data = [], $Message = null, $StatusCode = 200)
 {
     http_response_code($StatusCode);
 
@@ -26,7 +26,7 @@ function SuccessResponse($Data = [], $Message = null, $StatusCode = 200)
 
 // Paginated Response
 
-function PaginatedResponse($Data, $Page, $Limit, $Total, $Message = null, $StatusCode = 200)
+function paginatedResponse($Data, $Page, $Limit, $Total, $Message = null, $StatusCode = 200)
 {
     http_response_code($StatusCode);
 
@@ -58,7 +58,7 @@ function PaginatedResponse($Data, $Page, $Limit, $Total, $Message = null, $Statu
 
 // Error Response
 
-function ErrorResponse($Message, $StatusCode = 400, $Errors = [])
+function errorResponse($Message, $StatusCode = 400, $Errors = [])
 {
     http_response_code($StatusCode);
 
@@ -82,21 +82,21 @@ function ErrorResponse($Message, $StatusCode = 400, $Errors = [])
 
 // Not Found Response
 
-function NotFoundResponse($Message = "Resource not found")
+function notFoundResponse($Message = "Resource not found")
 {
-    ErrorResponse($Message, 404);
+    errorResponse($Message, 404);
 }
 
 
 // Method Not Allowed Response
 
-function MethodNotAllowedResponse($AllowedMethods = [])
+function methodNotAllowedResponse($AllowedMethods = [])
 {
     if (!empty($AllowedMethods)) {
         header("Allow: " . implode(", ", $AllowedMethods));
     }
 
-    ErrorResponse(
+    errorResponse(
         "Method not allowed",
         405,
         [
@@ -108,25 +108,25 @@ function MethodNotAllowedResponse($AllowedMethods = [])
 
 // Unauthorized Response
 
-function UnauthorizedResponse($Message = "Authentication required")
+function unauthorizedResponse($Message = "Authentication required")
 {
-    ErrorResponse($Message, 401);
+    errorResponse($Message, 401);
 }
 
 
 // Forbidden Response
 
-function ForbiddenResponse($Message = "Access denied")
+function forbiddenResponse($Message = "Access denied")
 {
-    ErrorResponse($Message, 403);
+    errorResponse($Message, 403);
 }
 
 
 // Validation Error Response
 
-function ValidationErrorResponse($Errors)
+function validationerrorResponse($Errors)
 {
-    ErrorResponse(
+    errorResponse(
         "Validation failed",
         422,
         $Errors
@@ -136,11 +136,11 @@ function ValidationErrorResponse($Errors)
 
 // Too Many Requests Response
 
-function TooManyRequestsResponse($Message = "Too many requests. Please try again later.", $RetryAfter = 60)
+function tooManyRequestsResponse($Message = "Too many requests. Please try again later.", $RetryAfter = 60)
 {
     header("Retry-After: " . (int)$RetryAfter);
 
-    ErrorResponse(
+    errorResponse(
         $Message,
         429,
         [

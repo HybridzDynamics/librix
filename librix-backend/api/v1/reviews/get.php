@@ -2,23 +2,23 @@
 
 // Configuration
 
-require_once __DIR__ . "/../../../config/config.php";
-require_once __DIR__ . "/../../../config/database.php";
-require_once __DIR__ . "/../../../helpers/response.php";
-require_once __DIR__ . "/../../../helpers/validation.php";
-require_once __DIR__ . "/../../../helpers/functions.php";
+require __DIR__ . "/../../../config/config.php";
+require __DIR__ . "/../../../config/database.php";
+require __DIR__ . "/../../../helpers/response.php";
+require __DIR__ . "/../../../helpers/validation.php";
+require __DIR__ . "/../../../helpers/functions.php";
 
 
 // Request Method
 
 if ($_SERVER["REQUEST_METHOD"] !== "GET") {
-    MethodNotAllowedResponse(["GET"]);
+    methodNotAllowedResponse(["GET"]);
 }
 
 
 // Query Parameters
 
-$BookId = $_GET["book_id"] ?? ($parts[3] ?? null);
+$BookId = $_GET["book_id"] ?? ($GLOBALS['parts'][3] ?? null);
 $Page = isset($_GET["page"]) ? max(1, (int)$_GET["page"]) : 1;
 $Limit = isset($_GET["limit"]) ? min(100, max(1, (int)$_GET["limit"])) : 10;
 $Offset = ($Page - 1) * $Limit;
@@ -27,9 +27,9 @@ $Offset = ($Page - 1) * $Limit;
 // If specific BookId provided
 
 if ($BookId !== null) {
-    $IdError = ValidatePositiveInteger($BookId, "Book ID");
+    $IdError = validatePositiveInteger($BookId, "Book ID");
     if ($IdError !== null) {
-        ErrorResponse($IdError, 400);
+        errorResponse($IdError, 400);
     }
 
     try {
@@ -79,7 +79,7 @@ if ($BookId !== null) {
 
         $TotalPages = $Limit > 0 ? (int)ceil($Total / $Limit) : 1;
 
-        SuccessResponse([
+        successResponse([
             "reviews" => $Reviews,
             "average_rating" => (float)$Stats["average_rating"],
             "total_reviews" => $Total,
@@ -92,7 +92,7 @@ if ($BookId !== null) {
         ]);
 
     } catch (PDOException $e) {
-        ErrorResponse("Database error", 500);
+        errorResponse("Database error", 500);
     }
 }
 
@@ -132,10 +132,10 @@ try {
         $Review["rating"] = (int)$Review["rating"];
     }
 
-    PaginatedResponse($Reviews, $Page, $Limit, $Total);
+    paginatedResponse($Reviews, $Page, $Limit, $Total);
 
 } catch (PDOException $e) {
-    ErrorResponse("Database error", 500);
+    errorResponse("Database error", 500);
 }
 
 ?>

@@ -2,26 +2,26 @@
 
 // Configuration
 
-require_once __DIR__ . "/../../../config/config.php";
-require_once __DIR__ . "/../../../config/database.php";
-require_once __DIR__ . "/../../../helpers/response.php";
-require_once __DIR__ . "/../../../helpers/validation.php";
-require_once __DIR__ . "/../../../helpers/functions.php";
-require_once __DIR__ . "/../../../middleware/auth.php";
-require_once __DIR__ . "/../../../middleware/admin.php";
+require __DIR__ . "/../../../config/config.php";
+require __DIR__ . "/../../../config/database.php";
+require __DIR__ . "/../../../helpers/response.php";
+require __DIR__ . "/../../../helpers/validation.php";
+require __DIR__ . "/../../../helpers/functions.php";
+require __DIR__ . "/../../../middleware/auth.php";
+require __DIR__ . "/../../../middleware/admin.php";
 
 
 // Request Method
 
 if ($_SERVER["REQUEST_METHOD"] !== "DELETE") {
-    MethodNotAllowedResponse(["DELETE"]);
+    methodNotAllowedResponse(["DELETE"]);
 }
 
 
 // Authentication & Admin Check
 
-$User = RequireAuth();
-RequireAdmin($User);
+$User = requireAuth();
+requireAdmin($User);
 $UserId = (int)$User["id"];
 
 
@@ -29,13 +29,13 @@ $UserId = (int)$User["id"];
 
 $PublisherId = $publisherId ?? ($parts[3] ?? ($_GET["id"] ?? null));
 if ($PublisherId === null) {
-    $Input = GetJsonInput();
+    $Input = getJsonInput();
     $PublisherId = $Input["id"] ?? null;
 }
 
-$IdError = ValidatePositiveInteger($PublisherId, "Publisher ID");
+$IdError = validatePositiveInteger($PublisherId, "Publisher ID");
 if ($IdError !== null) {
-    ErrorResponse($IdError, 400);
+    errorResponse($IdError, 400);
 }
 
 $PublisherId = (int)$PublisherId;
@@ -49,7 +49,7 @@ try {
     $Publisher = $Stmt->fetch();
 
     if (!$Publisher) {
-        NotFoundResponse("Publisher not found");
+        notFoundResponse("Publisher not found");
     }
 
     // Set books with this publisher_id to NULL
@@ -60,12 +60,12 @@ try {
     $DelStmt = $pdo->prepare("DELETE FROM publishers WHERE id = ?");
     $DelStmt->execute([$PublisherId]);
 
-    LogAudit($UserId, "delete_publisher", "publishers", $PublisherId, "Deleted publisher '{$Publisher['name']}'");
+    logAudit($UserId, "delete_publisher", "publishers", $PublisherId, "Deleted publisher '{$Publisher['name']}'");
 
-    SuccessResponse(null, "Publisher deleted successfully");
+    successResponse(null, "Publisher deleted successfully");
 
 } catch (PDOException $e) {
-    ErrorResponse("Database error", 500);
+    errorResponse("Database error", 500);
 }
 
 ?>

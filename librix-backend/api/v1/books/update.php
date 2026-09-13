@@ -2,36 +2,36 @@
 
 // Configuration
 
-require_once __DIR__ . "/../../../config/config.php";
-require_once __DIR__ . "/../../../config/database.php";
-require_once __DIR__ . "/../../../helpers/response.php";
-require_once __DIR__ . "/../../../helpers/validation.php";
-require_once __DIR__ . "/../../../helpers/functions.php";
-require_once __DIR__ . "/../../../middleware/auth.php";
-require_once __DIR__ . "/../../../middleware/admin.php";
+require __DIR__ . "/../../../config/config.php";
+require __DIR__ . "/../../../config/database.php";
+require __DIR__ . "/../../../helpers/response.php";
+require __DIR__ . "/../../../helpers/validation.php";
+require __DIR__ . "/../../../helpers/functions.php";
+require __DIR__ . "/../../../middleware/auth.php";
+require __DIR__ . "/../../../middleware/admin.php";
 
 
 // Request Method
 
 if ($_SERVER["REQUEST_METHOD"] !== "PUT") {
-    MethodNotAllowedResponse(["PUT"]);
+    methodNotAllowedResponse(["PUT"]);
 }
 
 
 // Authentication
 
-$User = RequireAuth();
-RequireAdmin($User);
+$User = requireAuth();
+requireAdmin($User);
 
 
 // Request Data
 
 $BookId = $bookId ?? ($parts[3] ?? null);
 
-$IdError = ValidatePositiveInteger($BookId, "Book ID");
+$IdError = validatePositiveInteger($BookId, "Book ID");
 
 if ($IdError !== null) {
-    ErrorResponse($IdError, 400);
+    errorResponse($IdError, 400);
 }
 
 $BookId = (int)$BookId;
@@ -45,14 +45,14 @@ try {
     $ExistingBook = $Stmt->fetch();
 
 } catch (PDOException $e) {
-    ErrorResponse("Database error", 500);
+    errorResponse("Database error", 500);
 }
 
 if (!$ExistingBook) {
-    NotFoundResponse("Book not found");
+    notFoundResponse("Book not found");
 }
 
-$RequestData = GetJsonInput();
+$RequestData = getJsonInput();
 
 $Title = array_key_exists("title", $RequestData) ? trim($RequestData["title"]) : $ExistingBook["title"];
 $AuthorId = array_key_exists("author_id", $RequestData) ? $RequestData["author_id"] : $ExistingBook["author_id"];
@@ -70,12 +70,12 @@ $CoverImage = array_key_exists("cover_image", $RequestData) ? $RequestData["cove
 
 $Errors = [];
 
-$TitleError = Required($Title, "Title");
+$TitleError = required($Title, "Title");
 
 if ($TitleError !== null) {
     $Errors["title"] = $TitleError;
 } else {
-    $TitleError = MaxLength($Title, 255, "Title");
+    $TitleError = maxLength($Title, 255, "Title");
 
     if ($TitleError !== null) {
         $Errors["title"] = $TitleError;
@@ -83,7 +83,7 @@ if ($TitleError !== null) {
 }
 
 if ($AuthorId !== null && $AuthorId !== "") {
-    $AuthorIdError = ValidatePositiveInteger($AuthorId, "Author ID");
+    $AuthorIdError = validatePositiveInteger($AuthorId, "Author ID");
 
     if ($AuthorIdError !== null) {
         $Errors["author_id"] = $AuthorIdError;
@@ -96,7 +96,7 @@ if ($AuthorId !== null && $AuthorId !== "") {
                 $Errors["author_id"] = "Selected author does not exist";
             }
         } catch (PDOException $e) {
-            ErrorResponse("Database error", 500);
+            errorResponse("Database error", 500);
         }
     }
 } else {
@@ -104,7 +104,7 @@ if ($AuthorId !== null && $AuthorId !== "") {
 }
 
 if ($Isbn !== null && $Isbn !== "") {
-    $IsbnLengthError = MaxLength($Isbn, 20, "ISBN");
+    $IsbnLengthError = maxLength($Isbn, 20, "ISBN");
 
     if ($IsbnLengthError !== null) {
         $Errors["isbn"] = $IsbnLengthError;
@@ -117,12 +117,12 @@ if ($Isbn !== null && $Isbn !== "") {
                 $Errors["isbn"] = "ISBN already exists";
             }
         } catch (PDOException $e) {
-            ErrorResponse("Database error", 500);
+            errorResponse("Database error", 500);
         }
     }
 }
 
-$CopiesError = ValidatePositiveInteger($TotalCopies, "Total copies");
+$CopiesError = validatePositiveInteger($TotalCopies, "Total copies");
 
 if ($CopiesError !== null) {
     $Errors["total_copies"] = $CopiesError;
@@ -151,8 +151,8 @@ if ($PublicationYear !== null && $PublicationYear !== "") {
     $PublicationYear = null;
 }
 
-if (HasValidationErrors($Errors)) {
-    ValidationErrorResponse($Errors);
+if (hasValidationErrors($Errors)) {
+    ValidationerrorResponse($Errors);
 }
 
 
@@ -189,7 +189,7 @@ try {
     ]);
 
 } catch (PDOException $e) {
-    ErrorResponse("Unable to update book", 500);
+    errorResponse("Unable to update book", 500);
 }
 
 
@@ -224,18 +224,18 @@ try {
     $UpdatedBook = $Stmt->fetch();
 
 } catch (PDOException $e) {
-    ErrorResponse("Unable to retrieve updated book", 500);
+    errorResponse("Unable to retrieve updated book", 500);
 }
 
 
 // Audit Log
 
-LogAudit((int)$User["id"], "book_updated", "books", $BookId, "Updated book '$Title'");
+logAudit((int)$User["id"], "book_updated", "books", $BookId, "Updated book '$Title'");
 
 
 // Response
 
-SuccessResponse(
+successResponse(
     $UpdatedBook,
     "Book updated successfully"
 );

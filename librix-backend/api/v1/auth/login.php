@@ -2,34 +2,34 @@
 
 // Configuration
 
-require_once __DIR__ . "/../../../config/config.php";
-require_once __DIR__ . "/../../../config/database.php";
-require_once __DIR__ . "/../../../helpers/response.php";
-require_once __DIR__ . "/../../../helpers/validation.php";
-require_once __DIR__ . "/../../../helpers/functions.php";
+require __DIR__ . "/../../../config/config.php";
+require __DIR__ . "/../../../config/database.php";
+require __DIR__ . "/../../../helpers/response.php";
+require __DIR__ . "/../../../helpers/validation.php";
+require __DIR__ . "/../../../helpers/functions.php";
 
 
 // Request Method
 
 if ($_SERVER["REQUEST_METHOD"] !== "POST") {
-    MethodNotAllowedResponse(["POST"]);
+    methodNotAllowedResponse(["POST"]);
 }
 
 
 // Rate Limiting
 
-$ClientIp = GetClientIp();
+$ClientIp = getClientIp();
 $RateLimitKey = "login_" . $ClientIp;
-$RetryAfter = CheckRateLimit($RateLimitKey, RATE_LIMIT_LOGIN_MAX, RATE_LIMIT_WINDOW_SECONDS);
+$RetryAfter = checkRateLimit($RateLimitKey, RATE_LIMIT_LOGIN_MAX, RATE_LIMIT_WINDOW_SECONDS);
 
 if ($RetryAfter > 0) {
-    TooManyRequestsResponse("Too many login attempts. Please try again later.", $RetryAfter);
+    tooManyRequestsResponse("Too many login attempts. Please try again later.", $RetryAfter);
 }
 
 
 // Request Data
 
-$RequestData = GetJsonInput();
+$RequestData = getJsonInput();
 
 $UserEmail = trim($RequestData["email"] ?? "");
 $Password = $RequestData["password"] ?? "";
@@ -39,26 +39,26 @@ $Password = $RequestData["password"] ?? "";
 
 $Errors = [];
 
-$EmailError = Required($UserEmail, "Email");
+$EmailError = required($UserEmail, "Email");
 
 if ($EmailError !== null) {
     $Errors["email"] = $EmailError;
 } else {
-    $EmailError = ValidateEmail($UserEmail);
+    $EmailError = validateEmail($UserEmail);
 
     if ($EmailError !== null) {
         $Errors["email"] = $EmailError;
     }
 }
 
-$PasswordError = Required($Password, "Password");
+$PasswordError = required($Password, "Password");
 
 if ($PasswordError !== null) {
     $Errors["password"] = $PasswordError;
 }
 
-if (HasValidationErrors($Errors)) {
-    ValidationErrorResponse($Errors);
+if (hasValidationErrors($Errors)) {
+    ValidationerrorResponse($Errors);
 }
 
 
@@ -77,34 +77,34 @@ try {
     $User = $Stmt->fetch();
 
 } catch (PDOException $e) {
-    ErrorResponse("Database error", 500);
+    errorResponse("Database error", 500);
 }
 
 
 // Check User
 
 if (!$User) {
-    ErrorResponse("Invalid email or password", 401);
+    errorResponse("Invalid email or password", 401);
 }
 
 
 // Check User Status
 
 if ($User["status"] !== "active") {
-    ForbiddenResponse("Your account is not active");
+    forbiddenResponse("Your account is not active");
 }
 
 
 // Check Password
 
 if (!password_verify($Password, $User["password"])) {
-    ErrorResponse("Invalid email or password", 401);
+    errorResponse("Invalid email or password", 401);
 }
 
 
 // Generate Token
 
-$Token = GenerateToken(32);
+$Token = generateToken(32);
 
 
 // Token Expiration
@@ -131,7 +131,7 @@ try {
     ]);
 
 } catch (PDOException $e) {
-    ErrorResponse("Unable to create authentication session", 500);
+    errorResponse("Unable to create authentication session", 500);
 }
 
 
@@ -142,7 +142,7 @@ unset($User["password"]);
 
 // Login Response
 
-SuccessResponse(
+successResponse(
     [
         "token" => $Token,
         "expires_at" => $ExpiresAt,

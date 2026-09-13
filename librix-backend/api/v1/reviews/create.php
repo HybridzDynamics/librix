@@ -2,41 +2,41 @@
 
 // Configuration
 
-require_once __DIR__ . "/../../../config/config.php";
-require_once __DIR__ . "/../../../config/database.php";
-require_once __DIR__ . "/../../../helpers/response.php";
-require_once __DIR__ . "/../../../helpers/validation.php";
-require_once __DIR__ . "/../../../helpers/functions.php";
-require_once __DIR__ . "/../../../middleware/auth.php";
+require __DIR__ . "/../../../config/config.php";
+require __DIR__ . "/../../../config/database.php";
+require __DIR__ . "/../../../helpers/response.php";
+require __DIR__ . "/../../../helpers/validation.php";
+require __DIR__ . "/../../../helpers/functions.php";
+require __DIR__ . "/../../../middleware/auth.php";
 
 
 // Request Method
 
 if ($_SERVER["REQUEST_METHOD"] !== "POST") {
-    MethodNotAllowedResponse(["POST"]);
+    methodNotAllowedResponse(["POST"]);
 }
 
 
 // Authentication
 
-$User = RequireAuth();
+$User = requireAuth();
 $UserId = (int)$User["id"];
 
 
 // Request Data
 
-$Input = GetJsonInput();
+$Input = getJsonInput();
 
 $BookId = $Input["book_id"] ?? null;
 $Rating = $Input["rating"] ?? null;
-$ReviewText = isset($Input["review_text"]) ? SanitizeString($Input["review_text"]) : null;
+$ReviewText = isset($Input["review_text"]) ? sanitizeString($Input["review_text"]) : null;
 
 
 // Validation
 
 $Errors = [];
 
-$BookIdError = ValidatePositiveInteger($BookId, "Book ID");
+$BookIdError = validatePositiveInteger($BookId, "Book ID");
 if ($BookIdError !== null) {
     $Errors["book_id"] = $BookIdError;
 }
@@ -46,7 +46,7 @@ if ($Rating === null || !is_numeric($Rating) || (int)$Rating < 1 || (int)$Rating
 }
 
 if (!empty($Errors)) {
-    ErrorResponse("Validation failed", 422, $Errors);
+    errorResponse("Validation failed", 422, $Errors);
 }
 
 $BookId = (int)$BookId;
@@ -59,10 +59,10 @@ try {
     $BookCheck = $pdo->prepare("SELECT id FROM books WHERE id = ? LIMIT 1");
     $BookCheck->execute([$BookId]);
     if (!$BookCheck->fetch()) {
-        NotFoundResponse("Book not found");
+        notFoundResponse("Book not found");
     }
 } catch (PDOException $e) {
-    ErrorResponse("Database error", 500);
+    errorResponse("Database error", 500);
 }
 
 
@@ -104,12 +104,12 @@ try {
     $Review["user_id"] = (int)$Review["user_id"];
     $Review["rating"] = (int)$Review["rating"];
 
-    LogAudit($UserId, "create_or_update_review", "reviews", $Review["id"], "User reviewed book #{$BookId}");
+    logAudit($UserId, "create_or_update_review", "reviews", $Review["id"], "User reviewed book #{$BookId}");
 
-    SuccessResponse($Review, "Review saved successfully", 201);
+    successResponse($Review, "Review saved successfully", 201);
 
 } catch (PDOException $e) {
-    ErrorResponse("Database error", 500);
+    errorResponse("Database error", 500);
 }
 
 ?>

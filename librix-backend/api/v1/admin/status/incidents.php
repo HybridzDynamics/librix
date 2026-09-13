@@ -2,19 +2,19 @@
 
 // Configuration
 
-require_once __DIR__ . "/../../../../config/config.php";
-require_once __DIR__ . "/../../../../config/database.php";
-require_once __DIR__ . "/../../../../helpers/response.php";
-require_once __DIR__ . "/../../../../helpers/validation.php";
-require_once __DIR__ . "/../../../../helpers/functions.php";
-require_once __DIR__ . "/../../../../middleware/auth.php";
-require_once __DIR__ . "/../../../../middleware/admin.php";
+require __DIR__ . "/../../../../config/config.php";
+require __DIR__ . "/../../../../config/database.php";
+require __DIR__ . "/../../../../helpers/response.php";
+require __DIR__ . "/../../../../helpers/validation.php";
+require __DIR__ . "/../../../../helpers/functions.php";
+require __DIR__ . "/../../../../middleware/auth.php";
+require __DIR__ . "/../../../../middleware/admin.php";
 
 
 // Authentication
 
-$AdminUser = RequireAuth();
-RequireAdmin($AdminUser);
+$AdminUser = requireAuth();
+requireAdmin($AdminUser);
 
 
 // Request Method
@@ -26,7 +26,7 @@ $Method = $_SERVER["REQUEST_METHOD"];
 
 if ($Method === "POST") {
 
-    $RequestData = GetJsonInput();
+    $RequestData = getJsonInput();
 
     $Title = trim($RequestData["title"] ?? "");
     $Description = trim($RequestData["description"] ?? "");
@@ -36,10 +36,10 @@ if ($Method === "POST") {
 
     $Errors = [];
 
-    $TitleError = Required($Title, "Title");
+    $TitleError = required($Title, "Title");
     if ($TitleError !== null) $Errors["title"] = $TitleError;
 
-    $DescError = Required($Description, "Description");
+    $DescError = required($Description, "Description");
     if ($DescError !== null) $Errors["description"] = $DescError;
 
     $AllowedStatuses = ["investigating", "identified", "monitoring", "resolved"];
@@ -52,8 +52,8 @@ if ($Method === "POST") {
         $Errors["severity"] = "Invalid severity. Allowed: " . implode(", ", $AllowedSeverities);
     }
 
-    if (HasValidationErrors($Errors)) {
-        ValidationErrorResponse($Errors);
+    if (hasValidationErrors($Errors)) {
+        ValidationerrorResponse($Errors);
     }
 
     $ResolvedAt = ($Status === "resolved") ? date("Y-m-d H:i:s") : null;
@@ -76,7 +76,7 @@ if ($Method === "POST") {
 
         $IncidentId = (int)$pdo->lastInsertId();
 
-        LogAudit(
+        logAudit(
             (int)$AdminUser["id"],
             "status_incident_created",
             "status_incidents",
@@ -85,7 +85,7 @@ if ($Method === "POST") {
         );
 
     } catch (PDOException $e) {
-        ErrorResponse("Unable to create incident", 500);
+        errorResponse("Unable to create incident", 500);
     }
 
     // Return Created
@@ -96,10 +96,10 @@ if ($Method === "POST") {
         $Created["id"] = (int)$Created["id"];
 
     } catch (PDOException $e) {
-        ErrorResponse("Database error", 500);
+        errorResponse("Database error", 500);
     }
 
-    SuccessResponse($Created, "Incident created successfully", 201);
+    successResponse($Created, "Incident created successfully", 201);
 }
 
 
@@ -110,13 +110,13 @@ if ($Method === "PUT" || $Method === "PATCH") {
     $IncidentId = $parts[5] ?? null;
 
     if ($IncidentId === null) {
-        $RequestData = GetJsonInput();
+        $RequestData = getJsonInput();
         $IncidentId = $RequestData["id"] ?? null;
     }
 
-    $IdError = ValidatePositiveInteger($IncidentId, "Incident ID");
+    $IdError = validatePositiveInteger($IncidentId, "Incident ID");
     if ($IdError !== null) {
-        ErrorResponse($IdError, 400);
+        errorResponse($IdError, 400);
     }
 
     $IncidentId = (int)$IncidentId;
@@ -128,14 +128,14 @@ if ($Method === "PUT" || $Method === "PATCH") {
         $Existing = $Stmt->fetch();
 
     } catch (PDOException $e) {
-        ErrorResponse("Database error", 500);
+        errorResponse("Database error", 500);
     }
 
     if (!$Existing) {
-        NotFoundResponse("Incident not found");
+        notFoundResponse("Incident not found");
     }
 
-    $RequestData = GetJsonInput();
+    $RequestData = getJsonInput();
 
     $Title = array_key_exists("title", $RequestData) ? trim($RequestData["title"]) : $Existing["title"];
     $Description = array_key_exists("description", $RequestData) ? trim($RequestData["description"]) : $Existing["description"];
@@ -144,12 +144,12 @@ if ($Method === "PUT" || $Method === "PATCH") {
 
     $AllowedStatuses = ["investigating", "identified", "monitoring", "resolved"];
     if (!in_array($Status, $AllowedStatuses, true)) {
-        ErrorResponse("Invalid status value", 422);
+        errorResponse("Invalid status value", 422);
     }
 
     $AllowedSeverities = ["minor", "major", "critical"];
     if (!in_array($Severity, $AllowedSeverities, true)) {
-        ErrorResponse("Invalid severity value", 422);
+        errorResponse("Invalid severity value", 422);
     }
 
     $ResolvedAt = $Existing["resolved_at"];
@@ -179,7 +179,7 @@ if ($Method === "PUT" || $Method === "PATCH") {
             $IncidentId
         ]);
 
-        LogAudit(
+        logAudit(
             (int)$AdminUser["id"],
             "status_incident_updated",
             "status_incidents",
@@ -188,7 +188,7 @@ if ($Method === "PUT" || $Method === "PATCH") {
         );
 
     } catch (PDOException $e) {
-        ErrorResponse("Unable to update incident", 500);
+        errorResponse("Unable to update incident", 500);
     }
 
     // Return Updated
@@ -199,10 +199,10 @@ if ($Method === "PUT" || $Method === "PATCH") {
         $Updated["id"] = (int)$Updated["id"];
 
     } catch (PDOException $e) {
-        ErrorResponse("Database error", 500);
+        errorResponse("Database error", 500);
     }
 
-    SuccessResponse($Updated, "Incident updated successfully");
+    successResponse($Updated, "Incident updated successfully");
 }
 
 
@@ -213,13 +213,13 @@ if ($Method === "DELETE") {
     $IncidentId = $parts[5] ?? null;
 
     if ($IncidentId === null) {
-        $RequestData = GetJsonInput();
+        $RequestData = getJsonInput();
         $IncidentId = $RequestData["id"] ?? null;
     }
 
-    $IdError = ValidatePositiveInteger($IncidentId, "Incident ID");
+    $IdError = validatePositiveInteger($IncidentId, "Incident ID");
     if ($IdError !== null) {
-        ErrorResponse($IdError, 400);
+        errorResponse($IdError, 400);
     }
 
     $IncidentId = (int)$IncidentId;
@@ -230,18 +230,18 @@ if ($Method === "DELETE") {
         $Existing = $Stmt->fetch();
 
     } catch (PDOException $e) {
-        ErrorResponse("Database error", 500);
+        errorResponse("Database error", 500);
     }
 
     if (!$Existing) {
-        NotFoundResponse("Incident not found");
+        notFoundResponse("Incident not found");
     }
 
     try {
         $Stmt = $pdo->prepare("DELETE FROM status_incidents WHERE id = ?");
         $Stmt->execute([$IncidentId]);
 
-        LogAudit(
+        logAudit(
             (int)$AdminUser["id"],
             "status_incident_deleted",
             "status_incidents",
@@ -250,12 +250,12 @@ if ($Method === "DELETE") {
         );
 
     } catch (PDOException $e) {
-        ErrorResponse("Unable to delete incident", 500);
+        errorResponse("Unable to delete incident", 500);
     }
 
-    SuccessResponse(["id" => $IncidentId], "Incident deleted successfully");
+    successResponse(["id" => $IncidentId], "Incident deleted successfully");
 }
 
-MethodNotAllowedResponse(["POST", "PUT", "DELETE"]);
+methodNotAllowedResponse(["POST", "PUT", "DELETE"]);
 
 ?>

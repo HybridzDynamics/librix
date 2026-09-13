@@ -2,19 +2,19 @@
 
 // Configuration
 
-require_once __DIR__ . "/../../../../config/config.php";
-require_once __DIR__ . "/../../../../config/database.php";
-require_once __DIR__ . "/../../../../helpers/response.php";
-require_once __DIR__ . "/../../../../helpers/validation.php";
-require_once __DIR__ . "/../../../../helpers/functions.php";
-require_once __DIR__ . "/../../../../middleware/auth.php";
-require_once __DIR__ . "/../../../../middleware/admin.php";
+require __DIR__ . "/../../../../config/config.php";
+require __DIR__ . "/../../../../config/database.php";
+require __DIR__ . "/../../../../helpers/response.php";
+require __DIR__ . "/../../../../helpers/validation.php";
+require __DIR__ . "/../../../../helpers/functions.php";
+require __DIR__ . "/../../../../middleware/auth.php";
+require __DIR__ . "/../../../../middleware/admin.php";
 
 
 // Authentication
 
-$AdminUser = RequireAuth();
-RequireAdmin($AdminUser);
+$AdminUser = requireAuth();
+requireAdmin($AdminUser);
 
 
 // Request Method
@@ -26,7 +26,7 @@ $Method = $_SERVER["REQUEST_METHOD"];
 
 if ($Method === "POST") {
 
-    $RequestData = GetJsonInput();
+    $RequestData = getJsonInput();
 
     $Title = trim($RequestData["title"] ?? "");
     $Description = trim($RequestData["description"] ?? "");
@@ -37,16 +37,16 @@ if ($Method === "POST") {
 
     $Errors = [];
 
-    $TitleError = Required($Title, "Title");
+    $TitleError = required($Title, "Title");
     if ($TitleError !== null) $Errors["title"] = $TitleError;
 
-    $DescError = Required($Description, "Description");
+    $DescError = required($Description, "Description");
     if ($DescError !== null) $Errors["description"] = $DescError;
 
-    $StartsError = Required($StartsAt, "Starts at");
+    $StartsError = required($StartsAt, "Starts at");
     if ($StartsError !== null) $Errors["starts_at"] = $StartsError;
 
-    $EndsError = Required($EndsAt, "Ends at");
+    $EndsError = required($EndsAt, "Ends at");
     if ($EndsError !== null) $Errors["ends_at"] = $EndsError;
 
     $AllowedStatuses = ["scheduled", "active", "completed", "cancelled"];
@@ -54,8 +54,8 @@ if ($Method === "POST") {
         $Errors["status"] = "Invalid status. Allowed: " . implode(", ", $AllowedStatuses);
     }
 
-    if (HasValidationErrors($Errors)) {
-        ValidationErrorResponse($Errors);
+    if (hasValidationErrors($Errors)) {
+        ValidationerrorResponse($Errors);
     }
 
     try {
@@ -77,7 +77,7 @@ if ($Method === "POST") {
 
         $WindowId = (int)$pdo->lastInsertId();
 
-        LogAudit(
+        logAudit(
             (int)$AdminUser["id"],
             "maintenance_window_created",
             "maintenance_windows",
@@ -86,7 +86,7 @@ if ($Method === "POST") {
         );
 
     } catch (PDOException $e) {
-        ErrorResponse("Unable to schedule maintenance", 500);
+        errorResponse("Unable to schedule maintenance", 500);
     }
 
     // Return Created
@@ -97,10 +97,10 @@ if ($Method === "POST") {
         $Created["id"] = (int)$Created["id"];
 
     } catch (PDOException $e) {
-        ErrorResponse("Database error", 500);
+        errorResponse("Database error", 500);
     }
 
-    SuccessResponse($Created, "Maintenance window scheduled successfully", 201);
+    successResponse($Created, "Maintenance window scheduled successfully", 201);
 }
 
 
@@ -111,13 +111,13 @@ if ($Method === "PUT" || $Method === "PATCH") {
     $WindowId = $parts[5] ?? null;
 
     if ($WindowId === null) {
-        $RequestData = GetJsonInput();
+        $RequestData = getJsonInput();
         $WindowId = $RequestData["id"] ?? null;
     }
 
-    $IdError = ValidatePositiveInteger($WindowId, "Maintenance Window ID");
+    $IdError = validatePositiveInteger($WindowId, "Maintenance Window ID");
     if ($IdError !== null) {
-        ErrorResponse($IdError, 400);
+        errorResponse($IdError, 400);
     }
 
     $WindowId = (int)$WindowId;
@@ -128,14 +128,14 @@ if ($Method === "PUT" || $Method === "PATCH") {
         $Existing = $Stmt->fetch();
 
     } catch (PDOException $e) {
-        ErrorResponse("Database error", 500);
+        errorResponse("Database error", 500);
     }
 
     if (!$Existing) {
-        NotFoundResponse("Maintenance window not found");
+        notFoundResponse("Maintenance window not found");
     }
 
-    $RequestData = GetJsonInput();
+    $RequestData = getJsonInput();
 
     $Title = array_key_exists("title", $RequestData) ? trim($RequestData["title"]) : $Existing["title"];
     $Description = array_key_exists("description", $RequestData) ? trim($RequestData["description"]) : $Existing["description"];
@@ -146,7 +146,7 @@ if ($Method === "PUT" || $Method === "PATCH") {
 
     $AllowedStatuses = ["scheduled", "active", "completed", "cancelled"];
     if (!in_array($Status, $AllowedStatuses, true)) {
-        ErrorResponse("Invalid status value", 422);
+        errorResponse("Invalid status value", 422);
     }
 
     try {
@@ -171,7 +171,7 @@ if ($Method === "PUT" || $Method === "PATCH") {
             $WindowId
         ]);
 
-        LogAudit(
+        logAudit(
             (int)$AdminUser["id"],
             "maintenance_window_updated",
             "maintenance_windows",
@@ -180,7 +180,7 @@ if ($Method === "PUT" || $Method === "PATCH") {
         );
 
     } catch (PDOException $e) {
-        ErrorResponse("Unable to update maintenance window", 500);
+        errorResponse("Unable to update maintenance window", 500);
     }
 
     // Return Updated
@@ -191,10 +191,10 @@ if ($Method === "PUT" || $Method === "PATCH") {
         $Updated["id"] = (int)$Updated["id"];
 
     } catch (PDOException $e) {
-        ErrorResponse("Database error", 500);
+        errorResponse("Database error", 500);
     }
 
-    SuccessResponse($Updated, "Maintenance window updated successfully");
+    successResponse($Updated, "Maintenance window updated successfully");
 }
 
 
@@ -205,13 +205,13 @@ if ($Method === "DELETE") {
     $WindowId = $parts[5] ?? null;
 
     if ($WindowId === null) {
-        $RequestData = GetJsonInput();
+        $RequestData = getJsonInput();
         $WindowId = $RequestData["id"] ?? null;
     }
 
-    $IdError = ValidatePositiveInteger($WindowId, "Maintenance Window ID");
+    $IdError = validatePositiveInteger($WindowId, "Maintenance Window ID");
     if ($IdError !== null) {
-        ErrorResponse($IdError, 400);
+        errorResponse($IdError, 400);
     }
 
     $WindowId = (int)$WindowId;
@@ -222,18 +222,18 @@ if ($Method === "DELETE") {
         $Existing = $Stmt->fetch();
 
     } catch (PDOException $e) {
-        ErrorResponse("Database error", 500);
+        errorResponse("Database error", 500);
     }
 
     if (!$Existing) {
-        NotFoundResponse("Maintenance window not found");
+        notFoundResponse("Maintenance window not found");
     }
 
     try {
         $Stmt = $pdo->prepare("DELETE FROM maintenance_windows WHERE id = ?");
         $Stmt->execute([$WindowId]);
 
-        LogAudit(
+        logAudit(
             (int)$AdminUser["id"],
             "maintenance_window_deleted",
             "maintenance_windows",
@@ -242,12 +242,12 @@ if ($Method === "DELETE") {
         );
 
     } catch (PDOException $e) {
-        ErrorResponse("Unable to delete maintenance window", 500);
+        errorResponse("Unable to delete maintenance window", 500);
     }
 
-    SuccessResponse(["id" => $WindowId], "Maintenance window deleted successfully");
+    successResponse(["id" => $WindowId], "Maintenance window deleted successfully");
 }
 
-MethodNotAllowedResponse(["POST", "PUT", "DELETE"]);
+methodNotAllowedResponse(["POST", "PUT", "DELETE"]);
 
 ?>

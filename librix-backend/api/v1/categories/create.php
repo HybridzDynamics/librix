@@ -2,34 +2,34 @@
 
 // Configuration
 
-require_once __DIR__ . "/../../../config/config.php";
-require_once __DIR__ . "/../../../config/database.php";
-require_once __DIR__ . "/../../../helpers/response.php";
-require_once __DIR__ . "/../../../helpers/validation.php";
-require_once __DIR__ . "/../../../helpers/functions.php";
-require_once __DIR__ . "/../../../middleware/auth.php";
-require_once __DIR__ . "/../../../middleware/admin.php";
+require __DIR__ . "/../../../config/config.php";
+require __DIR__ . "/../../../config/database.php";
+require __DIR__ . "/../../../helpers/response.php";
+require __DIR__ . "/../../../helpers/validation.php";
+require __DIR__ . "/../../../helpers/functions.php";
+require __DIR__ . "/../../../middleware/auth.php";
+require __DIR__ . "/../../../middleware/admin.php";
 
 
 // Request Method
 
 if ($_SERVER["REQUEST_METHOD"] !== "POST") {
-    MethodNotAllowedResponse(["POST"]);
+    methodNotAllowedResponse(["POST"]);
 }
 
 
 // Authentication & Admin Check
 
-$User = RequireAuth();
-RequireAdmin($User);
+$User = requireAuth();
+requireAdmin($User);
 $UserId = (int)$User["id"];
 
 
 // Request Data
 
-$Input = GetJsonInput();
-$Name = isset($Input["name"]) ? SanitizeString($Input["name"]) : null;
-$Description = isset($Input["description"]) ? SanitizeString($Input["description"]) : null;
+$Input = getJsonInput();
+$Name = isset($Input["name"]) ? sanitizeString($Input["name"]) : null;
+$Description = isset($Input["description"]) ? sanitizeString($Input["description"]) : null;
 
 
 // Validation
@@ -43,7 +43,7 @@ if (empty($Name)) {
 }
 
 if (!empty($Errors)) {
-    ErrorResponse("Validation failed", 422, $Errors);
+    errorResponse("Validation failed", 422, $Errors);
 }
 
 
@@ -53,23 +53,23 @@ try {
     $Check = $pdo->prepare("SELECT id FROM categories WHERE LOWER(name) = LOWER(?) LIMIT 1");
     $Check->execute([$Name]);
     if ($Check->fetch()) {
-        ErrorResponse("Category with this name already exists", 409);
+        errorResponse("Category with this name already exists", 409);
     }
 
     $Stmt = $pdo->prepare("INSERT INTO categories (name, description) VALUES (?, ?)");
     $Stmt->execute([$Name, $Description]);
     $NewId = (int)$pdo->lastInsertId();
 
-    LogAudit($UserId, "create_category", "categories", $NewId, "Created category '{$Name}'");
+    logAudit($UserId, "create_category", "categories", $NewId, "Created category '{$Name}'");
 
-    SuccessResponse([
+    successResponse([
         "id" => $NewId,
         "name" => $Name,
         "description" => $Description
     ], "Category created successfully", 201);
 
 } catch (PDOException $e) {
-    ErrorResponse("Database error", 500);
+    errorResponse("Database error", 500);
 }
 
 ?>

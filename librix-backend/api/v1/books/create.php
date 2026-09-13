@@ -2,31 +2,31 @@
 
 // Configuration
 
-require_once __DIR__ . "/../../../config/config.php";
-require_once __DIR__ . "/../../../config/database.php";
-require_once __DIR__ . "/../../../helpers/response.php";
-require_once __DIR__ . "/../../../helpers/validation.php";
-require_once __DIR__ . "/../../../helpers/functions.php";
-require_once __DIR__ . "/../../../middleware/auth.php";
-require_once __DIR__ . "/../../../middleware/admin.php";
+require __DIR__ . "/../../../config/config.php";
+require __DIR__ . "/../../../config/database.php";
+require __DIR__ . "/../../../helpers/response.php";
+require __DIR__ . "/../../../helpers/validation.php";
+require __DIR__ . "/../../../helpers/functions.php";
+require __DIR__ . "/../../../middleware/auth.php";
+require __DIR__ . "/../../../middleware/admin.php";
 
 
 // Request Method
 
 if ($_SERVER["REQUEST_METHOD"] !== "POST") {
-    MethodNotAllowedResponse(["POST"]);
+    methodNotAllowedResponse(["POST"]);
 }
 
 
 // Authentication
 
-$User = RequireAuth();
-RequireAdmin($User);
+$User = requireAuth();
+requireAdmin($User);
 
 
 // Request Data
 
-$RequestData = GetJsonInput();
+$RequestData = getJsonInput();
 
 $Title = trim($RequestData["title"] ?? "");
 $AuthorId = $RequestData["author_id"] ?? null;
@@ -43,12 +43,12 @@ $CoverImage = isset($RequestData["cover_image"]) ? trim($RequestData["cover_imag
 
 $Errors = [];
 
-$TitleError = Required($Title, "Title");
+$TitleError = required($Title, "Title");
 
 if ($TitleError !== null) {
     $Errors["title"] = $TitleError;
 } else {
-    $TitleError = MaxLength($Title, 255, "Title");
+    $TitleError = maxLength($Title, 255, "Title");
 
     if ($TitleError !== null) {
         $Errors["title"] = $TitleError;
@@ -56,7 +56,7 @@ if ($TitleError !== null) {
 }
 
 if ($AuthorId !== null && $AuthorId !== "") {
-    $AuthorIdError = ValidatePositiveInteger($AuthorId, "Author ID");
+    $AuthorIdError = validatePositiveInteger($AuthorId, "Author ID");
 
     if ($AuthorIdError !== null) {
         $Errors["author_id"] = $AuthorIdError;
@@ -70,7 +70,7 @@ if ($AuthorId !== null && $AuthorId !== "") {
                 $Errors["author_id"] = "Selected author does not exist";
             }
         } catch (PDOException $e) {
-            ErrorResponse("Database error", 500);
+            errorResponse("Database error", 500);
         }
     }
 } else {
@@ -78,7 +78,7 @@ if ($AuthorId !== null && $AuthorId !== "") {
 }
 
 if ($Isbn !== null && $Isbn !== "") {
-    $IsbnLengthError = MaxLength($Isbn, 20, "ISBN");
+    $IsbnLengthError = maxLength($Isbn, 20, "ISBN");
 
     if ($IsbnLengthError !== null) {
         $Errors["isbn"] = $IsbnLengthError;
@@ -92,14 +92,14 @@ if ($Isbn !== null && $Isbn !== "") {
                 $Errors["isbn"] = "ISBN already exists";
             }
         } catch (PDOException $e) {
-            ErrorResponse("Database error", 500);
+            errorResponse("Database error", 500);
         }
     }
 } else {
     $Isbn = null;
 }
 
-$CopiesError = ValidatePositiveInteger($TotalCopies, "Total copies");
+$CopiesError = validatePositiveInteger($TotalCopies, "Total copies");
 
 if ($CopiesError !== null) {
     $Errors["total_copies"] = $CopiesError;
@@ -115,8 +115,8 @@ if ($PublicationYear !== null && $PublicationYear !== "") {
     $PublicationYear = null;
 }
 
-if (HasValidationErrors($Errors)) {
-    ValidationErrorResponse($Errors);
+if (hasValidationErrors($Errors)) {
+    ValidationerrorResponse($Errors);
 }
 
 
@@ -147,7 +147,7 @@ try {
     $NewBookId = (int)$pdo->lastInsertId();
 
 } catch (PDOException $e) {
-    ErrorResponse("Unable to create book", 500);
+    errorResponse("Unable to create book", 500);
 }
 
 
@@ -182,18 +182,18 @@ try {
     $CreatedBook = $Stmt->fetch();
 
 } catch (PDOException $e) {
-    ErrorResponse("Unable to retrieve created book", 500);
+    errorResponse("Unable to retrieve created book", 500);
 }
 
 
 // Audit Log
 
-LogAudit((int)$User["id"], "book_created", "books", $NewBookId, "Created book '$Title'");
+logAudit((int)$User["id"], "book_created", "books", $NewBookId, "Created book '$Title'");
 
 
 // Response
 
-SuccessResponse(
+successResponse(
     $CreatedBook,
     "Book created successfully",
     201

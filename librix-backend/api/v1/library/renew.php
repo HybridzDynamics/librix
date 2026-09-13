@@ -2,36 +2,36 @@
 
 // Configuration
 
-require_once __DIR__ . "/../../../config/config.php";
-require_once __DIR__ . "/../../../config/database.php";
-require_once __DIR__ . "/../../../helpers/response.php";
-require_once __DIR__ . "/../../../helpers/validation.php";
-require_once __DIR__ . "/../../../helpers/functions.php";
-require_once __DIR__ . "/../../../middleware/auth.php";
+require __DIR__ . "/../../../config/config.php";
+require __DIR__ . "/../../../config/database.php";
+require __DIR__ . "/../../../helpers/response.php";
+require __DIR__ . "/../../../helpers/validation.php";
+require __DIR__ . "/../../../helpers/functions.php";
+require __DIR__ . "/../../../middleware/auth.php";
 
 
 // Request Method
 
 if ($_SERVER["REQUEST_METHOD"] !== "POST") {
-    MethodNotAllowedResponse(["POST"]);
+    methodNotAllowedResponse(["POST"]);
 }
 
 
 // Authentication
 
-$User = RequireAuth();
+$User = requireAuth();
 $UserId = (int)$User["id"];
 $IsAdmin = ($User["role"] === "admin");
 
 
 // Request Data
 
-$Input = GetJsonInput();
+$Input = getJsonInput();
 $IssueId = $Input["issue_id"] ?? null;
 
-$IdError = ValidatePositiveInteger($IssueId, "Issue ID");
+$IdError = validatePositiveInteger($IssueId, "Issue ID");
 if ($IdError !== null) {
-    ErrorResponse($IdError, 400);
+    errorResponse($IdError, 400);
 }
 
 $IssueId = (int)$IssueId;
@@ -59,24 +59,24 @@ try {
     $Issue = $Stmt->fetch();
 
     if (!$Issue) {
-        NotFoundResponse("Book issue not found");
+        notFoundResponse("Book issue not found");
     }
 
     // Permission check
     if (!$IsAdmin && (int)$Issue["user_id"] !== $UserId) {
-        ForbiddenResponse("You can only renew books issued to your account");
+        forbiddenResponse("You can only renew books issued to your account");
     }
 
     // Status check
     if ($Issue["status"] === "returned") {
-        ErrorResponse("Cannot renew a book that has already been returned", 400);
+        errorResponse("Cannot renew a book that has already been returned", 400);
     }
 
     $RenewalCount = (int)$Issue["renewal_count"];
     $MaxRenewals = (int)$Issue["max_renewals"];
 
     if ($RenewalCount >= $MaxRenewals) {
-        ErrorResponse("Maximum number of renewals ({$MaxRenewals}) reached for this book", 400);
+        errorResponse("Maximum number of renewals ({$MaxRenewals}) reached for this book", 400);
     }
 
     // Calculate new due date (14 days from current due date or today if already overdue)
@@ -104,9 +104,9 @@ try {
         "Your borrowing of '{$Issue['book_title']}' has been renewed until {$NewDueDate}."
     ]);
 
-    LogAudit($UserId, "renew_book", "book_issues", $IssueId, "Renewed book issue #{$IssueId} until {$NewDueDate}");
+    logAudit($UserId, "renew_book", "book_issues", $IssueId, "Renewed book issue #{$IssueId} until {$NewDueDate}");
 
-    SuccessResponse([
+    successResponse([
         "issue_id" => $IssueId,
         "book_title" => $Issue["book_title"],
         "new_due_date" => $NewDueDate,
@@ -115,7 +115,7 @@ try {
     ], "Book successfully renewed until " . $NewDueDate);
 
 } catch (PDOException $e) {
-    ErrorResponse("Database error", 500);
+    errorResponse("Database error", 500);
 }
 
 ?>

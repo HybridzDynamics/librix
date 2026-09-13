@@ -2,24 +2,24 @@
 
 // Configuration
 
-require_once __DIR__ . "/../../../config/config.php";
-require_once __DIR__ . "/../../../config/database.php";
-require_once __DIR__ . "/../../../helpers/response.php";
-require_once __DIR__ . "/../../../helpers/validation.php";
-require_once __DIR__ . "/../../../helpers/functions.php";
-require_once __DIR__ . "/../../../middleware/auth.php";
+require __DIR__ . "/../../../config/config.php";
+require __DIR__ . "/../../../config/database.php";
+require __DIR__ . "/../../../helpers/response.php";
+require __DIR__ . "/../../../helpers/validation.php";
+require __DIR__ . "/../../../helpers/functions.php";
+require __DIR__ . "/../../../middleware/auth.php";
 
 
 // Request Method
 
 if ($_SERVER["REQUEST_METHOD"] !== "PUT") {
-    MethodNotAllowedResponse(["PUT"]);
+    methodNotAllowedResponse(["PUT"]);
 }
 
 
 // Authentication
 
-$User = RequireAuth();
+$User = requireAuth();
 $UserId = (int)$User["id"];
 
 
@@ -31,17 +31,17 @@ try {
     $ExistingUser = $Stmt->fetch();
 
 } catch (PDOException $e) {
-    ErrorResponse("Database error", 500);
+    errorResponse("Database error", 500);
 }
 
 if (!$ExistingUser) {
-    NotFoundResponse("User not found");
+    notFoundResponse("User not found");
 }
 
 
 // Request Data
 
-$RequestData = GetJsonInput();
+$RequestData = getJsonInput();
 
 $Name = array_key_exists("name", $RequestData) ? trim($RequestData["name"]) : $ExistingUser["name"];
 $Email = array_key_exists("email", $RequestData) ? trim($RequestData["email"]) : $ExistingUser["email"];
@@ -52,17 +52,17 @@ $Password = array_key_exists("password", $RequestData) && !empty($RequestData["p
 
 $Errors = [];
 
-$NameError = Required($Name, "Name");
+$NameError = required($Name, "Name");
 
 if ($NameError !== null) {
     $Errors["name"] = $NameError;
 } else {
-    $NameError = MinLength($Name, 2, "Name");
+    $NameError = minLength($Name, 2, "Name");
 
     if ($NameError !== null) {
         $Errors["name"] = $NameError;
     } else {
-        $NameError = MaxLength($Name, 100, "Name");
+        $NameError = maxLength($Name, 100, "Name");
 
         if ($NameError !== null) {
             $Errors["name"] = $NameError;
@@ -70,12 +70,12 @@ if ($NameError !== null) {
     }
 }
 
-$EmailError = Required($Email, "Email");
+$EmailError = required($Email, "Email");
 
 if ($EmailError !== null) {
     $Errors["email"] = $EmailError;
 } else {
-    $EmailError = ValidateEmail($Email);
+    $EmailError = validateEmail($Email);
 
     if ($EmailError !== null) {
         $Errors["email"] = $EmailError;
@@ -89,21 +89,21 @@ if ($EmailError !== null) {
                 $Errors["email"] = "Email is already in use by another account";
             }
         } catch (PDOException $e) {
-            ErrorResponse("Database error", 500);
+            errorResponse("Database error", 500);
         }
     }
 }
 
 if ($Password !== null) {
-    $PasswordError = MinLength($Password, 8, "Password");
+    $PasswordError = minLength($Password, 8, "Password");
 
     if ($PasswordError !== null) {
         $Errors["password"] = $PasswordError;
     }
 }
 
-if (HasValidationErrors($Errors)) {
-    ValidationErrorResponse($Errors);
+if (hasValidationErrors($Errors)) {
+    ValidationerrorResponse($Errors);
 }
 
 
@@ -144,7 +144,7 @@ try {
     }
 
 } catch (PDOException $e) {
-    ErrorResponse("Unable to update profile", 500);
+    errorResponse("Unable to update profile", 500);
 }
 
 
@@ -163,7 +163,7 @@ try {
     $UpdatedUser = $Stmt->fetch();
 
 } catch (PDOException $e) {
-    ErrorResponse("Unable to retrieve updated profile", 500);
+    errorResponse("Unable to retrieve updated profile", 500);
 }
 
 $UpdatedUser["id"] = (int)$UpdatedUser["id"];
@@ -171,7 +171,7 @@ $UpdatedUser["id"] = (int)$UpdatedUser["id"];
 
 // Response
 
-SuccessResponse(
+successResponse(
     $UpdatedUser,
     "Profile updated successfully"
 );

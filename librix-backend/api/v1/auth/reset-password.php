@@ -2,23 +2,23 @@
 
 // Configuration
 
-require_once __DIR__ . "/../../../config/config.php";
-require_once __DIR__ . "/../../../config/database.php";
-require_once __DIR__ . "/../../../helpers/response.php";
-require_once __DIR__ . "/../../../helpers/validation.php";
-require_once __DIR__ . "/../../../helpers/functions.php";
+require __DIR__ . "/../../../config/config.php";
+require __DIR__ . "/../../../config/database.php";
+require __DIR__ . "/../../../helpers/response.php";
+require __DIR__ . "/../../../helpers/validation.php";
+require __DIR__ . "/../../../helpers/functions.php";
 
 
 // Request Method
 
 if ($_SERVER["REQUEST_METHOD"] !== "POST") {
-    MethodNotAllowedResponse(["POST"]);
+    methodNotAllowedResponse(["POST"]);
 }
 
 
 // Request Data
 
-$RequestData = GetJsonInput();
+$RequestData = getJsonInput();
 
 $Token = trim($RequestData["token"] ?? "");
 $Password = $RequestData["password"] ?? "";
@@ -28,26 +28,26 @@ $Password = $RequestData["password"] ?? "";
 
 $Errors = [];
 
-$TokenError = Required($Token, "Reset token");
+$TokenError = required($Token, "Reset token");
 
 if ($TokenError !== null) {
     $Errors["token"] = $TokenError;
 }
 
-$PasswordError = Required($Password, "Password");
+$PasswordError = required($Password, "Password");
 
 if ($PasswordError !== null) {
     $Errors["password"] = $PasswordError;
 } else {
-    $PasswordError = MinLength($Password, 8, "Password");
+    $PasswordError = minLength($Password, 8, "Password");
 
     if ($PasswordError !== null) {
         $Errors["password"] = $PasswordError;
     }
 }
 
-if (HasValidationErrors($Errors)) {
-    ValidationErrorResponse($Errors);
+if (hasValidationErrors($Errors)) {
+    ValidationerrorResponse($Errors);
 }
 
 
@@ -66,22 +66,22 @@ try {
     $ResetRecord = $Stmt->fetch();
 
 } catch (PDOException $e) {
-    ErrorResponse("Unable to process password reset", 500);
+    errorResponse("Unable to process password reset", 500);
 }
 
 
 // Check Token Validity
 
 if (!$ResetRecord) {
-    ErrorResponse("Invalid or expired reset token", 400);
+    errorResponse("Invalid or expired reset token", 400);
 }
 
 if ($ResetRecord["used_at"] !== null) {
-    ErrorResponse("Reset token has already been used", 400);
+    errorResponse("Reset token has already been used", 400);
 }
 
 if (strtotime($ResetRecord["expires_at"]) <= time()) {
-    ErrorResponse("Reset token has expired", 400);
+    errorResponse("Reset token has expired", 400);
 }
 
 $UserId = (int)$ResetRecord["user_id"];
@@ -96,11 +96,11 @@ try {
     $User = $Stmt->fetch();
 
 } catch (PDOException $e) {
-    ErrorResponse("Unable to process password reset", 500);
+    errorResponse("Unable to process password reset", 500);
 }
 
 if (!$User || $User["status"] !== "active") {
-    ErrorResponse("Unable to reset password for this account", 400);
+    errorResponse("Unable to reset password for this account", 400);
 }
 
 
@@ -154,13 +154,13 @@ try {
     if ($pdo->inTransaction()) {
         $pdo->rollBack();
     }
-    ErrorResponse("Unable to reset password", 500);
+    errorResponse("Unable to reset password", 500);
 }
 
 
 // Response
 
-SuccessResponse(
+successResponse(
     [],
     "Password reset successful"
 );

@@ -2,30 +2,30 @@
 
 // Configuration
 
-require_once __DIR__ . "/../../../config/config.php";
-require_once __DIR__ . "/../../../config/database.php";
-require_once __DIR__ . "/../../../helpers/response.php";
-require_once __DIR__ . "/../../../helpers/validation.php";
-require_once __DIR__ . "/../../../helpers/functions.php";
-require_once __DIR__ . "/../../../middleware/auth.php";
+require __DIR__ . "/../../../config/config.php";
+require __DIR__ . "/../../../config/database.php";
+require __DIR__ . "/../../../helpers/response.php";
+require __DIR__ . "/../../../helpers/validation.php";
+require __DIR__ . "/../../../helpers/functions.php";
+require __DIR__ . "/../../../middleware/auth.php";
 
 
 // Request Method
 
 if (!in_array($_SERVER["REQUEST_METHOD"], ["PUT", "POST"])) {
-    MethodNotAllowedResponse(["PUT", "POST"]);
+    methodNotAllowedResponse(["PUT", "POST"]);
 }
 
 
 // Authentication
 
-$User = RequireAuth();
+$User = requireAuth();
 $UserId = (int)$User["id"];
 
 
 // Request Data
 
-$Input = GetJsonInput();
+$Input = getJsonInput();
 $NotificationId = $Input["id"] ?? ($parts[3] ?? ($_GET["id"] ?? null));
 $MarkAll = isset($Input["all"]) && $Input["all"] === true;
 
@@ -38,11 +38,11 @@ try {
         $Stmt->execute([$UserId]);
         $Count = $Stmt->rowCount();
 
-        SuccessResponse(["updated_count" => $Count], "All notifications marked as read");
+        successResponse(["updated_count" => $Count], "All notifications marked as read");
     } else {
-        $IdError = ValidatePositiveInteger($NotificationId, "Notification ID");
+        $IdError = validatePositiveInteger($NotificationId, "Notification ID");
         if ($IdError !== null) {
-            ErrorResponse($IdError, 400);
+            errorResponse($IdError, 400);
         }
 
         $NotificationId = (int)$NotificationId;
@@ -56,15 +56,15 @@ try {
             $Check->execute([$NotificationId, $UserId]);
             $Row = $Check->fetch();
             if (!$Row) {
-                NotFoundResponse("Notification not found");
+                notFoundResponse("Notification not found");
             }
         }
 
-        SuccessResponse(["id" => $NotificationId, "is_read" => true], "Notification marked as read");
+        successResponse(["id" => $NotificationId, "is_read" => true], "Notification marked as read");
     }
 
 } catch (PDOException $e) {
-    ErrorResponse("Database error", 500);
+    errorResponse("Database error", 500);
 }
 
 ?>

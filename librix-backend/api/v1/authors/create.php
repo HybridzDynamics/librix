@@ -2,31 +2,31 @@
 
 // Configuration
 
-require_once __DIR__ . "/../../../config/config.php";
-require_once __DIR__ . "/../../../config/database.php";
-require_once __DIR__ . "/../../../helpers/response.php";
-require_once __DIR__ . "/../../../helpers/validation.php";
-require_once __DIR__ . "/../../../helpers/functions.php";
-require_once __DIR__ . "/../../../middleware/auth.php";
-require_once __DIR__ . "/../../../middleware/admin.php";
+require __DIR__ . "/../../../config/config.php";
+require __DIR__ . "/../../../config/database.php";
+require __DIR__ . "/../../../helpers/response.php";
+require __DIR__ . "/../../../helpers/validation.php";
+require __DIR__ . "/../../../helpers/functions.php";
+require __DIR__ . "/../../../middleware/auth.php";
+require __DIR__ . "/../../../middleware/admin.php";
 
 
 // Request Method
 
 if ($_SERVER["REQUEST_METHOD"] !== "POST") {
-    MethodNotAllowedResponse(["POST"]);
+    methodNotAllowedResponse(["POST"]);
 }
 
 
 // Authentication
 
-$User = RequireAuth();
-RequireAdmin($User);
+$User = requireAuth();
+requireAdmin($User);
 
 
 // Request Data
 
-$RequestData = GetJsonInput();
+$RequestData = getJsonInput();
 
 $Name = trim($RequestData["name"] ?? "");
 $Biography = isset($RequestData["biography"]) ? trim($RequestData["biography"]) : null;
@@ -36,17 +36,17 @@ $Biography = isset($RequestData["biography"]) ? trim($RequestData["biography"]) 
 
 $Errors = [];
 
-$NameError = Required($Name, "Name");
+$NameError = required($Name, "Name");
 
 if ($NameError !== null) {
     $Errors["name"] = $NameError;
 } else {
-    $NameError = MinLength($Name, 2, "Name");
+    $NameError = minLength($Name, 2, "Name");
 
     if ($NameError !== null) {
         $Errors["name"] = $NameError;
     } else {
-        $NameError = MaxLength($Name, 150, "Name");
+        $NameError = maxLength($Name, 150, "Name");
 
         if ($NameError !== null) {
             $Errors["name"] = $NameError;
@@ -54,8 +54,8 @@ if ($NameError !== null) {
     }
 }
 
-if (HasValidationErrors($Errors)) {
-    ValidationErrorResponse($Errors);
+if (hasValidationErrors($Errors)) {
+    ValidationerrorResponse($Errors);
 }
 
 
@@ -75,7 +75,7 @@ try {
     $AuthorId = (int)$pdo->lastInsertId();
 
 } catch (PDOException $e) {
-    ErrorResponse("Unable to create author", 500);
+    errorResponse("Unable to create author", 500);
 }
 
 
@@ -94,18 +94,18 @@ try {
     $CreatedAuthor = $Stmt->fetch();
 
 } catch (PDOException $e) {
-    ErrorResponse("Unable to retrieve created author", 500);
+    errorResponse("Unable to retrieve created author", 500);
 }
 
 
 // Audit Log
 
-LogAudit((int)$User["id"], "author_created", "authors", $AuthorId, "Created author '$Name'");
+logAudit((int)$User["id"], "author_created", "authors", $AuthorId, "Created author '$Name'");
 
 
 // Response
 
-SuccessResponse(
+successResponse(
     $CreatedAuthor,
     "Author created successfully",
     201

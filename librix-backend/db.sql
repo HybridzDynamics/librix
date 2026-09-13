@@ -419,3 +419,8 @@ CREATE TABLE maintenance_windows (
         ON DELETE SET NULL
         ON UPDATE CASCADE
 );
+
+ALTER TABLE books
+ADD COLUMN average_rating DECIMAL(3,2) NULL,
+ADD COLUMN rating_count INT UNSIGNED NOT NULL DEFAULT 0,
+ADD COLUMN content LONGTEXT NULL;

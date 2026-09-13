@@ -2,34 +2,34 @@
 
 // Configuration
 
-require_once __DIR__ . "/../../../config/config.php";
-require_once __DIR__ . "/../../../config/database.php";
-require_once __DIR__ . "/../../../helpers/response.php";
-require_once __DIR__ . "/../../../helpers/validation.php";
-require_once __DIR__ . "/../../../helpers/functions.php";
+require __DIR__ . "/../../../config/config.php";
+require __DIR__ . "/../../../config/database.php";
+require __DIR__ . "/../../../helpers/response.php";
+require __DIR__ . "/../../../helpers/validation.php";
+require __DIR__ . "/../../../helpers/functions.php";
 
 
 // Request Method
 
 if ($_SERVER["REQUEST_METHOD"] !== "POST") {
-    MethodNotAllowedResponse(["POST"]);
+    methodNotAllowedResponse(["POST"]);
 }
 
 
 // Rate Limiting
 
-$ClientIp = GetClientIp();
+$ClientIp = getClientIp();
 $RateLimitKey = "resend_verify_" . $ClientIp;
-$RetryAfter = CheckRateLimit($RateLimitKey, RATE_LIMIT_AUTH_MAX, RATE_LIMIT_WINDOW_SECONDS);
+$RetryAfter = checkRateLimit($RateLimitKey, RATE_LIMIT_AUTH_MAX, RATE_LIMIT_WINDOW_SECONDS);
 
 if ($RetryAfter > 0) {
-    TooManyRequestsResponse("Too many verification requests. Please try again later.", $RetryAfter);
+    tooManyRequestsResponse("Too many verification requests. Please try again later.", $RetryAfter);
 }
 
 
 // Request Data
 
-$RequestData = GetJsonInput();
+$RequestData = getJsonInput();
 
 $UserEmail = trim($RequestData["email"] ?? "");
 
@@ -38,20 +38,20 @@ $UserEmail = trim($RequestData["email"] ?? "");
 
 $Errors = [];
 
-$EmailError = Required($UserEmail, "Email");
+$EmailError = required($UserEmail, "Email");
 
 if ($EmailError !== null) {
     $Errors["email"] = $EmailError;
 } else {
-    $EmailError = ValidateEmail($UserEmail);
+    $EmailError = validateEmail($UserEmail);
 
     if ($EmailError !== null) {
         $Errors["email"] = $EmailError;
     }
 }
 
-if (HasValidationErrors($Errors)) {
-    ValidationErrorResponse($Errors);
+if (hasValidationErrors($Errors)) {
+    ValidationerrorResponse($Errors);
 }
 
 
@@ -75,7 +75,7 @@ try {
     $User = $Stmt->fetch();
 
 } catch (PDOException $e) {
-    ErrorResponse("Unable to process request", 500);
+    errorResponse("Unable to process request", 500);
 }
 
 
@@ -83,7 +83,7 @@ try {
 
 if ($User && $User["status"] !== "suspended" && $User["email_verified_at"] === null) {
 
-    $VerificationToken = GenerateToken(32);
+    $VerificationToken = generateToken(32);
 
     $ExpiresAt = date(
         "Y-m-d H:i:s",
@@ -113,14 +113,14 @@ if ($User && $User["status"] !== "suspended" && $User["email_verified_at"] === n
         ]);
 
     } catch (PDOException $e) {
-        ErrorResponse("Unable to process request", 500);
+        errorResponse("Unable to process request", 500);
     }
 }
 
 
 // Response
 
-SuccessResponse(
+successResponse(
     [],
     $GenericMessage
 );

@@ -2,33 +2,33 @@
 
 // Configuration
 
-require_once __DIR__ . "/../../../config/config.php";
-require_once __DIR__ . "/../../../config/database.php";
-require_once __DIR__ . "/../../../helpers/response.php";
-require_once __DIR__ . "/../../../helpers/validation.php";
-require_once __DIR__ . "/../../../helpers/functions.php";
+require __DIR__ . "/../../../config/config.php";
+require __DIR__ . "/../../../config/database.php";
+require __DIR__ . "/../../../helpers/response.php";
+require __DIR__ . "/../../../helpers/validation.php";
+require __DIR__ . "/../../../helpers/functions.php";
 
 
 // Request Method
 
 if ($_SERVER["REQUEST_METHOD"] !== "POST") {
-    MethodNotAllowedResponse(["POST"]);
+    methodNotAllowedResponse(["POST"]);
 }
 
 
 // Request Data
 
-$RequestData = GetJsonInput();
+$RequestData = getJsonInput();
 
 $Token = trim($RequestData["token"] ?? "");
 
 
 // Validation
 
-$TokenError = Required($Token, "Verification token");
+$TokenError = required($Token, "Verification token");
 
 if ($TokenError !== null) {
-    ValidationErrorResponse(["token" => $TokenError]);
+    ValidationerrorResponse(["token" => $TokenError]);
 }
 
 
@@ -47,19 +47,19 @@ try {
     $TokenRecord = $Stmt->fetch();
 
 } catch (PDOException $e) {
-    ErrorResponse("Unable to verify email", 500);
+    errorResponse("Unable to verify email", 500);
 }
 
 if (!$TokenRecord) {
-    ErrorResponse("Invalid or expired verification token", 400);
+    errorResponse("Invalid or expired verification token", 400);
 }
 
 if ($TokenRecord["used_at"] !== null) {
-    ErrorResponse("Verification token has already been used", 400);
+    errorResponse("Verification token has already been used", 400);
 }
 
 if (strtotime($TokenRecord["expires_at"]) <= time()) {
-    ErrorResponse("Verification token has expired", 400);
+    errorResponse("Verification token has expired", 400);
 }
 
 $UserId = (int)$TokenRecord["user_id"];
@@ -104,13 +104,13 @@ try {
     if ($pdo->inTransaction()) {
         $pdo->rollBack();
     }
-    ErrorResponse("Unable to verify email", 500);
+    errorResponse("Unable to verify email", 500);
 }
 
 
 // Response
 
-SuccessResponse(
+successResponse(
     [],
     "Email verified successfully"
 );

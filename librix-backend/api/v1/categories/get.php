@@ -2,31 +2,31 @@
 
 // Configuration
 
-require_once __DIR__ . "/../../../config/config.php";
-require_once __DIR__ . "/../../../config/database.php";
-require_once __DIR__ . "/../../../helpers/response.php";
-require_once __DIR__ . "/../../../helpers/validation.php";
-require_once __DIR__ . "/../../../helpers/functions.php";
+require __DIR__ . "/../../../config/config.php";
+require __DIR__ . "/../../../config/database.php";
+require __DIR__ . "/../../../helpers/response.php";
+require __DIR__ . "/../../../helpers/validation.php";
+require __DIR__ . "/../../../helpers/functions.php";
 
 
 // Request Method
 
 if ($_SERVER["REQUEST_METHOD"] !== "GET") {
-    MethodNotAllowedResponse(["GET"]);
+    methodNotAllowedResponse(["GET"]);
 }
 
 
 // Request Data
 
-$CategoryId = $categoryId ?? ($parts[3] ?? null);
+$CategoryId = $_GET["id"] ?? null;
 
 
 // Single Category
 
 if ($CategoryId !== null) {
-    $IdError = ValidatePositiveInteger($CategoryId, "Category ID");
+    $IdError = validatePositiveInteger($CategoryId, "Category ID");
     if ($IdError !== null) {
-        ErrorResponse($IdError, 400);
+        errorResponse($IdError, 400);
     }
 
     try {
@@ -47,16 +47,16 @@ if ($CategoryId !== null) {
         $Category = $Stmt->fetch();
 
         if (!$Category) {
-            NotFoundResponse("Category not found");
+            notFoundResponse("Category not found");
         }
 
         $Category["id"] = (int)$Category["id"];
         $Category["total_books"] = (int)$Category["total_books"];
 
-        SuccessResponse($Category);
+        successResponse($Category);
 
     } catch (PDOException $e) {
-        ErrorResponse("Database error", 500);
+        errorResponse("Database error", 500);
     }
 }
 
@@ -84,10 +84,10 @@ try {
         $Item["total_books"] = (int)$Item["total_books"];
     }
 
-    SuccessResponse($Categories);
+    successResponse($Categories);
 
 } catch (PDOException $e) {
-    ErrorResponse("Database error", 500);
+    errorResponse("Database error", 500);
 }
 
 ?>

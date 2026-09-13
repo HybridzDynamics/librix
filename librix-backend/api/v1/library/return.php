@@ -2,29 +2,29 @@
 
 // Configuration
 
-require_once __DIR__ . "/../../../config/config.php";
-require_once __DIR__ . "/../../../config/database.php";
-require_once __DIR__ . "/../../../helpers/response.php";
-require_once __DIR__ . "/../../../helpers/validation.php";
-require_once __DIR__ . "/../../../helpers/functions.php";
-require_once __DIR__ . "/../../../middleware/auth.php";
+require __DIR__ . "/../../../config/config.php";
+require __DIR__ . "/../../../config/database.php";
+require __DIR__ . "/../../../helpers/response.php";
+require __DIR__ . "/../../../helpers/validation.php";
+require __DIR__ . "/../../../helpers/functions.php";
+require __DIR__ . "/../../../middleware/auth.php";
 
 
 // Request Method
 
 if ($_SERVER["REQUEST_METHOD"] !== "POST") {
-    MethodNotAllowedResponse(["POST"]);
+    methodNotAllowedResponse(["POST"]);
 }
 
 
 // Authentication
 
-$User = RequireAuth();
+$User = requireAuth();
 
 
 // Request Data
 
-$RequestData = GetJsonInput();
+$RequestData = getJsonInput();
 
 $IssueId = $RequestData["issue_id"] ?? null;
 $BookId = $RequestData["book_id"] ?? null;
@@ -33,7 +33,7 @@ $BookId = $RequestData["book_id"] ?? null;
 // Validation
 
 if ($IssueId === null && $BookId === null) {
-    ErrorResponse("Either issue_id or book_id is required", 400);
+    errorResponse("Either issue_id or book_id is required", 400);
 }
 
 $UserId = (int)$User["id"];
@@ -44,10 +44,10 @@ $IsAdmin = ($User["role"] === "admin");
 
 try {
     if ($IssueId !== null) {
-        $IdError = ValidatePositiveInteger($IssueId, "Issue ID");
+        $IdError = validatePositiveInteger($IssueId, "Issue ID");
 
         if ($IdError !== null) {
-            ErrorResponse($IdError, 400);
+            errorResponse($IdError, 400);
         }
 
         $Stmt = $pdo->prepare(
@@ -60,10 +60,10 @@ try {
         $Stmt->execute([(int)$IssueId]);
 
     } else {
-        $BookIdError = ValidatePositiveInteger($BookId, "Book ID");
+        $BookIdError = validatePositiveInteger($BookId, "Book ID");
 
         if ($BookIdError !== null) {
-            ErrorResponse($BookIdError, 400);
+            errorResponse($BookIdError, 400);
         }
 
         $Stmt = $pdo->prepare(
@@ -80,19 +80,19 @@ try {
     $IssueRecord = $Stmt->fetch();
 
 } catch (PDOException $e) {
-    ErrorResponse("Database error", 500);
+    errorResponse("Database error", 500);
 }
 
 if (!$IssueRecord) {
-    NotFoundResponse("Issue record not found");
+    notFoundResponse("Issue record not found");
 }
 
 if (!$IsAdmin && (int)$IssueRecord["user_id"] !== $UserId) {
-    ForbiddenResponse("You can only return your own issued books");
+    forbiddenResponse("You can only return your own issued books");
 }
 
 if ($IssueRecord["status"] === "returned") {
-    ErrorResponse("This book has already been returned", 400);
+    errorResponse("This book has already been returned", 400);
 }
 
 $TargetIssueId = (int)$IssueRecord["id"];
@@ -167,13 +167,13 @@ try {
 
     $pdo->commit();
 
-    LogAudit($UserId, "book_returned", "books", $TargetBookId, "Book returned for issue #$TargetIssueId");
+    logAudit($UserId, "book_returned", "books", $TargetBookId, "Book returned for issue #$TargetIssueId");
 
 } catch (PDOException $e) {
     if ($pdo->inTransaction()) {
         $pdo->rollBack();
     }
-    ErrorResponse("Unable to process book return", 500);
+    errorResponse("Unable to process book return", 500);
 }
 
 
@@ -184,7 +184,7 @@ $ResponseData = [
     "book_id" => $TargetBookId,
     "user_id" => $TargetUserId,
     "status" => "returned",
-    "returned_at" => CurrentTime()
+    "returned_at" => currentTime()
 ];
 
 if ($FineAmount > 0) {
@@ -195,7 +195,7 @@ if ($FineAmount > 0) {
     ];
 }
 
-SuccessResponse(
+successResponse(
     $ResponseData,
     "Book returned successfully"
 );

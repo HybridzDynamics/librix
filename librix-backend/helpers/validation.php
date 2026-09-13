@@ -1,8 +1,8 @@
 <?php
 
-// Required Field
+// required Field
 
-function Required($Value, $FieldName)
+function required($Value, $FieldName)
 {
     if ($Value === null || (is_string($Value) && trim($Value) === "")) {
         return "$FieldName is required";
@@ -14,7 +14,7 @@ function Required($Value, $FieldName)
 
 // Email Validation
 
-function ValidateEmail($Email)
+function validateEmail($Email)
 {
     if (!filter_var($Email, FILTER_VALIDATE_EMAIL)) {
         return "Invalid email address";
@@ -26,7 +26,7 @@ function ValidateEmail($Email)
 
 // Minimum Length
 
-function MinLength($Value, $Length, $FieldName)
+function minLength($Value, $Length, $FieldName)
 {
     if (strlen((string)$Value) < $Length) {
         return "$FieldName must be at least $Length characters";
@@ -38,7 +38,7 @@ function MinLength($Value, $Length, $FieldName)
 
 // Maximum Length
 
-function MaxLength($Value, $Length, $FieldName)
+function maxLength($Value, $Length, $FieldName)
 {
     if (strlen((string)$Value) > $Length) {
         return "$FieldName must not exceed $Length characters";
@@ -50,7 +50,7 @@ function MaxLength($Value, $Length, $FieldName)
 
 // Integer Validation
 
-function ValidateInteger($Value, $FieldName)
+function validateInteger($Value, $FieldName)
 {
     if (filter_var($Value, FILTER_VALIDATE_INT) === false) {
         return "$FieldName must be a valid integer";
@@ -62,7 +62,7 @@ function ValidateInteger($Value, $FieldName)
 
 // Positive Integer
 
-function ValidatePositiveInteger($Value, $FieldName)
+function validatePositiveInteger($Value, $FieldName)
 {
     if (!filter_var($Value, FILTER_VALIDATE_INT) || (int)$Value <= 0) {
         return "$FieldName must be a positive integer";
@@ -74,7 +74,7 @@ function ValidatePositiveInteger($Value, $FieldName)
 
 // Page Number Validation
 
-function ValidatePageNumber($Page)
+function validatePageNumber($Page)
 {
     if ($Page === null || $Page === "") {
         return 1;
@@ -90,7 +90,7 @@ function ValidatePageNumber($Page)
 
 // Page Limit Validation
 
-function ValidatePageLimit($Limit, $Default = 20, $Max = 100)
+function validatePageLimit($Limit, $Default = 20, $Max = 100)
 {
     if ($Limit === null || $Limit === "") {
         return $Default;
@@ -112,7 +112,7 @@ function ValidatePageLimit($Limit, $Default = 20, $Max = 100)
 
 // Validation Errors Check
 
-function HasValidationErrors($Errors)
+function hasValidationErrors($Errors)
 {
     return !empty($Errors);
 }

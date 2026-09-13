@@ -2,33 +2,33 @@
 
 // Configuration
 
-require_once __DIR__ . "/../../../config/config.php";
-require_once __DIR__ . "/../../../config/database.php";
-require_once __DIR__ . "/../../../helpers/response.php";
-require_once __DIR__ . "/../../../helpers/validation.php";
-require_once __DIR__ . "/../../../helpers/functions.php";
+require __DIR__ . "/../../../config/config.php";
+require __DIR__ . "/../../../config/database.php";
+require __DIR__ . "/../../../helpers/response.php";
+require __DIR__ . "/../../../helpers/validation.php";
+require __DIR__ . "/../../../helpers/functions.php";
 
 
 // Request Method
 
 if ($_SERVER["REQUEST_METHOD"] !== "GET") {
-    MethodNotAllowedResponse(["GET"]);
+    methodNotAllowedResponse(["GET"]);
 }
 
 
 // Request Data
 
-$AuthorId = $authorId ?? ($parts[3] ?? null);
+$AuthorId = $_GET["id"] ?? null;
 
 
 // Single Author
 
 if ($AuthorId !== null) {
 
-    $IdError = ValidatePositiveInteger($AuthorId, "Author ID");
+    $IdError = validatePositiveInteger($AuthorId, "Author ID");
 
     if ($IdError !== null) {
-        ErrorResponse($IdError, 400);
+        errorResponse($IdError, 400);
     }
 
     try {
@@ -53,16 +53,16 @@ if ($AuthorId !== null) {
         $Author = $Stmt->fetch();
 
     } catch (PDOException $e) {
-        ErrorResponse("Database error", 500);
+        errorResponse("Database error", 500);
     }
 
     if (!$Author) {
-        NotFoundResponse("Author not found");
+        notFoundResponse("Author not found");
     }
 
     $Author["total_books"] = (int)$Author["total_books"];
 
-    SuccessResponse($Author);
+    successResponse($Author);
 }
 
 
@@ -93,9 +93,9 @@ try {
     }
 
 } catch (PDOException $e) {
-    ErrorResponse("Database error", 500);
+    errorResponse("Database error", 500);
 }
 
-SuccessResponse($Authors);
+successResponse($Authors);
 
 ?>

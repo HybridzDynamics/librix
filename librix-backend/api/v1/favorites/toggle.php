@@ -2,35 +2,35 @@
 
 // Configuration
 
-require_once __DIR__ . "/../../../config/config.php";
-require_once __DIR__ . "/../../../config/database.php";
-require_once __DIR__ . "/../../../helpers/response.php";
-require_once __DIR__ . "/../../../helpers/validation.php";
-require_once __DIR__ . "/../../../helpers/functions.php";
-require_once __DIR__ . "/../../../middleware/auth.php";
+require __DIR__ . "/../../../config/config.php";
+require __DIR__ . "/../../../config/database.php";
+require __DIR__ . "/../../../helpers/response.php";
+require __DIR__ . "/../../../helpers/validation.php";
+require __DIR__ . "/../../../helpers/functions.php";
+require __DIR__ . "/../../../middleware/auth.php";
 
 
 // Request Method
 
 if ($_SERVER["REQUEST_METHOD"] !== "POST") {
-    MethodNotAllowedResponse(["POST"]);
+    methodNotAllowedResponse(["POST"]);
 }
 
 
 // Authentication
 
-$User = RequireAuth();
+$User = requireAuth();
 $UserId = (int)$User["id"];
 
 
 // Request Data
 
-$Input = GetJsonInput();
+$Input = getJsonInput();
 $BookId = $Input["book_id"] ?? null;
 
-$IdError = ValidatePositiveInteger($BookId, "Book ID");
+$IdError = validatePositiveInteger($BookId, "Book ID");
 if ($IdError !== null) {
-    ErrorResponse($IdError, 400);
+    errorResponse($IdError, 400);
 }
 
 $BookId = (int)$BookId;
@@ -42,10 +42,10 @@ try {
     $BookCheck = $pdo->prepare("SELECT id FROM books WHERE id = ? LIMIT 1");
     $BookCheck->execute([$BookId]);
     if (!$BookCheck->fetch()) {
-        NotFoundResponse("Book not found");
+        notFoundResponse("Book not found");
     }
 } catch (PDOException $e) {
-    ErrorResponse("Database error", 500);
+    errorResponse("Database error", 500);
 }
 
 
@@ -61,7 +61,7 @@ try {
         $DelStmt = $pdo->prepare("DELETE FROM favorites WHERE id = ?");
         $DelStmt->execute([(int)$Existing["id"]]);
 
-        SuccessResponse([
+        successResponse([
             "favorited" => false,
             "book_id" => $BookId
         ], "Book removed from favorites");
@@ -70,14 +70,14 @@ try {
         $AddStmt = $pdo->prepare("INSERT INTO favorites (user_id, book_id) VALUES (?, ?)");
         $AddStmt->execute([$UserId, $BookId]);
 
-        SuccessResponse([
+        successResponse([
             "favorited" => true,
             "book_id" => $BookId
         ], "Book added to favorites", 201);
     }
 
 } catch (PDOException $e) {
-    ErrorResponse("Database error", 500);
+    errorResponse("Database error", 500);
 }
 
 ?>

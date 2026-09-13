@@ -2,7 +2,7 @@
 
 // Get JSON Input
 
-function GetJsonInput()
+function getJsonInput()
 {
     $Input = file_get_contents("php://input");
 
@@ -22,7 +22,7 @@ function GetJsonInput()
 
 // Get Request Header
 
-function GetRequestHeader($Name)
+function getRequestHeader($Name)
 {
     if (function_exists("getallheaders")) {
         $Headers = getallheaders();
@@ -56,9 +56,9 @@ function GetRequestHeader($Name)
 
 // Get Authorization Token
 
-function GetAuthorizationToken()
+function getAuthorizationToken()
 {
-    $Header = GetRequestHeader("Authorization");
+    $Header = getRequestHeader("Authorization");
 
     if (!$Header) {
         return null;
@@ -74,7 +74,7 @@ function GetAuthorizationToken()
 
 // Generate Random Token
 
-function GenerateToken($Length = 32)
+function generateToken($Length = 32)
 {
     return bin2hex(random_bytes($Length));
 }
@@ -82,7 +82,7 @@ function GenerateToken($Length = 32)
 
 // Sanitize String
 
-function SanitizeString($Value)
+function sanitizeString($Value)
 {
     return htmlspecialchars(
         trim((string)$Value),
@@ -94,7 +94,7 @@ function SanitizeString($Value)
 
 // Get Current Time
 
-function CurrentTime()
+function currentTime()
 {
     return date("Y-m-d H:i:s");
 }
@@ -102,7 +102,7 @@ function CurrentTime()
 
 // Get Client IP
 
-function GetClientIp()
+function getClientIp()
 {
     return $_SERVER["REMOTE_ADDR"] ?? "unknown";
 }
@@ -110,7 +110,7 @@ function GetClientIp()
 
 // Audit Logging
 
-function LogAudit($UserId, $Action, $EntityType, $EntityId, $Description)
+function logAudit($UserId, $Action, $EntityType, $EntityId, $Description)
 {
     global $pdo;
 
@@ -118,7 +118,7 @@ function LogAudit($UserId, $Action, $EntityType, $EntityId, $Description)
         return false;
     }
 
-    $IpAddress = GetClientIp();
+    $IpAddress = getClientIp();
 
     try {
         $Stmt = $pdo->prepare(
@@ -147,7 +147,7 @@ function LogAudit($UserId, $Action, $EntityType, $EntityId, $Description)
 // Rate Limiting Check
 // Returns 0 if allowed, or positive integer seconds to wait if exceeded
 
-function CheckRateLimit($Key, $MaxRequests = 10, $WindowSeconds = 900)
+function checkRateLimit($Key, $MaxRequests = 10, $WindowSeconds = 900)
 {
     global $pdo;
 

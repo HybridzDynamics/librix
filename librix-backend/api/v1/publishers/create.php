@@ -2,35 +2,35 @@
 
 // Configuration
 
-require_once __DIR__ . "/../../../config/config.php";
-require_once __DIR__ . "/../../../config/database.php";
-require_once __DIR__ . "/../../../helpers/response.php";
-require_once __DIR__ . "/../../../helpers/validation.php";
-require_once __DIR__ . "/../../../helpers/functions.php";
-require_once __DIR__ . "/../../../middleware/auth.php";
-require_once __DIR__ . "/../../../middleware/admin.php";
+require __DIR__ . "/../../../config/config.php";
+require __DIR__ . "/../../../config/database.php";
+require __DIR__ . "/../../../helpers/response.php";
+require __DIR__ . "/../../../helpers/validation.php";
+require __DIR__ . "/../../../helpers/functions.php";
+require __DIR__ . "/../../../middleware/auth.php";
+require __DIR__ . "/../../../middleware/admin.php";
 
 
 // Request Method
 
 if ($_SERVER["REQUEST_METHOD"] !== "POST") {
-    MethodNotAllowedResponse(["POST"]);
+    methodNotAllowedResponse(["POST"]);
 }
 
 
 // Authentication & Admin Check
 
-$User = RequireAuth();
-RequireAdmin($User);
+$User = requireAuth();
+requireAdmin($User);
 $UserId = (int)$User["id"];
 
 
 // Request Data
 
-$Input = GetJsonInput();
-$Name = isset($Input["name"]) ? SanitizeString($Input["name"]) : null;
-$Address = isset($Input["address"]) ? SanitizeString($Input["address"]) : null;
-$Website = isset($Input["website"]) ? SanitizeString($Input["website"]) : null;
+$Input = getJsonInput();
+$Name = isset($Input["name"]) ? sanitizeString($Input["name"]) : null;
+$Address = isset($Input["address"]) ? sanitizeString($Input["address"]) : null;
+$Website = isset($Input["website"]) ? sanitizeString($Input["website"]) : null;
 
 
 // Validation
@@ -48,7 +48,7 @@ if (!empty($Website) && !filter_var($Website, FILTER_VALIDATE_URL)) {
 }
 
 if (!empty($Errors)) {
-    ErrorResponse("Validation failed", 422, $Errors);
+    errorResponse("Validation failed", 422, $Errors);
 }
 
 
@@ -59,9 +59,9 @@ try {
     $Stmt->execute([$Name, $Address, $Website]);
     $NewId = (int)$pdo->lastInsertId();
 
-    LogAudit($UserId, "create_publisher", "publishers", $NewId, "Created publisher '{$Name}'");
+    logAudit($UserId, "create_publisher", "publishers", $NewId, "Created publisher '{$Name}'");
 
-    SuccessResponse([
+    successResponse([
         "id" => $NewId,
         "name" => $Name,
         "address" => $Address,
@@ -69,7 +69,7 @@ try {
     ], "Publisher created successfully", 201);
 
 } catch (PDOException $e) {
-    ErrorResponse("Database error", 500);
+    errorResponse("Database error", 500);
 }
 
 ?>

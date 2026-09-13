@@ -2,18 +2,18 @@
 
 // Configuration
 
-require_once __DIR__ . "/../../../config/config.php";
-require_once __DIR__ . "/../../../config/database.php";
-require_once __DIR__ . "/../../../helpers/response.php";
-require_once __DIR__ . "/../../../helpers/validation.php";
-require_once __DIR__ . "/../../../helpers/functions.php";
-require_once __DIR__ . "/../../../helpers/readability.php";
+require __DIR__ . "/../../../config/config.php";
+require __DIR__ . "/../../../config/database.php";
+require __DIR__ . "/../../../helpers/response.php";
+require __DIR__ . "/../../../helpers/validation.php";
+require __DIR__ . "/../../../helpers/functions.php";
+require __DIR__ . "/../../../helpers/readability.php";
 
 
 // Request Method
 
 if ($_SERVER["REQUEST_METHOD"] !== "GET") {
-    MethodNotAllowedResponse(["GET"]);
+    methodNotAllowedResponse(["GET"]);
 }
 
 
@@ -21,9 +21,9 @@ if ($_SERVER["REQUEST_METHOD"] !== "GET") {
 
 $BookId = $_GET["book_id"] ?? ($parts[3] ?? null);
 
-$IdError = ValidatePositiveInteger($BookId, "Book ID");
+$IdError = validatePositiveInteger($BookId, "Book ID");
 if ($IdError !== null) {
-    ErrorResponse($IdError, 400);
+    errorResponse($IdError, 400);
 }
 
 $BookId = (int)$BookId;
@@ -63,7 +63,7 @@ try {
         $Readability["flesch_kincaid_grade"] = (float)$Readability["flesch_kincaid_grade"];
         $Readability["estimated_reading_minutes"] = (int)$Readability["estimated_reading_minutes"];
 
-        SuccessResponse($Readability);
+        successResponse($Readability);
     }
 
     // If not analyzed yet, check if book exists
@@ -72,7 +72,7 @@ try {
     $Book = $BookStmt->fetch();
 
     if (!$Book) {
-        NotFoundResponse("Book not found");
+        notFoundResponse("Book not found");
     }
 
     // Auto-analyze if description is available
@@ -112,13 +112,13 @@ try {
         $Analysis["book_title"] = $Book["title"];
         $Analysis["id"] = (int)$pdo->lastInsertId();
 
-        SuccessResponse($Analysis);
+        successResponse($Analysis);
     }
 
-    NotFoundResponse("Readability analysis not found for this book");
+    notFoundResponse("Readability analysis not found for this book");
 
 } catch (PDOException $e) {
-    ErrorResponse("Database error", 500);
+    errorResponse("Database error", 500);
 }
 
 ?>

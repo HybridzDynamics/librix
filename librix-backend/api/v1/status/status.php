@@ -2,16 +2,16 @@
 
 // Configuration
 
-require_once __DIR__ . "/../../../config/config.php";
-require_once __DIR__ . "/../../../config/database.php";
-require_once __DIR__ . "/../../../helpers/response.php";
-require_once __DIR__ . "/../../../helpers/functions.php";
+require __DIR__ . "/../../../config/config.php";
+require __DIR__ . "/../../../config/database.php";
+require __DIR__ . "/../../../helpers/response.php";
+require __DIR__ . "/../../../helpers/functions.php";
 
 
 // Request Method
 
 if ($_SERVER["REQUEST_METHOD"] !== "GET") {
-    MethodNotAllowedResponse(["GET"]);
+    methodNotAllowedResponse(["GET"]);
 }
 
 
@@ -31,11 +31,11 @@ try {
 }
 
 if (!$IsDbConnected) {
-    SuccessResponse([
+    successResponse([
         "status" => "major_outage",
         "name" => APP_NAME,
         "version" => APP_VERSION,
-        "updated_at" => CurrentTime()
+        "updated_at" => currentTime()
     ]);
 }
 
@@ -63,11 +63,11 @@ try {
 }
 
 if ($HasActiveMaintenance) {
-    SuccessResponse([
+    successResponse([
         "status" => "maintenance",
         "name" => APP_NAME,
         "version" => APP_VERSION,
-        "updated_at" => CurrentTime()
+        "updated_at" => currentTime()
     ]);
 }
 
@@ -117,11 +117,11 @@ if ($HighestIncidentSeverity === "critical") {
 
 // Response
 
-SuccessResponse([
+successResponse([
     "status" => $OverallStatus,
     "name" => APP_NAME,
     "version" => APP_VERSION,
-    "updated_at" => CurrentTime()
+    "updated_at" => currentTime()
 ]);
 
 ?>
