@@ -28,7 +28,7 @@ define("SESSION_NAME", "LIBRIX_SESSION");
 
 // CORS
 
-define("CORS_ORIGIN", getenv("CORS_ORIGIN") ?: (APP_ENV === "production" ? "https://librix.local" : "*"));
+define("CORS_ORIGIN", getenv("CORS_ORIGIN") ?: (APP_ENV === "production" ? "http://127.0.0.1:5500/" : "*"));
 
 
 // Response

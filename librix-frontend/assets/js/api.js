@@ -14,7 +14,6 @@ const LibrixConfig = {
 
         // Primary dev server (PHP built-in: php -S localhost:8000)
         candidates.push('http://localhost:8000/api/v1');
-        candidates.push('http://127.0.0.1:8000/api/v1');
 
         const origin = window.location.origin;
         const pathname = window.location.pathname;
