@@ -1,6 +1,6 @@
 /**
- * LibriX Authentication Module
- * Manages user sessions, auth state, role checks, and dynamic navigation updates with Lucide icons
+ * LibriX Authentication & Role-Based Access Control (RBAC) Module
+ * Supports Admin, Librarian, and Patron Roles with Multi-Tenant Organization Scoping
  */
 
 const auth = {
@@ -40,6 +40,32 @@ const auth = {
     },
 
     /**
+     * Check if current user is a librarian (or admin)
+     */
+    isLibrarian: function() {
+        const user = this.getUser();
+        return user && (user.role === 'librarian' || user.role === 'admin');
+    },
+
+    /**
+     * Get active Organization ID
+     */
+    getOrgId: function() {
+        const user = this.getUser();
+        return user ? (user.org_id || 1) : 1;
+    },
+
+    getOrgName: function() {
+        const user = this.getUser();
+        return user ? (user.org_name || 'MIT Central Library') : 'MIT Central Library';
+    },
+
+    getOrgCode: function() {
+        const user = this.getUser();
+        return user ? (user.org_code || 'ORG-MIT-01') : 'ORG-MIT-01';
+    },
+
+    /**
      * Authenticate with email and password
      */
     login: async function(email, password) {
@@ -59,9 +85,9 @@ const auth = {
     /**
      * Register a new user
      */
-    register: async function(name, email, password) {
+    register: async function(name, email, password, orgId = 1, role = 'user') {
         try {
-            const response = await api.post('/auth/register', { name, email, password });
+            const response = await api.post('/auth/register', { name, email, password, org_id: orgId, role });
             if (response.success && response.data) {
                 localStorage.setItem('librix_token', response.data.token);
                 localStorage.setItem('librix_user', JSON.stringify(response.data.user));
@@ -81,9 +107,7 @@ const auth = {
         if (token) {
             try {
                 await api.post('/auth/logout');
-            } catch (e) {
-                // Ignore API failure on logout
-            }
+            } catch (e) {}
         }
         localStorage.removeItem('librix_token');
         localStorage.removeItem('librix_user');
@@ -94,7 +118,7 @@ const auth = {
             window.location.reload();
         } else {
             const isInPages = window.location.pathname.includes('/pages/');
-            const isInSub = window.location.pathname.includes('/user/') || window.location.pathname.includes('/admin/');
+            const isInSub = window.location.pathname.includes('/user/') || window.location.pathname.includes('/admin/') || window.location.pathname.includes('/librarian/');
             const target = isInSub ? '../login.html' : (isInPages ? 'login.html' : 'pages/login.html');
             window.location.href = target;
         }
@@ -107,9 +131,26 @@ const auth = {
         if (!this.isLoggedIn()) {
             const current = encodeURIComponent(window.location.href);
             const isInPages = window.location.pathname.includes('/pages/');
-            const isInSub = window.location.pathname.includes('/user/') || window.location.pathname.includes('/admin/');
+            const isInSub = window.location.pathname.includes('/user/') || window.location.pathname.includes('/admin/') || window.location.pathname.includes('/librarian/');
             const defaultRedirect = isInSub ? `../login.html?redirect=${current}` : (isInPages ? `login.html?redirect=${current}` : `pages/login.html?redirect=${current}`);
             window.location.href = redirectUrl || defaultRedirect;
+            return false;
+        }
+        return true;
+    },
+
+    /**
+     * Require librarian access
+     */
+    requireLibrarian: function(redirectUrl = null) {
+        if (!this.requireAuth()) return false;
+        if (!this.isLibrarian()) {
+            if (typeof utils !== 'undefined') {
+                utils.toast('Access Denied', 'Librarian privileges are required for this section.', 'danger');
+            }
+            const isInPages = window.location.pathname.includes('/pages/');
+            const isInSub = window.location.pathname.includes('/user/') || window.location.pathname.includes('/admin/') || window.location.pathname.includes('/librarian/');
+            window.location.href = isInSub ? '../user/dashboard.html' : (isInPages ? 'user/dashboard.html' : 'pages/user/dashboard.html');
             return false;
         }
         return true;
@@ -121,9 +162,11 @@ const auth = {
     requireAdmin: function(redirectUrl = null) {
         if (!this.requireAuth()) return false;
         if (!this.isAdmin()) {
-            alert('Access Denied: Administrator privileges are required.');
+            if (typeof utils !== 'undefined') {
+                utils.toast('Access Denied', 'Administrator privileges are required.', 'danger');
+            }
             const isInPages = window.location.pathname.includes('/pages/');
-            const isInSub = window.location.pathname.includes('/user/') || window.location.pathname.includes('/admin/');
+            const isInSub = window.location.pathname.includes('/user/') || window.location.pathname.includes('/admin/') || window.location.pathname.includes('/librarian/');
             window.location.href = isInSub ? '../user/dashboard.html' : (isInPages ? 'user/dashboard.html' : 'pages/user/dashboard.html');
             return false;
         }
@@ -138,22 +181,30 @@ const auth = {
         if (!navAuth) return;
 
         const isInPages = window.location.pathname.includes('/pages/');
-        const isInSub = window.location.pathname.includes('/user/') || window.location.pathname.includes('/admin/');
+        const isInSub = window.location.pathname.includes('/user/') || window.location.pathname.includes('/admin/') || window.location.pathname.includes('/librarian/');
         
         const pathPrefix = isInSub ? '../' : (isInPages ? '' : 'pages/');
         const userIcon = window.lucide ? lucide.render('user', { size: 14 }) : '';
 
         if (this.isLoggedIn()) {
             const user = this.getUser();
-            const isAdmin = this.isAdmin();
-            const dashboardUrl = isAdmin ? `${pathPrefix}admin/dashboard.html` : `${pathPrefix}user/dashboard.html`;
+            let dashboardUrl = `${pathPrefix}user/dashboard.html`;
+            let roleBadge = '';
+
+            if (user.role === 'admin') {
+                dashboardUrl = `${pathPrefix}admin/dashboard.html`;
+                roleBadge = '<span class="badge badge-primary" style="font-size: 10px; padding: 1px 6px;">ADMIN</span>';
+            } else if (user.role === 'librarian') {
+                dashboardUrl = `${pathPrefix}librarian/dashboard.html`;
+                roleBadge = '<span class="badge badge-accent" style="font-size: 10px; padding: 1px 6px; background:#f3e8ff; color:#7e22ce;">LIBRARIAN</span>';
+            }
 
             navAuth.innerHTML = `
                 <div style="display: flex; align-items: center; gap: 12px;">
                     <a href="${dashboardUrl}" class="btn btn-secondary btn-sm" style="display: inline-flex; align-items: center; gap: 6px;">
                         ${userIcon}
                         <span>${utils.escapeHtml(user.name.split(' ')[0])}</span>
-                        ${isAdmin ? '<span class="badge badge-primary" style="font-size: 10px; padding: 1px 6px;">ADMIN</span>' : ''}
+                        ${roleBadge}
                     </a>
                     <button id="nav-logout-btn" class="btn btn-outline btn-sm" style="border-color: var(--border);">Logout</button>
                 </div>
@@ -161,9 +212,15 @@ const auth = {
 
             const logoutBtn = document.getElementById('nav-logout-btn');
             if (logoutBtn) {
-                logoutBtn.addEventListener('click', (e) => {
+                logoutBtn.addEventListener('click', async (e) => {
                     e.preventDefault();
-                    if (confirm('Are you sure you want to log out?')) {
+                    const confirmed = await utils.confirm({
+                        title: 'Sign Out Confirmation',
+                        message: 'Are you sure you want to log out of your session?',
+                        confirmText: 'Sign Out',
+                        icon: 'log-out'
+                    });
+                    if (confirmed) {
                         auth.logout();
                     }
                 });
@@ -180,20 +237,5 @@ const auth = {
         }
     }
 };
-
-// Automatic listener for session expiry
-window.addEventListener('librix:auth-expired', () => {
-    if (typeof utils !== 'undefined') {
-        utils.toast('Session Expired', 'Please log in again to continue.', 'warning');
-    }
-    setTimeout(() => {
-        auth.logout();
-    }, 1500);
-});
-
-// Auto-run updateNav on DOMContentLoaded
-document.addEventListener('DOMContentLoaded', () => {
-    auth.updateNav();
-});
 
 window.auth = auth;

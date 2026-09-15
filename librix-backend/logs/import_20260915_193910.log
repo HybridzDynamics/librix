@@ -1,0 +1,12 @@
+19:39:10 | INFO     | =======================================================
+19:39:10 | INFO     |   LibriX Book Importer v2.0
+19:39:10 | INFO     | =======================================================
+19:39:10 | INFO     | CSV       : C:\Users\moham\Desktop\librix\books_clean.csv
+19:39:10 | INFO     | Total CSV : 10000 rows
+19:39:10 | INFO     | Importing : 100 rows
+19:39:10 | INFO     | Org ID    : NULL (global / all orgs)
+19:39:10 | INFO     | Dry-run   : True
+19:39:10 | INFO     | Log file  : C:\Users\moham\Desktop\librix\librix-backend\logs\import_20260915_193910.log
+19:39:10 | INFO     | =======================================================
+19:39:10 | INFO     | DRY-RUN active — no database writes.
+19:39:10 | INFO     | Dry-run done. Valid: 100  Skipped: 0

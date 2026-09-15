@@ -8,6 +8,7 @@
     <link rel="icon" type="image/png" href="../assets/images/favicon.png">
     <link rel="stylesheet" href="../assets/css/global.css">
     <link rel="stylesheet" href="../assets/css/login.css">
+    <script src="../assets/js/icons.js"></script>
 </head>
 
 <body>
@@ -58,6 +59,26 @@
                             required
                         >
                         <div class="form-error" id="email-error"></div>
+                    </div>
+
+                    <!-- Role -->
+                    <div class="form-group">
+                        <label for="role_select" class="form-label">Account Type <span class="required">*</span></label>
+                        <select id="role_select" name="role" class="form-input" style="height: 44px;">
+                            <option value="user">Patron (Reader)</option>
+                            <option value="librarian">Librarian (Staff)</option>
+                        </select>
+                    </div>
+
+                    <!-- Organization -->
+                    <div class="form-group">
+                        <label for="org_select" class="form-label">Affiliated Library Organization <span class="required">*</span></label>
+                        <select id="org_select" name="org_id" class="form-input" style="height: 44px;">
+                            <option value="1">MIT Central Library (ORG-MIT-01)</option>
+                            <option value="2">Oxford Bodleian Library (ORG-OXFORD-02)</option>
+                            <option value="3">Stanford University Libraries (ORG-STANFORD-03)</option>
+                            <option value="4">Global Public Library Network (ORG-GLOBAL-00)</option>
+                        </select>
                     </div>
 
                     <!-- Password -->
@@ -224,12 +245,21 @@
             submitBtn.innerHTML = '<span class="spinner spinner-sm spinner-white"></span> Creating account...';
 
             try {
-                const res = await auth.register(name, email, password);
-                utils.toast("Account Created", "Welcome to Librix! Redirecting...", "success");
-
-                setTimeout(() => {
-                    window.location.href = "user/dashboard.html";
-                }, 1000);
+                const orgId = parseInt(document.getElementById("org_select").value) || 1;
+                const role = document.getElementById("role_select").value || 'user';
+                const res = await auth.register(name, email, password, orgId, role);
+                
+                if (res.user && res.user.status === 'pending') {
+                    utils.toast("Registration Pending", "Your account has been created but requires approval before you can log in.", "info", 8000);
+                    setTimeout(() => {
+                        window.location.href = "login.html";
+                    }, 3000);
+                } else {
+                    utils.toast("Account Created", "Welcome to LibriX! Redirecting...", "success");
+                    setTimeout(() => {
+                        window.location.href = "user/dashboard.html";
+                    }, 1000);
+                }
 
             } catch (err) {
                 submitBtn.disabled = false;

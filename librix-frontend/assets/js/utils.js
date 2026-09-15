@@ -1,6 +1,6 @@
 /**
- * LibriX Utility Functions
- * Toasts, Modals, Formatters, Badges, Helpers using Lucide Icons
+ * LibriX Utility & Modern UI Modal System
+ * Complete replacement for browser confirm() / alert() with animated glassmorphic dialogs
  */
 
 const utils = {
@@ -22,7 +22,7 @@ const utils = {
         let iconSvg = '';
         if (window.lucide) {
             if (type === 'success') iconSvg = lucide.render('check-circle', { size: 20, color: 'var(--success)' });
-            else if (type === 'error') iconSvg = lucide.render('x-circle', { size: 20, color: 'var(--danger)' });
+            else if (type === 'error' || type === 'danger') iconSvg = lucide.render('x-circle', { size: 20, color: 'var(--danger)' });
             else if (type === 'warning') iconSvg = lucide.render('alert-triangle', { size: 20, color: 'var(--warning)' });
             else iconSvg = lucide.render('info', { size: 20, color: 'var(--info)' });
         } else {
@@ -53,6 +53,160 @@ const utils = {
         if (duration > 0) {
             setTimeout(dismiss, duration);
         }
+    },
+
+    /**
+     * Modern UI Confirmation Modal (Replaces browser confirm() dialogs)
+     */
+    confirm: function(options) {
+        return new Promise((resolve) => {
+            const {
+                title = 'Confirm Action',
+                message = 'Are you sure you want to proceed?',
+                confirmText = 'Confirm',
+                cancelText = 'Cancel',
+                type = 'primary', // 'primary', 'danger', 'success', 'warning'
+                icon = 'help-circle'
+            } = typeof options === 'string' ? { message: options } : options;
+
+            // Remove existing confirm modal if any
+            const existing = document.getElementById('librix-confirm-modal');
+            if (existing) existing.remove();
+
+            const backdrop = document.createElement('div');
+            backdrop.id = 'librix-confirm-modal';
+            backdrop.className = 'modal-backdrop is-active';
+            backdrop.style.zIndex = '99999';
+
+            let iconColor = 'var(--primary)';
+            let btnClass = 'btn-primary';
+            if (type === 'danger') {
+                iconColor = 'var(--danger)';
+                btnClass = 'btn-danger';
+            } else if (type === 'success') {
+                iconColor = 'var(--success)';
+                btnClass = 'btn-success';
+            } else if (type === 'warning') {
+                iconColor = 'var(--warning)';
+                btnClass = 'btn-warning';
+            }
+
+            const iconHtml = window.lucide ? lucide.render(icon, { size: 28, color: iconColor }) : '';
+
+            backdrop.innerHTML = `
+                <div class="modal" style="max-width: 440px; border-radius: 16px; overflow: hidden; box-shadow: 0 20px 40px rgba(0,0,0,0.2); animation: modalIn 0.2s cubic-bezier(0.16, 1, 0.3, 1);">
+                    <div style="padding: 24px 24px 20px; display: flex; gap: 16px; align-items: flex-start;">
+                        <div style="background: rgba(79, 70, 229, 0.08); padding: 12px; border-radius: 12px; display: flex; align-items: center; justify-content: center; flex-shrink: 0;">
+                            ${iconHtml}
+                        </div>
+                        <div style="flex: 1;">
+                            <h3 style="font-size: 1.15rem; font-weight: 700; color: var(--text-main); margin-bottom: 6px;">${utils.escapeHtml(title)}</h3>
+                            <p style="font-size: 0.9rem; color: var(--text-muted); line-height: 1.5;">${utils.escapeHtml(message)}</p>
+                        </div>
+                    </div>
+                    <div style="padding: 16px 24px; background: #f8fafc; border-top: 1px solid var(--border); display: flex; justify-content: flex-end; gap: 10px;">
+                        <button class="btn btn-outline btn-sm" id="confirm-modal-cancel" style="border-color: var(--border); font-weight: 500;">${utils.escapeHtml(cancelText)}</button>
+                        <button class="btn ${btnClass} btn-sm" id="confirm-modal-ok" style="font-weight: 600;">${utils.escapeHtml(confirmText)}</button>
+                    </div>
+                </div>
+            `;
+
+            document.body.appendChild(backdrop);
+            document.body.style.overflow = 'hidden';
+
+            const cleanup = () => {
+                backdrop.classList.remove('is-active');
+                document.body.style.overflow = '';
+                setTimeout(() => backdrop.remove(), 200);
+            };
+
+            backdrop.querySelector('#confirm-modal-cancel').onclick = () => {
+                cleanup();
+                resolve(false);
+            };
+
+            backdrop.querySelector('#confirm-modal-ok').onclick = () => {
+                cleanup();
+                resolve(true);
+            };
+
+            backdrop.onclick = (e) => {
+                if (e.target === backdrop) {
+                    cleanup();
+                    resolve(false);
+                }
+            };
+        });
+    },
+
+    /**
+     * Modern Prompt Modal (Replaces browser prompt() dialogs)
+     */
+    prompt: function(options) {
+        return new Promise((resolve) => {
+            const {
+                title = 'Enter Information',
+                message = '',
+                placeholder = 'Enter value...',
+                defaultValue = '',
+                confirmText = 'Submit',
+                cancelText = 'Cancel'
+            } = typeof options === 'string' ? { title: options } : options;
+
+            const existing = document.getElementById('librix-prompt-modal');
+            if (existing) existing.remove();
+
+            const backdrop = document.createElement('div');
+            backdrop.id = 'librix-prompt-modal';
+            backdrop.className = 'modal-backdrop is-active';
+            backdrop.style.zIndex = '99999';
+
+            backdrop.innerHTML = `
+                <div class="modal" style="max-width: 440px; border-radius: 16px; overflow: hidden; box-shadow: 0 20px 40px rgba(0,0,0,0.2);">
+                    <div style="padding: 24px;">
+                        <h3 style="font-size: 1.15rem; font-weight: 700; color: var(--text-main); margin-bottom: 6px;">${utils.escapeHtml(title)}</h3>
+                        ${message ? `<p style="font-size: 0.9rem; color: var(--text-muted); margin-bottom: 14px;">${utils.escapeHtml(message)}</p>` : ''}
+                        <input type="text" id="prompt-modal-input" class="form-control" style="width: 100%;" placeholder="${utils.escapeHtml(placeholder)}" value="${utils.escapeHtml(defaultValue)}" />
+                    </div>
+                    <div style="padding: 16px 24px; background: #f8fafc; border-top: 1px solid var(--border); display: flex; justify-content: flex-end; gap: 10px;">
+                        <button class="btn btn-outline btn-sm" id="prompt-modal-cancel">${utils.escapeHtml(cancelText)}</button>
+                        <button class="btn btn-primary btn-sm" id="prompt-modal-ok">${utils.escapeHtml(confirmText)}</button>
+                    </div>
+                </div>
+            `;
+
+            document.body.appendChild(backdrop);
+            document.body.style.overflow = 'hidden';
+
+            const input = backdrop.querySelector('#prompt-modal-input');
+            input.focus();
+
+            const cleanup = () => {
+                backdrop.classList.remove('is-active');
+                document.body.style.overflow = '';
+                setTimeout(() => backdrop.remove(), 200);
+            };
+
+            backdrop.querySelector('#prompt-modal-cancel').onclick = () => {
+                cleanup();
+                resolve(null);
+            };
+
+            const submit = () => {
+                const val = input.value.trim();
+                cleanup();
+                resolve(val);
+            };
+
+            backdrop.querySelector('#prompt-modal-ok').onclick = submit;
+            input.onkeydown = (e) => {
+                if (e.key === 'Enter') submit();
+                if (e.key === 'Escape') {
+                    cleanup();
+                    resolve(null);
+                }
+            };
+        });
     },
 
     /**

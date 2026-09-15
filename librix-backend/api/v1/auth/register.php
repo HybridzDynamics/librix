@@ -2,11 +2,11 @@
 
 // Configuration
 
-require __DIR__ . "/../../../config/config.php";
-require __DIR__ . "/../../../config/database.php";
-require __DIR__ . "/../../../helpers/response.php";
-require __DIR__ . "/../../../helpers/validation.php";
-require __DIR__ . "/../../../helpers/functions.php";
+require_once __DIR__ . "/../../../config/config.php";
+require_once __DIR__ . "/../../../config/database.php";
+require_once __DIR__ . "/../../../helpers/response.php";
+require_once __DIR__ . "/../../../helpers/validation.php";
+require_once __DIR__ . "/../../../helpers/functions.php";
 
 
 // Request Method
@@ -108,7 +108,14 @@ $HashedPassword = password_hash(
     PASSWORD_DEFAULT
 );
 
-$InitialStatus = EMAIL_VERIFICATION_ENABLED ? "inactive" : "active";
+$UserRole = $RequestData["role"] ?? "user";
+if (!in_array($UserRole, ["user", "librarian"])) {
+    $UserRole = "user"; // Default to user if invalid
+}
+
+$OrgId = isset($RequestData["org_id"]) ? (int)$RequestData["org_id"] : null;
+
+$InitialStatus = "pending"; // Always require approval for librarians and users joining orgs
 $EmailVerifiedAt = EMAIL_VERIFICATION_ENABLED ? null : date("Y-m-d H:i:s");
 
 try {
@@ -116,17 +123,18 @@ try {
 
     $Stmt = $pdo->prepare(
         "INSERT INTO users
-        (name, email, password, role, status, email_verified_at)
-        VALUES (?, ?, ?, ?, ?, ?)"
+        (name, email, password, role, status, email_verified_at, org_id)
+        VALUES (?, ?, ?, ?, ?, ?, ?)"
     );
 
     $Stmt->execute([
         $UserName,
         $UserEmail,
         $HashedPassword,
-        "user",
+        $UserRole,
         $InitialStatus,
-        $EmailVerifiedAt
+        $EmailVerifiedAt,
+        $OrgId
     ]);
 
     $UserId = (int)$pdo->lastInsertId();

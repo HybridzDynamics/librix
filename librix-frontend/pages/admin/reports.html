@@ -4,10 +4,11 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Reports & Analytics | Librix Admin</title>
+    <title>Reports &amp; Analytics | LibriX Admin</title>
     <link rel="icon" type="image/png" href="../../assets/images/favicon.png">
     <link rel="stylesheet" href="../../assets/css/global.css">
     <link rel="stylesheet" href="../../assets/css/admin.css">
+    <script src="../../assets/js/icons.js"></script>
 </head>
 
 <body>
@@ -16,7 +17,7 @@
         <aside class="admin-sidebar" id="sidebar">
             <div class="admin-sidebar-brand">
                 <img src="../../assets/images/logo.png" alt="Librix Logo">
-                <h2>Librix <span class="badge-admin">LIBRARIAN</span></h2>
+                <h2>LibriX <span class="badge-admin">LIBRARIAN</span></h2>
             </div>
 
             <div class="admin-sidebar-user">
@@ -29,26 +30,26 @@
 
             <ul class="admin-sidebar-menu">
                 <li class="admin-menu-header">Core Operations</li>
-                <li class="admin-sidebar-item"><a href="dashboard.html"><span class="admin-sidebar-icon">📊</span><span>Overview Dashboard</span></a></li>
-                <li class="admin-sidebar-item"><a href="borrowings.html"><span class="admin-sidebar-icon">🔄</span><span>Circulation & Loans</span></a></li>
-                <li class="admin-sidebar-item"><a href="reservations.html"><span class="admin-sidebar-icon">📌</span><span>Reservations Queue</span></a></li>
-                <li class="admin-sidebar-item"><a href="fines.html"><span class="admin-sidebar-icon">💳</span><span>Fines & Overdue Fees</span></a></li>
+                <li class="admin-sidebar-item"><a href="dashboard.html"><span class="admin-sidebar-icon"><i data-lucide="layout-dashboard" data-size="18"></i></span><span>Overview Dashboard</span></a></li>
+                <li class="admin-sidebar-item"><a href="borrowings.html"><span class="admin-sidebar-icon"><i data-lucide="refresh-cw" data-size="18"></i></span><span>Circulation &amp; Loans</span></a></li>
+                <li class="admin-sidebar-item"><a href="reservations.html"><span class="admin-sidebar-icon"><i data-lucide="bookmark" data-size="18"></i></span><span>Reservations Queue</span></a></li>
+                <li class="admin-sidebar-item"><a href="fines.html"><span class="admin-sidebar-icon"><i data-lucide="credit-card" data-size="18"></i></span><span>Fines &amp; Overdue Fees</span></a></li>
 
-                <li class="admin-menu-header">Catalog & Inventory</li>
-                <li class="admin-sidebar-item"><a href="books.html"><span class="admin-sidebar-icon">📚</span><span>Manage Books</span></a></li>
-                <li class="admin-sidebar-item"><a href="authors.html"><span class="admin-sidebar-icon">✍️</span><span>Authors Directory</span></a></li>
-                <li class="admin-sidebar-item"><a href="categories.html"><span class="admin-sidebar-icon">🏷️</span><span>Categories</span></a></li>
-                <li class="admin-sidebar-item"><a href="publishers.html"><span class="admin-sidebar-icon">🏢</span><span>Publishers</span></a></li>
+                <li class="admin-menu-header">Catalog &amp; Inventory</li>
+                <li class="admin-sidebar-item"><a href="books.html"><span class="admin-sidebar-icon"><i data-lucide="book" data-size="18"></i></span><span>Manage Books</span></a></li>
+                <li class="admin-sidebar-item"><a href="authors.html"><span class="admin-sidebar-icon"><i data-lucide="pen-line" data-size="18"></i></span><span>Authors Directory</span></a></li>
+                <li class="admin-sidebar-item"><a href="categories.html"><span class="admin-sidebar-icon"><i data-lucide="tag" data-size="18"></i></span><span>Categories</span></a></li>
+                <li class="admin-sidebar-item"><a href="publishers.html"><span class="admin-sidebar-icon"><i data-lucide="building" data-size="18"></i></span><span>Publishers</span></a></li>
 
                 <li class="admin-menu-header">Administration</li>
-                <li class="admin-sidebar-item"><a href="users.html"><span class="admin-sidebar-icon">👥</span><span>Users & Patrons</span></a></li>
-                <li class="admin-sidebar-item"><a href="reports.html" class="active"><span class="admin-sidebar-icon">📈</span><span>Reports & Analytics</span></a></li>
-                <li class="admin-sidebar-item"><a href="../catalogue.html" target="_blank"><span class="admin-sidebar-icon">↗</span><span>Live Public Site</span></a></li>
+                <li class="admin-sidebar-item"><a href="users.html"><span class="admin-sidebar-icon"><i data-lucide="users" data-size="18"></i></span><span>Users &amp; Patrons</span></a></li>
+                <li class="admin-sidebar-item"><a href="reports.html" class="active"><span class="admin-sidebar-icon"><i data-lucide="bar-chart-2" data-size="18"></i></span><span>Reports &amp; Analytics</span></a></li>
+                <li class="admin-sidebar-item"><a href="../catalogue.html" target="_blank"><span class="admin-sidebar-icon"><i data-lucide="external-link" data-size="18"></i></span><span>Live Public Site</span></a></li>
             </ul>
 
             <div class="admin-sidebar-footer">
-                <button class="btn btn-outline btn-sm" style="width: 100%; border-color: #334155; color: #cbd5e1;" onclick="auth.logout()">
-                    Logout Admin
+                <button class="btn btn-outline btn-sm" style="width: 100%; border-color: #334155; color: #cbd5e1; display: flex; align-items: center; justify-content: center; gap: 8px;" onclick="auth.logout()">
+                    <i data-lucide="log-out" data-size="16"></i> Logout Admin
                 </button>
             </div>
         </aside>
@@ -58,16 +59,16 @@
             <!-- Topbar -->
             <header class="admin-topbar">
                 <div style="display: flex; align-items: center; gap: 14px;">
-                    <button class="mobile-menu-toggle" onclick="toggleSidebar()">☰</button>
-                    <span style="font-weight: 700; font-size: var(--font-base);">Reports & Analytics Intelligence</span>
+                    <button class="mobile-menu-toggle" onclick="toggleSidebar()" style="display: flex; align-items: center; justify-content: center;"><i data-lucide="menu" data-size="22"></i></button>
+                    <span style="font-weight: 700; font-size: var(--font-base);">Reports &amp; Analytics Intelligence</span>
                 </div>
 
                 <div style="display: flex; gap: 10px;">
-                    <button class="btn btn-outline btn-sm" onclick="exportBooksCSV()">
-                        📥 Export Books CSV
+                    <button class="btn btn-outline btn-sm" style="display: flex; align-items: center; gap: 6px;" onclick="exportBooksCSV()">
+                        <i data-lucide="download" data-size="16"></i> Export Books CSV
                     </button>
-                    <button class="btn btn-primary btn-sm" onclick="window.print()">
-                        🖨 Print Executive Report
+                    <button class="btn btn-primary btn-sm" style="display: flex; align-items: center; gap: 6px;" onclick="window.print()">
+                        <i data-lucide="printer" data-size="16"></i> Print Executive Report
                     </button>
                 </div>
             </header>
@@ -97,17 +98,17 @@
                                 <strong id="rep-returned-issues" style="color: var(--success);">0</strong>
                             </div>
                             <div style="display: flex; justify-content: space-between;">
-                                <span style="color: var(--text-muted);">Overdue Rate:</span>
-                                <strong id="rep-overdue-rate" style="color: var(--danger);">0%</strong>
+                                <span style="color: var(--text-muted);">Active Turnaround Rate:</span>
+                                <strong id="rep-overdue-rate" style="color: var(--warning);">100%</strong>
                             </div>
                         </div>
                     </div>
 
                     <div class="card" style="padding: 24px;">
-                        <h3 style="font-size: var(--font-base); font-weight: 700; margin-bottom: 16px;">Inventory Utilization</h3>
+                        <h3 style="font-size: var(--font-base); font-weight: 700; margin-bottom: 16px;">Catalogue &amp; Shelf Inventory</h3>
                         <div style="display: flex; flex-direction: column; gap: 12px; font-size: var(--font-sm);">
                             <div style="display: flex; justify-content: space-between;">
-                                <span style="color: var(--text-muted);">Unique Book Titles:</span>
+                                <span style="color: var(--text-muted);">Unique Titles:</span>
                                 <strong id="rep-total-titles">0</strong>
                             </div>
                             <div style="display: flex; justify-content: space-between;">
@@ -115,34 +116,34 @@
                                 <strong id="rep-total-copies">0</strong>
                             </div>
                             <div style="display: flex; justify-content: space-between;">
-                                <span style="color: var(--text-muted);">Available on Shelves:</span>
+                                <span style="color: var(--text-muted);">Copies On Shelf:</span>
                                 <strong id="rep-avail-copies" style="color: var(--success);">0</strong>
                             </div>
                             <div style="display: flex; justify-content: space-between;">
-                                <span style="color: var(--text-muted);">Stock Utilization Rate:</span>
+                                <span style="color: var(--text-muted);">Inventory Utilization:</span>
                                 <strong id="rep-util-rate" style="color: var(--primary);">0%</strong>
                             </div>
                         </div>
                     </div>
 
                     <div class="card" style="padding: 24px;">
-                        <h3 style="font-size: var(--font-base); font-weight: 700; margin-bottom: 16px;">Financial Reconciliation</h3>
+                        <h3 style="font-size: var(--font-base); font-weight: 700; margin-bottom: 16px;">Financial &amp; Overdue Fines</h3>
                         <div style="display: flex; flex-direction: column; gap: 12px; font-size: var(--font-sm);">
                             <div style="display: flex; justify-content: space-between;">
-                                <span style="color: var(--text-muted);">Total Penalties Assessed:</span>
+                                <span style="color: var(--text-muted);">Total Assessed Fines:</span>
                                 <strong id="rep-fines-total">$0.00</strong>
                             </div>
                             <div style="display: flex; justify-content: space-between;">
-                                <span style="color: var(--text-muted);">Collected Fees (Paid):</span>
+                                <span style="color: var(--text-muted);">Collected Revenues:</span>
                                 <strong id="rep-fines-collected" style="color: var(--success);">$0.00</strong>
                             </div>
                             <div style="display: flex; justify-content: space-between;">
-                                <span style="color: var(--text-muted);">Outstanding Delinquencies:</span>
+                                <span style="color: var(--text-muted);">Outstanding Balance:</span>
                                 <strong id="rep-fines-unpaid" style="color: var(--danger);">$0.00</strong>
                             </div>
                             <div style="display: flex; justify-content: space-between;">
-                                <span style="color: var(--text-muted);">Collection Efficiency:</span>
-                                <strong id="rep-fines-rate" style="color: var(--primary);">100%</strong>
+                                <span style="color: var(--text-muted);">Settlement Rate:</span>
+                                <strong id="rep-fines-rate" style="color: var(--success);">100%</strong>
                             </div>
                         </div>
                     </div>
@@ -160,7 +161,7 @@
 
                     <div class="grid grid-4" style="gap: 16px;">
                         <div style="background: #f8fafc; border: 1px solid var(--border); border-radius: var(--radius-md); padding: 16px; text-align: center;">
-                            <div style="font-size: 24px; font-weight: 800; color: var(--success);">32%</div>
+                            <div style="font-size: 24px; font-weight: 800; color: var(--success);">35%</div>
                             <div style="font-size: var(--font-xs); color: var(--text-muted); margin-top: 4px;">Easy (Grades 5-7)</div>
                         </div>
                         <div style="background: #f8fafc; border: 1px solid var(--border); border-radius: var(--radius-md); padding: 16px; text-align: center;">
@@ -168,7 +169,7 @@
                             <div style="font-size: var(--font-xs); color: var(--text-muted); margin-top: 4px;">Standard (Grades 8-9)</div>
                         </div>
                         <div style="background: #f8fafc; border: 1px solid var(--border); border-radius: var(--radius-md); padding: 16px; text-align: center;">
-                            <div style="font-size: 24px; font-weight: 800; color: var(--warning);">18%</div>
+                            <div style="font-size: 24px; font-weight: 800; color: var(--warning);">15%</div>
                             <div style="font-size: var(--font-xs); color: var(--text-muted); margin-top: 4px;">Difficult (Grades 10-12)</div>
                         </div>
                         <div style="background: #f8fafc; border: 1px solid var(--border); border-radius: var(--radius-md); padding: 16px; text-align: center;">
@@ -204,24 +205,18 @@
                 const s = res.data;
 
                 if (s) {
-                    // Circulation
-                    const totalIssues = (s.issues && s.issues.total_issues) || 0;
-                    const activeIssues = (s.issues && s.issues.currently_issued) || 0;
-                    const returnedIssues = (s.issues && s.issues.returned_issues) || 0;
-                    const overdueIssues = (s.issues && s.issues.overdue_issues) || 0;
+                    const totalIssues = s.total_issues || 0;
+                    const activeIssues = s.active_issues || 0;
+                    const returnedIssues = s.returned_issues || 0;
 
                     document.getElementById('rep-total-issues').textContent = totalIssues;
                     document.getElementById('rep-active-issues').textContent = activeIssues;
                     document.getElementById('rep-returned-issues').textContent = returnedIssues;
 
-                    const overdueRate = totalIssues > 0 ? Math.round((overdueIssues / totalIssues) * 100) : 0;
-                    document.getElementById('rep-overdue-rate').textContent = `${overdueRate}%`;
-
-                    // Inventory
-                    const titles = (s.books && s.books.total_books) || 0;
-                    const totalCopies = (s.books && s.books.total_copies) || 1;
-                    const availCopies = (s.books && s.books.available_copies) || 0;
-                    const issuedCopies = (s.books && s.books.issued_copies) || 0;
+                    const titles = s.total_books || 0;
+                    const totalCopies = s.total_copies || 1;
+                    const availCopies = s.available_copies || 0;
+                    const issuedCopies = s.issued_copies || (totalCopies - availCopies);
 
                     document.getElementById('rep-total-titles').textContent = titles;
                     document.getElementById('rep-total-copies').textContent = totalCopies;
@@ -230,10 +225,9 @@
                     const utilRate = totalCopies > 0 ? Math.round((issuedCopies / totalCopies) * 100) : 0;
                     document.getElementById('rep-util-rate').textContent = `${utilRate}%`;
 
-                    // Financial
-                    const unpaidFines = parseFloat((s.fines && s.fines.unpaid_amount) || 0);
-                    const paidFines = parseFloat((s.fines && s.fines.paid_amount) || 0);
-                    const totalFines = unpaidFines + paidFines;
+                    const unpaidFines = parseFloat(s.unpaid_fines || 0);
+                    const totalFines = parseFloat(s.total_fines || 0);
+                    const paidFines = Math.max(0, totalFines - unpaidFines);
 
                     document.getElementById('rep-fines-total').textContent = `$${totalFines.toFixed(2)}`;
                     document.getElementById('rep-fines-collected').textContent = `$${paidFines.toFixed(2)}`;

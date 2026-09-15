@@ -4,10 +4,11 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Fines & Overdue Fees | Librix Admin</title>
+    <title>Fines &amp; Overdue Fees | LibriX Admin</title>
     <link rel="icon" type="image/png" href="../../assets/images/favicon.png">
     <link rel="stylesheet" href="../../assets/css/global.css">
     <link rel="stylesheet" href="../../assets/css/admin.css">
+    <script src="../../assets/js/icons.js"></script>
 </head>
 
 <body>
@@ -16,7 +17,7 @@
         <aside class="admin-sidebar" id="sidebar">
             <div class="admin-sidebar-brand">
                 <img src="../../assets/images/logo.png" alt="Librix Logo">
-                <h2>Librix <span class="badge-admin">LIBRARIAN</span></h2>
+                <h2>LibriX <span class="badge-admin">LIBRARIAN</span></h2>
             </div>
 
             <div class="admin-sidebar-user">
@@ -29,81 +30,26 @@
 
             <ul class="admin-sidebar-menu">
                 <li class="admin-menu-header">Core Operations</li>
-                <li class="admin-sidebar-item">
-                    <a href="dashboard.html">
-                        <span class="admin-sidebar-icon">📊</span>
-                        <span>Overview Dashboard</span>
-                    </a>
-                </li>
-                <li class="admin-sidebar-item">
-                    <a href="borrowings.html">
-                        <span class="admin-sidebar-icon">🔄</span>
-                        <span>Circulation & Loans</span>
-                    </a>
-                </li>
-                <li class="admin-sidebar-item">
-                    <a href="reservations.html">
-                        <span class="admin-sidebar-icon">📌</span>
-                        <span>Reservations Queue</span>
-                    </a>
-                </li>
-                <li class="admin-sidebar-item">
-                    <a href="fines.html" class="active">
-                        <span class="admin-sidebar-icon">💳</span>
-                        <span>Fines & Overdue Fees</span>
-                    </a>
-                </li>
+                <li class="admin-sidebar-item"><a href="dashboard.html"><span class="admin-sidebar-icon"><i data-lucide="layout-dashboard" data-size="18"></i></span><span>Overview Dashboard</span></a></li>
+                <li class="admin-sidebar-item"><a href="borrowings.html"><span class="admin-sidebar-icon"><i data-lucide="refresh-cw" data-size="18"></i></span><span>Circulation &amp; Loans</span></a></li>
+                <li class="admin-sidebar-item"><a href="reservations.html"><span class="admin-sidebar-icon"><i data-lucide="bookmark" data-size="18"></i></span><span>Reservations Queue</span></a></li>
+                <li class="admin-sidebar-item"><a href="fines.html" class="active"><span class="admin-sidebar-icon"><i data-lucide="credit-card" data-size="18"></i></span><span>Fines &amp; Overdue Fees</span></a></li>
 
-                <li class="admin-menu-header">Catalog & Inventory</li>
-                <li class="admin-sidebar-item">
-                    <a href="books.html">
-                        <span class="admin-sidebar-icon">📚</span>
-                        <span>Manage Books</span>
-                    </a>
-                </li>
-                <li class="admin-sidebar-item">
-                    <a href="authors.html">
-                        <span class="admin-sidebar-icon">✍️</span>
-                        <span>Authors Directory</span>
-                    </a>
-                </li>
-                <li class="admin-sidebar-item">
-                    <a href="categories.html">
-                        <span class="admin-sidebar-icon">🏷️</span>
-                        <span>Categories</span>
-                    </a>
-                </li>
-                <li class="admin-sidebar-item">
-                    <a href="publishers.html">
-                        <span class="admin-sidebar-icon">🏢</span>
-                        <span>Publishers</span>
-                    </a>
-                </li>
+                <li class="admin-menu-header">Catalog &amp; Inventory</li>
+                <li class="admin-sidebar-item"><a href="books.html"><span class="admin-sidebar-icon"><i data-lucide="book" data-size="18"></i></span><span>Manage Books</span></a></li>
+                <li class="admin-sidebar-item"><a href="authors.html"><span class="admin-sidebar-icon"><i data-lucide="pen-line" data-size="18"></i></span><span>Authors Directory</span></a></li>
+                <li class="admin-sidebar-item"><a href="categories.html"><span class="admin-sidebar-icon"><i data-lucide="tag" data-size="18"></i></span><span>Categories</span></a></li>
+                <li class="admin-sidebar-item"><a href="publishers.html"><span class="admin-sidebar-icon"><i data-lucide="building" data-size="18"></i></span><span>Publishers</span></a></li>
 
                 <li class="admin-menu-header">Administration</li>
-                <li class="admin-sidebar-item">
-                    <a href="users.html">
-                        <span class="admin-sidebar-icon">👥</span>
-                        <span>Users & Patrons</span>
-                    </a>
-                </li>
-                <li class="admin-sidebar-item">
-                    <a href="reports.html">
-                        <span class="admin-sidebar-icon">📈</span>
-                        <span>Reports & Analytics</span>
-                    </a>
-                </li>
-                <li class="admin-sidebar-item">
-                    <a href="../catalogue.html" target="_blank">
-                        <span class="admin-sidebar-icon">↗</span>
-                        <span>Live Public Site</span>
-                    </a>
-                </li>
+                <li class="admin-sidebar-item"><a href="users.html"><span class="admin-sidebar-icon"><i data-lucide="users" data-size="18"></i></span><span>Users &amp; Patrons</span></a></li>
+                <li class="admin-sidebar-item"><a href="reports.html"><span class="admin-sidebar-icon"><i data-lucide="bar-chart-2" data-size="18"></i></span><span>Reports &amp; Analytics</span></a></li>
+                <li class="admin-sidebar-item"><a href="../catalogue.html" target="_blank"><span class="admin-sidebar-icon"><i data-lucide="external-link" data-size="18"></i></span><span>Live Public Site</span></a></li>
             </ul>
 
             <div class="admin-sidebar-footer">
-                <button class="btn btn-outline btn-sm" style="width: 100%; border-color: #334155; color: #cbd5e1;" onclick="auth.logout()">
-                    Logout Admin
+                <button class="btn btn-outline btn-sm" style="width: 100%; border-color: #334155; color: #cbd5e1; display: flex; align-items: center; justify-content: center; gap: 8px;" onclick="auth.logout()">
+                    <i data-lucide="log-out" data-size="16"></i> Logout Admin
                 </button>
             </div>
         </aside>
@@ -113,35 +59,35 @@
             <!-- Topbar -->
             <header class="admin-topbar">
                 <div style="display: flex; align-items: center; gap: 14px;">
-                    <button class="mobile-menu-toggle" onclick="toggleSidebar()">☰</button>
-                    <span style="font-weight: 700; font-size: var(--font-base);">Fines & Fee Collections</span>
+                    <button class="mobile-menu-toggle" onclick="toggleSidebar()" style="display: flex; align-items: center; justify-content: center;"><i data-lucide="menu" data-size="22"></i></button>
+                    <span style="font-weight: 700; font-size: var(--font-base);">Fines &amp; Fee Management</span>
                 </div>
             </header>
 
             <!-- Admin Body -->
             <div class="admin-body">
                 <div class="page-header">
-                    <h1 class="page-title">Overdue Fines Ledger</h1>
-                    <p class="page-subtitle">Inspect overdue fees, mark collected cash or digital payments, or waive disputed library penalties.</p>
+                    <h1 class="page-title">Overdue Penalties &amp; Fines Ledger</h1>
+                    <p class="page-subtitle">Track late return assessments, reconcile incoming payments, and process discretionary fee waivers.</p>
                 </div>
 
                 <!-- Table Toolbar -->
                 <div class="table-toolbar">
                     <div class="toolbar-search">
                         <span class="toolbar-search-icon">🔍</span>
-                        <input type="text" id="fines-search" placeholder="Search patron name or reason...">
+                        <input type="text" id="fines-search" placeholder="Search patron name or fine description...">
                     </div>
                     <div class="toolbar-actions">
-                        <select id="fines-status-filter" class="form-select" style="width: 150px; font-size: var(--font-xs); padding: 8px;">
+                        <select id="fines-status-filter" class="form-select" style="width: 160px; font-size: var(--font-xs); padding: 8px;">
                             <option value="">All Statuses</option>
                             <option value="unpaid" selected>Unpaid Fines</option>
-                            <option value="paid">Paid & Cleared</option>
+                            <option value="paid">Paid</option>
                             <option value="waived">Waived</option>
                         </select>
                     </div>
                 </div>
 
-                <!-- Fines Table Card -->
+                <!-- Table Card -->
                 <div class="table-container-card">
                     <div id="fines-table-wrap">
                         <div style="padding: 60px; text-align: center;"><div class="spinner"></div></div>
@@ -189,7 +135,17 @@
                     status: status
                 });
 
-                const fines = res.data && res.data.fines ? res.data.fines : (Array.isArray(res.data) ? res.data : []);
+                let fines = res.data && res.data.fines ? res.data.fines : (Array.isArray(res.data) ? res.data : []);
+                
+                if (status) {
+                    fines = fines.filter(f => f.status === status);
+                }
+
+                if (search) {
+                    const s = search.toLowerCase();
+                    fines = fines.filter(f => (f.user_name || '').toLowerCase().includes(s) || (f.reason || '').toLowerCase().includes(s));
+                }
+
                 const pagination = res.pagination || (res.data && res.data.pagination) || { total: fines.length, total_pages: 1 };
 
                 if (fines.length === 0) {
@@ -235,7 +191,7 @@
                                             <td>
                                                 <div class="table-actions-cell">
                                                     ${f.status === 'unpaid' ? `
-                                                        <button class="btn btn-success btn-sm" onclick="markPaid(${f.id})">
+                                                        <button class="btn btn-primary btn-sm" onclick="markPaid(${f.id})">
                                                             Mark Paid
                                                         </button>
                                                         <button class="btn btn-outline btn-sm" onclick="waiveFine(${f.id})">
@@ -287,26 +243,42 @@
         }
 
         async function markPaid(id) {
-            if (confirm(`Confirm receipt of payment for fine #${id}?`)) {
-                try {
-                    await api.put('/admin/fines', { id: id, status: 'paid' });
-                    utils.toast("Payment Recorded", `Fine #${id} was marked as paid.`, "success");
-                    loadFines();
-                } catch (err) {
-                    utils.toast("Action Failed", err.message, "error");
-                }
+            const confirmed = await utils.confirm({
+                title: 'Record Fine Payment',
+                message: `Confirm receipt of payment for fine #${id}?`,
+                confirmText: 'Mark as Paid',
+                type: 'success',
+                icon: 'dollar-sign'
+            });
+
+            if (!confirmed) return;
+
+            try {
+                await api.put('/admin/fines', { id: id, status: 'paid' });
+                utils.toast("Payment Recorded", `Fine #${id} was marked as paid.`, "success");
+                loadFines();
+            } catch (err) {
+                utils.toast("Action Failed", err.message, "danger");
             }
         }
 
         async function waiveFine(id) {
-            if (confirm(`Waive and dismiss fine #${id}?`)) {
-                try {
-                    await api.put('/admin/fines', { id: id, status: 'waived' });
-                    utils.toast("Fine Waived", `Fine #${id} has been dismissed.`, "info");
-                    loadFines();
-                } catch (err) {
-                    utils.toast("Action Failed", err.message, "error");
-                }
+            const confirmed = await utils.confirm({
+                title: 'Waive Fine Penalty',
+                message: `Waive and dismiss fine #${id}? This penalty will be permanently excused.`,
+                confirmText: 'Waive Fine',
+                type: 'warning',
+                icon: 'check'
+            });
+
+            if (!confirmed) return;
+
+            try {
+                await api.put('/admin/fines', { id: id, status: 'waived' });
+                utils.toast("Fine Waived", `Fine #${id} has been dismissed.`, "info");
+                loadFines();
+            } catch (err) {
+                utils.toast("Action Failed", err.message, "danger");
             }
         }
 

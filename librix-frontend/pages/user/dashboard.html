@@ -307,7 +307,7 @@
                                 return `
                                     <tr>
                                         <td>
-                                            <strong style="display: block; font-size: var(--font-sm);">${utils.escapeHtml(b.title)}</strong>
+                                            <strong style="display: block; font-size: var(--font-sm);">${utils.escapeHtml(b.title || b.book_title)}</strong>
                                             <span style="font-size: var(--font-xs); color: var(--text-muted);">${utils.escapeHtml(b.author_name || '')}</span>
                                         </td>
                                         <td>${utils.formatDate(b.issued_at)}</td>
@@ -316,7 +316,7 @@
                                         </td>
                                         <td>${statusBadge}</td>
                                         <td style="text-align: right;">
-                                            <button class="btn btn-outline btn-sm" onclick="returnBook(${b.issue_id}, '${utils.escapeHtml(b.title)}')">
+                                            <button class="btn btn-outline btn-sm" onclick="returnBook(${b.issue_id || b.id}, '${utils.escapeHtml(b.title || b.book_title)}')">
                                                 Return
                                             </button>
                                         </td>
@@ -350,14 +350,22 @@
         }
 
         async function returnBook(issueId, title) {
-            if (confirm(`Confirm returning "${title}" to the library?`)) {
-                try {
-                    await api.post('/library/return', { issue_id: issueId });
-                    utils.toast("Book Returned", `"${title}" was successfully checked back in.`, "success");
-                    loadDashboardData();
-                } catch (err) {
-                    utils.toast("Return Error", err.message, "error");
-                }
+            const confirmed = await utils.confirm({
+                title: 'Confirm Book Return',
+                message: `Are you ready to return "${title}" to the library?`,
+                confirmText: 'Return Book',
+                icon: 'check-circle',
+                type: 'success'
+            });
+
+            if (!confirmed) return;
+
+            try {
+                await api.post('/library/return', { issue_id: issueId });
+                utils.toast("Book Returned", `"${title}" was successfully checked back in.`, "success");
+                loadDashboardData();
+            } catch (err) {
+                utils.toast("Return Error", err.message, "danger");
             }
         }
 

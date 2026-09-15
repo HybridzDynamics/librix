@@ -1,0 +1,29 @@
+19:39:25 | INFO     | =======================================================
+19:39:25 | INFO     |   LibriX Book Importer v2.0
+19:39:25 | INFO     | =======================================================
+19:39:25 | INFO     | CSV       : C:\Users\moham\Desktop\librix\books_clean.csv
+19:39:25 | INFO     | Total CSV : 10000 rows
+19:39:25 | INFO     | Importing : 10000 rows
+19:39:25 | INFO     | Org ID    : NULL (global / all orgs)
+19:39:25 | INFO     | Dry-run   : False
+19:39:25 | INFO     | Log file  : C:\Users\moham\Desktop\librix\librix-backend\logs\import_20260915_193925.log
+19:39:25 | INFO     | =======================================================
+19:39:25 | INFO     | package: mysql.connector.plugins
+19:39:25 | INFO     | plugin_name: caching_sha2_password
+19:39:25 | INFO     | AUTHENTICATION_PLUGIN_CLASS: MySQLCachingSHA2PasswordAuthPlugin
+19:39:25 | INFO     | Connected to MySQL at localhost:3306/librix
+19:39:25 | INFO     | Authors loaded  : 4640
+19:39:25 | INFO     | Categories loaded: 297
+19:39:29 | INFO     | =======================================================
+19:39:29 | INFO     |   IMPORT COMPLETE
+19:39:29 | INFO     | =======================================================
+19:39:29 | INFO     |   Books inserted         : 0
+19:39:29 | INFO     |   Already existed        : 10000
+19:39:29 | INFO     |   Skipped (invalid)      : 0
+19:39:29 | INFO     |   Failed (errors)        : 0
+19:39:29 | INFO     |   Authors in DB          : 4640
+19:39:29 | INFO     |   Categories in DB       : 297
+19:39:29 | INFO     |   Org ID                 : NULL (global)
+19:39:29 | INFO     |   Log file               : C:\Users\moham\Desktop\librix\librix-backend\logs\import_20260915_193925.log
+19:39:29 | INFO     | =======================================================
+19:39:29 | INFO     | Database connection closed.

@@ -2,11 +2,11 @@
 
 // Configuration
 
-require __DIR__ . "/../../../config/config.php";
-require __DIR__ . "/../../../config/database.php";
-require __DIR__ . "/../../../helpers/response.php";
-require __DIR__ . "/../../../helpers/validation.php";
-require __DIR__ . "/../../../helpers/functions.php";
+require_once __DIR__ . "/../../../config/config.php";
+require_once __DIR__ . "/../../../config/database.php";
+require_once __DIR__ . "/../../../helpers/response.php";
+require_once __DIR__ . "/../../../helpers/validation.php";
+require_once __DIR__ . "/../../../helpers/functions.php";
 
 
 // Request Method
@@ -18,7 +18,7 @@ if ($_SERVER["REQUEST_METHOD"] !== "GET") {
 
 // Query Parameters
 
-$BookId = $_GET["book_id"] ?? ($GLOBALS['parts'][3] ?? null);
+$BookId = $parts[3] ?? ($_GET["book_id"] ?? ($_GET["id"] ?? null));
 $Page = isset($_GET["page"]) ? max(1, (int)$_GET["page"]) : 1;
 $Limit = isset($_GET["limit"]) ? min(100, max(1, (int)$_GET["limit"])) : 10;
 $Offset = ($Page - 1) * $Limit;

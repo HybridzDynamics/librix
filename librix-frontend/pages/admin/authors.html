@@ -139,13 +139,21 @@
         }
 
         async function deleteAuthor(id, name) {
-            if (confirm(`Delete author "${name}"? Books linked to this author will remain in catalog.`)) {
-                try {
-                    await api.delete(`/authors/${id}`);
-                    utils.toast("Author Deleted", `Removed "${name}".`, "success");
-                    loadAuthors();
-                } catch (err) { utils.toast("Delete Failed", err.message, "error"); }
-            }
+            const confirmed = await utils.confirm({
+                title: 'Delete Author Profile',
+                message: `Delete author "${name}"? Books linked to this author will remain in catalog.`,
+                confirmText: 'Delete Author',
+                type: 'danger',
+                icon: 'trash-2'
+            });
+
+            if (!confirmed) return;
+
+            try {
+                await api.delete(`/authors/${id}`);
+                utils.toast("Author Deleted", `Removed "${name}".`, "success");
+                loadAuthors();
+            } catch (err) { utils.toast("Delete Failed", err.message, "danger"); }
         }
 
         document.getElementById('author-form').addEventListener('submit', async function(e) {

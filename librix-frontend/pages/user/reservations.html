@@ -113,14 +113,22 @@
         }
 
         async function cancelReservation(resId, title) {
-            if (confirm(`Cancel reservation for "${title}"?`)) {
-                try {
-                    await api.post('/library/cancel-reservation', { reservation_id: resId });
-                    utils.toast("Reservation Cancelled", `Cancelled hold on "${title}".`, "info");
-                    loadReservations();
-                } catch (err) {
-                    utils.toast("Cancellation Failed", err.message, "error");
-                }
+            const confirmed = await utils.confirm({
+                title: 'Cancel Reservation Hold',
+                message: `Are you sure you want to cancel your reservation for "${title}"?`,
+                confirmText: 'Cancel Hold',
+                type: 'warning',
+                icon: 'x-circle'
+            });
+
+            if (!confirmed) return;
+
+            try {
+                await api.post('/library/cancel-reservation', { reservation_id: resId });
+                utils.toast("Reservation Cancelled", `Cancelled hold on "${title}".`, "info");
+                loadReservations();
+            } catch (err) {
+                utils.toast("Cancellation Failed", err.message, "danger");
             }
         }
 

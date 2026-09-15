@@ -1,0 +1,325 @@
+<!doctype html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Org Book Collection | LibriX</title>
+    <link rel="icon" type="image/png" href="../../assets/images/favicon.png">
+    <link rel="stylesheet" href="../../assets/css/global.css">
+    <link rel="stylesheet" href="../../assets/css/dashboard.css">
+    <link rel="stylesheet" href="../../assets/css/admin.css">
+    <script src="../../assets/js/icons.js"></script>
+</head>
+
+<body>
+    <div class="dashboard-wrapper">
+        <!-- Sidebar -->
+        <aside class="dashboard-sidebar" id="sidebar">
+            <div class="sidebar-brand">
+                <img src="../../assets/images/logo.png" alt="LibriX Logo">
+                <h2>LibriX</h2>
+            </div>
+            <div class="sidebar-user">
+                <div class="sidebar-avatar" id="user-avatar" style="background:#7e22ce;color:#fff;">L</div>
+                <div class="sidebar-user-info">
+                    <div class="sidebar-user-name" id="user-name-display">Loading...</div>
+                    <div class="sidebar-user-role" style="color:#7e22ce;font-weight:600;">Librarian Officer</div>
+                </div>
+            </div>
+            <ul class="sidebar-menu">
+                <li class="sidebar-item"><a href="dashboard.html"><span class="sidebar-icon"><i data-lucide="layout-dashboard" data-size="18"></i></span><span>Org Dashboard</span></a></li>
+                <li class="sidebar-item"><a href="books.html" class="active"><span class="sidebar-icon"><i data-lucide="book-open" data-size="18"></i></span><span>Org Book Collection</span></a></li>
+                <li class="sidebar-item"><a href="borrowings.html"><span class="sidebar-icon"><i data-lucide="repeat" data-size="18"></i></span><span>Org Circulation</span></a></li>
+                <li class="sidebar-item"><a href="settings.html"><span class="sidebar-icon"><i data-lucide="settings" data-size="18"></i></span><span>Organization Settings</span></a></li>
+                <li class="sidebar-item" style="margin-top:12px;border-top:1px solid var(--border);padding-top:12px;"><a href="../catalogue.html"><span class="sidebar-icon"><i data-lucide="search" data-size="18"></i></span><span>Public Catalogue</span></a></li>
+            </ul>
+            <div class="sidebar-footer">
+                <button class="btn btn-outline btn-sm" style="width:100%;display:flex;align-items:center;justify-content:center;gap:8px;border-color:var(--border);" onclick="auth.logout()"><i data-lucide="log-out" data-size="16"></i> Sign Out</button>
+            </div>
+        </aside>
+
+        <!-- Main Area -->
+        <main class="dashboard-main">
+            <header class="dashboard-topbar">
+                <div style="display:flex;align-items:center;gap:14px;">
+                    <button class="mobile-menu-toggle" onclick="toggleSidebar()" style="display:flex;align-items:center;justify-content:center;"><i data-lucide="menu" data-size="22"></i></button>
+                    <span style="font-weight:700;font-size:var(--font-base);">Organization Books Management</span>
+                </div>
+                <div class="topbar-actions" style="display:flex;align-items:center;gap:10px;">
+                    <span class="badge badge-accent" id="active-org-badge" style="background:#f3e8ff;color:#7e22ce;font-weight:600;padding:6px 12px;">ORG-MIT-01</span>
+                    <button class="btn btn-primary btn-sm" onclick="openAddBookModal()" style="display:flex;align-items:center;gap:6px;"><i data-lucide="plus" data-size="16"></i> Add Book to Org</button>
+                </div>
+            </header>
+
+            <div class="dashboard-body">
+                <div class="page-header" style="display:flex;justify-content:space-between;align-items:flex-end;flex-wrap:wrap;gap:12px;">
+                    <div>
+                        <h1 class="page-title">Manage Books Linked to Organization</h1>
+                        <p class="page-subtitle">Add new inventory, update copies, and remove titles belonging to <strong id="org-name-header">Active Org</strong>.</p>
+                    </div>
+                </div>
+
+                <!-- Filters -->
+                <div class="card" style="padding:18px;margin-bottom:20px;">
+                    <div style="display:flex;gap:14px;flex-wrap:wrap;align-items:center;">
+                        <div style="flex:1;min-width:240px;position:relative;">
+                            <input type="text" id="book-search-input" class="form-control" placeholder="Search titles, authors, ISBNs..." oninput="handleSearch()" />
+                        </div>
+                        <div style="width:200px;">
+                            <select id="category-filter" class="form-control" onchange="loadBooks()">
+                                <option value="">All Categories</option>
+                                <option value="1">Classic Literature</option>
+                                <option value="2">Computer Science</option>
+                                <option value="3">Dystopian &amp; Sci-Fi</option>
+                                <option value="4">Philosophy &amp; Psychology</option>
+                                <option value="5">Fantasy &amp; Adventure</option>
+                            </select>
+                        </div>
+                        <button class="btn btn-outline btn-sm" onclick="loadBooks()"><i data-lucide="refresh-cw" data-size="14"></i> Refresh</button>
+                    </div>
+                </div>
+
+                <!-- Books Table -->
+                <div class="card" style="padding:24px;">
+                    <div class="table-responsive">
+                        <table class="table">
+                            <thead>
+                                <tr>
+                                    <th>Book Cover &amp; Title</th>
+                                    <th>ISBN</th>
+                                    <th>Category</th>
+                                    <th>Publisher</th>
+                                    <th>Copies</th>
+                                    <th>Status</th>
+                                    <th style="text-align:right;">Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody id="books-table-body">
+                                <tr><td colspan="7" style="text-align:center;padding:40px;"><div class="spinner"></div></td></tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <!-- Add Book to Org Modal -->
+    <div class="modal-backdrop" id="add-book-modal">
+        <div class="modal" style="max-width:580px;">
+            <div class="modal-header">
+                <h3 class="modal-title">Add New Book to Organization</h3>
+                <button class="modal-close" data-modal-close>&times;</button>
+            </div>
+            <div class="modal-body">
+                <form id="add-book-form" onsubmit="handleAddBookSubmit(event)">
+                    <div class="form-group" style="margin-bottom:14px;">
+                        <label class="form-label">Book Title *</label>
+                        <input type="text" id="book-title" class="form-control" required placeholder="e.g. Introduction to Algorithms" />
+                    </div>
+                    <div class="grid grid-2" style="gap:14px;margin-bottom:14px;">
+                        <div class="form-group">
+                            <label class="form-label">Author Name *</label>
+                            <input type="text" id="book-author" class="form-control" required placeholder="e.g. Thomas H. Cormen" />
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label">ISBN Number</label>
+                            <input type="text" id="book-isbn" class="form-control" placeholder="e.g. 9780262033848" />
+                        </div>
+                    </div>
+                    <div class="grid grid-2" style="gap:14px;margin-bottom:14px;">
+                        <div class="form-group">
+                            <label class="form-label">Category</label>
+                            <select id="book-category" class="form-control">
+                                <option value="Computer Science">Computer Science</option>
+                                <option value="Classic Literature">Classic Literature</option>
+                                <option value="Dystopian & Sci-Fi">Dystopian & Sci-Fi</option>
+                                <option value="Philosophy & Psychology">Philosophy & Psychology</option>
+                                <option value="Fantasy & Adventure">Fantasy & Adventure</option>
+                                <option value="Science & Nature">Science & Nature</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label">Publisher</label>
+                            <input type="text" id="book-publisher" class="form-control" placeholder="e.g. MIT Press" />
+                        </div>
+                    </div>
+                    <div class="grid grid-2" style="gap:14px;margin-bottom:14px;">
+                        <div class="form-group">
+                            <label class="form-label">Total Physical Copies</label>
+                            <input type="number" id="book-copies" class="form-control" min="1" max="100" value="5" />
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label">Publication Year</label>
+                            <input type="number" id="book-year" class="form-control" min="1800" max="2030" value="2024" />
+                        </div>
+                    </div>
+                    <div class="form-group" style="margin-bottom:14px;">
+                        <label class="form-label">Cover Image URL</label>
+                        <input type="url" id="book-cover" class="form-control" placeholder="https://images.unsplash.com/photo-..." value="https://images.unsplash.com/photo-1544716278-ca5e3f4abd8c?w=500&q=80" />
+                    </div>
+                    <div class="form-group" style="margin-bottom:14px;">
+                        <label class="form-label">Synopsis / Description</label>
+                        <textarea id="book-description" class="form-control" rows="3" placeholder="Overview of the book contents and reading relevance..."></textarea>
+                    </div>
+                    <div style="background:#f8fafc;padding:12px 16px;border-radius:8px;border:1px solid var(--border);font-size:12px;color:var(--text-muted);">
+                        <i data-lucide="info" data-size="14" style="vertical-align:middle;margin-right:4px;"></i> This book will be tagged with your active organization: <strong id="modal-org-label">ORG-MIT-01</strong>
+                    </div>
+                    <div class="modal-footer" style="margin-top:18px;padding-right:0;padding-bottom:0;">
+                        <button type="button" class="btn btn-outline btn-sm" data-modal-close>Cancel</button>
+                        <button type="submit" class="btn btn-primary btn-sm" id="submit-book-btn">Save Book to Org</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <script src="../../assets/js/api.js"></script>
+    <script src="../../assets/js/utils.js"></script>
+    <script src="../../assets/js/auth.js"></script>
+    <script>
+        if (!auth.requireLibrarian()) {}
+
+        const user = auth.getUser();
+        if (user) {
+            document.getElementById('user-name-display').textContent = user.name;
+            document.getElementById('user-avatar').textContent = user.name.charAt(0).toUpperCase();
+        }
+
+        function toggleSidebar() {
+            document.getElementById('sidebar').classList.toggle('is-open');
+        }
+
+        const handleSearch = utils.debounce(() => {
+            loadBooks();
+        }, 300);
+
+        function openAddBookModal() {
+            document.getElementById('modal-org-label').textContent = auth.getOrgCode();
+            utils.modal('add-book-modal').open();
+        }
+
+        async function handleAddBookSubmit(e) {
+            e.preventDefault();
+            const btn = document.getElementById('submit-book-btn');
+            btn.disabled = true;
+            btn.textContent = 'Saving...';
+
+            const payload = {
+                org_id: auth.getOrgId(),
+                title: document.getElementById('book-title').value.trim(),
+                author_name: document.getElementById('book-author').value.trim(),
+                isbn: document.getElementById('book-isbn').value.trim(),
+                category: document.getElementById('book-category').value,
+                publisher: document.getElementById('book-publisher').value.trim(),
+                total_copies: parseInt(document.getElementById('book-copies').value) || 1,
+                available_copies: parseInt(document.getElementById('book-copies').value) || 1,
+                publication_year: parseInt(document.getElementById('book-year').value) || 2026,
+                cover_image: document.getElementById('book-cover').value.trim(),
+                description: document.getElementById('book-description').value.trim()
+            };
+
+            try {
+                const res = await api.librarian.addBook(payload);
+                utils.toast('Book Catalogued', res.message || `"${payload.title}" has been added.`, 'success');
+                utils.modal('add-book-modal').close();
+                document.getElementById('add-book-form').reset();
+                loadBooks();
+            } catch (err) {
+                utils.toast('Save Failed', err.message, 'danger');
+            } finally {
+                btn.disabled = false;
+                btn.textContent = 'Save Book to Org';
+            }
+        }
+
+        async function removeBook(bookId, title) {
+            const confirmed = await utils.confirm({
+                title: 'Delete Organization Book',
+                message: `Are you sure you want to delete "${title}"? This will permanently remove it from your organization's collection.`,
+                confirmText: 'Delete Book',
+                type: 'danger',
+                icon: 'trash-2'
+            });
+
+            if (!confirmed) return;
+
+            try {
+                await api.librarian.deleteBook(bookId);
+                utils.toast('Book Deleted', `"${title}" has been removed from organization library.`, 'success');
+                loadBooks();
+            } catch (err) {
+                utils.toast('Delete Error', err.message, 'danger');
+            }
+        }
+
+        async function loadBooks() {
+            const orgId = auth.getOrgId();
+            const orgName = auth.getOrgName();
+            const orgCode = auth.getOrgCode();
+
+            document.getElementById('active-org-badge').textContent = orgCode;
+            document.getElementById('org-name-header').textContent = orgName;
+
+            const search = document.getElementById('book-search-input').value.trim();
+            const categoryId = document.getElementById('category-filter').value;
+            const tbody = document.getElementById('books-table-body');
+
+            try {
+                const res = await api.librarian.getBooks({ org_id: orgId, search, category_id: categoryId });
+                const books = res.data && res.data.books ? res.data.books : [];
+
+                if (books.length === 0) {
+                    tbody.innerHTML = `<tr><td colspan="7" style="text-align:center;padding:40px;color:var(--text-muted);">No books found matching your search under this organization.</td></tr>`;
+                    return;
+                }
+
+                tbody.innerHTML = books.map(b => `
+                    <tr>
+                        <td>
+                            <div style="display:flex;align-items:center;gap:12px;">
+                                <img src="${b.cover_image || 'https://images.unsplash.com/photo-1543002588-bfa74002ed7e?w=500&q=80'}" alt="${utils.escapeHtml(b.title)}" style="width:40px;height:52px;object-fit:cover;border-radius:4px;box-shadow:0 2px 6px rgba(0,0,0,0.1);" />
+                                <div>
+                                    <div style="font-weight:700;color:var(--text-main);">${utils.escapeHtml(b.title)}</div>
+                                    <div style="font-size:12px;color:var(--text-muted);">${utils.escapeHtml(b.author_name || 'Academic Contributor')}</div>
+                                </div>
+                            </div>
+                        </td>
+                        <td style="font-family:monospace;font-size:12px;">${b.isbn || 'N/A'}</td>
+                        <td><span class="badge badge-neutral">${utils.escapeHtml(b.category || 'General')}</span></td>
+                        <td><span style="font-size:12px;color:var(--text-muted);">${utils.escapeHtml(b.publisher || 'LibriX Press')}</span></td>
+                        <td><span style="font-weight:700;color:${b.available_copies > 0 ? 'var(--success)' : 'var(--danger)'};">${b.available_copies}</span> / ${b.total_copies}</td>
+                        <td>
+                            ${b.available_copies > 0 ? '<span class="badge badge-success">Available</span>' : '<span class="badge badge-warning">All Borrowed</span>'}
+                        </td>
+                        <td style="text-align:right;">
+                            <div style="display:inline-flex;gap:6px;">
+                                <a href="../book-details.html?id=${b.id}" class="btn btn-outline btn-sm" style="padding:4px 8px;" title="View Details"><i data-lucide="eye" data-size="14"></i></a>
+                                <button class="btn btn-outline btn-sm" style="color:var(--danger);border-color:var(--danger-border);padding:4px 8px;" onclick="removeBook(${b.id}, '${utils.escapeHtml(b.title)}')" title="Remove Book from Org">
+                                    <i data-lucide="trash-2" data-size="14"></i>
+                                </button>
+                            </div>
+                        </td>
+                    </tr>
+                `).join('');
+
+                if (window.lucide) {
+                    lucide.createIcons();
+                }
+
+            } catch (err) {
+                tbody.innerHTML = `<tr><td colspan="7" style="text-align:center;padding:30px;color:var(--danger);">Error loading organization books.</td></tr>`;
+            }
+        }
+
+        // Check query param for auto-open
+        const urlParams = new URLSearchParams(window.location.search);
+        if (urlParams.get('action') === 'add') {
+            setTimeout(openAddBookModal, 200);
+        }
+
+        loadBooks();
+    </script>
+</body>
+</html>

@@ -10,6 +10,7 @@
     <link rel="stylesheet" href="../assets/css/global.css">
     <link rel="stylesheet" href="../assets/css/style.css">
     <link rel="stylesheet" href="../assets/css/book-details.css">
+    <script src="../assets/js/icons.js"></script>
 </head>
 
 <body>
@@ -360,14 +361,22 @@
                 return;
             }
 
-            if (confirm(`Confirm borrowing "${currentBook.title}" for 14 days?`)) {
-                try {
-                    await api.post('/library/issue', { book_id: currentBook.id });
-                    utils.toast("Book Borrowed Successfully", "You can now view this in your My Books dashboard.", "success");
-                    setTimeout(() => window.location.href = 'user/my-books.html', 1200);
-                } catch (err) {
-                    utils.toast("Borrowing Error", err.message, "error");
-                }
+            const confirmed = await utils.confirm({
+                title: 'Borrow Book',
+                message: `Confirm borrowing "${currentBook.title}" for standard 14-day checkout?`,
+                confirmText: 'Borrow Book',
+                icon: 'book-open',
+                type: 'primary'
+            });
+
+            if (!confirmed) return;
+
+            try {
+                await api.post('/library/issue', { book_id: currentBook.id });
+                utils.toast("Book Borrowed Successfully", "You can now view this in your My Books dashboard.", "success");
+                setTimeout(() => window.location.href = 'user/my-books.html', 1200);
+            } catch (err) {
+                utils.toast("Borrowing Error", err.message, "danger");
             }
         }
 
@@ -379,14 +388,22 @@
                 return;
             }
 
-            if (confirm(`Place a reservation on "${currentBook.title}"?`)) {
-                try {
-                    await api.post('/library/reserve', { book_id: currentBook.id });
-                    utils.toast("Reservation Confirmed", "We will notify you immediately once a copy is returned.", "success");
-                    setTimeout(() => window.location.href = 'user/reservations.html', 1200);
-                } catch (err) {
-                    utils.toast("Reservation Error", err.message, "error");
-                }
+            const confirmed = await utils.confirm({
+                title: 'Place Hold / Reservation',
+                message: `Place a reservation on "${currentBook.title}"? You will be alerted the moment a copy is available.`,
+                confirmText: 'Place Reservation',
+                icon: 'bookmark',
+                type: 'primary'
+            });
+
+            if (!confirmed) return;
+
+            try {
+                await api.post('/library/reserve', { book_id: currentBook.id });
+                utils.toast("Reservation Confirmed", "We will notify you immediately once a copy is returned.", "success");
+                setTimeout(() => window.location.href = 'user/reservations.html', 1200);
+            } catch (err) {
+                utils.toast("Reservation Error", err.message, "danger");
             }
         }
 

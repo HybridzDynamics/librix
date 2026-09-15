@@ -2,13 +2,13 @@
 
 // Configuration
 
-require __DIR__ . "/../../../config/config.php";
-require __DIR__ . "/../../../config/database.php";
-require __DIR__ . "/../../../helpers/response.php";
-require __DIR__ . "/../../../helpers/validation.php";
-require __DIR__ . "/../../../helpers/functions.php";
-require __DIR__ . "/../../../middleware/auth.php";
-require __DIR__ . "/../../../middleware/admin.php";
+require_once __DIR__ . "/../../../config/config.php";
+require_once __DIR__ . "/../../../config/database.php";
+require_once __DIR__ . "/../../../helpers/response.php";
+require_once __DIR__ . "/../../../helpers/validation.php";
+require_once __DIR__ . "/../../../helpers/functions.php";
+require_once __DIR__ . "/../../../middleware/auth.php";
+require_once __DIR__ . "/../../../middleware/admin.php";
 
 
 // Request Method
@@ -27,7 +27,7 @@ $UserId = (int)$User["id"];
 
 // Category ID
 
-$CategoryId = $GLOBALS["categoryId"] ?? ($parts[3] ?? null);
+$CategoryId = $categoryId ?? ($parts[3] ?? null);
 $Input = getJsonInput();
 
 if ($CategoryId === null) {

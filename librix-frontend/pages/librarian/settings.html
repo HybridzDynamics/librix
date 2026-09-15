@@ -1,0 +1,147 @@
+<!doctype html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Organization Settings | LibriX</title>
+    <link rel="icon" type="image/png" href="../../assets/images/favicon.png">
+    <link rel="stylesheet" href="../../assets/css/global.css">
+    <link rel="stylesheet" href="../../assets/css/dashboard.css">
+    <link rel="stylesheet" href="../../assets/css/admin.css">
+    <script src="../../assets/js/icons.js"></script>
+</head>
+
+<body>
+    <div class="dashboard-wrapper">
+        <!-- Sidebar -->
+        <aside class="dashboard-sidebar" id="sidebar">
+            <div class="sidebar-brand">
+                <img src="../../assets/images/logo.png" alt="LibriX Logo">
+                <h2>LibriX</h2>
+            </div>
+            <div class="sidebar-user">
+                <div class="sidebar-avatar" id="user-avatar" style="background:#7e22ce;color:#fff;">L</div>
+                <div class="sidebar-user-info">
+                    <div class="sidebar-user-name" id="user-name-display">Loading...</div>
+                    <div class="sidebar-user-role" style="color:#7e22ce;font-weight:600;">Librarian Officer</div>
+                </div>
+            </div>
+            <ul class="sidebar-menu">
+                <li class="sidebar-item"><a href="dashboard.html"><span class="sidebar-icon"><i data-lucide="layout-dashboard" data-size="18"></i></span><span>Org Dashboard</span></a></li>
+                <li class="sidebar-item"><a href="books.html"><span class="sidebar-icon"><i data-lucide="book-open" data-size="18"></i></span><span>Org Book Collection</span></a></li>
+                <li class="sidebar-item"><a href="borrowings.html"><span class="sidebar-icon"><i data-lucide="repeat" data-size="18"></i></span><span>Org Circulation</span></a></li>
+                <li class="sidebar-item"><a href="settings.html" class="active"><span class="sidebar-icon"><i data-lucide="settings" data-size="18"></i></span><span>Organization Settings</span></a></li>
+                <li class="sidebar-item" style="margin-top:12px;border-top:1px solid var(--border);padding-top:12px;"><a href="../catalogue.html"><span class="sidebar-icon"><i data-lucide="search" data-size="18"></i></span><span>Public Catalogue</span></a></li>
+            </ul>
+            <div class="sidebar-footer">
+                <button class="btn btn-outline btn-sm" style="width:100%;display:flex;align-items:center;justify-content:center;gap:8px;border-color:var(--border);" onclick="auth.logout()"><i data-lucide="log-out" data-size="16"></i> Sign Out</button>
+            </div>
+        </aside>
+
+        <!-- Main Area -->
+        <main class="dashboard-main">
+            <header class="dashboard-topbar">
+                <div style="display:flex;align-items:center;gap:14px;">
+                    <button class="mobile-menu-toggle" onclick="toggleSidebar()" style="display:flex;align-items:center;justify-content:center;"><i data-lucide="menu" data-size="22"></i></button>
+                    <span style="font-weight:700;font-size:var(--font-base);">Organization Configuration</span>
+                </div>
+            </header>
+
+            <div class="dashboard-body">
+                <div class="page-header">
+                    <h1 class="page-title">Organization Settings &amp; Scope</h1>
+                    <p class="page-subtitle">Configure active organization parameters, API identifiers, and working tenancy.</p>
+                </div>
+
+                <div class="grid grid-2" style="gap:24px;">
+                    <div class="card" style="padding:24px;">
+                        <h2 style="font-size:1.15rem;font-weight:700;margin-bottom:16px;">Active Organization Scope</h2>
+                        <form onsubmit="handleSaveOrg(event)">
+                            <div class="form-group" style="margin-bottom:16px;">
+                                <label class="form-label">Working Organization</label>
+                                <select id="active-org-select" class="form-control">
+                                    <option value="1">MIT Central Library (ORG-MIT-01)</option>
+                                    <option value="2">Oxford Bodleian Library (ORG-OXFORD-02)</option>
+                                    <option value="3">Stanford University Libraries (ORG-STANFORD-03)</option>
+                                    <option value="4">Global Public Library Network (ORG-GLOBAL-00)</option>
+                                </select>
+                            </div>
+                            <div class="form-group" style="margin-bottom:16px;">
+                                <label class="form-label">Organization Code</label>
+                                <input type="text" id="org-code-input" class="form-control" readonly style="background:#f1f5f9;font-family:monospace;" />
+                            </div>
+                            <div class="form-group" style="margin-bottom:20px;">
+                                <label class="form-label">Librarian Access Email</label>
+                                <input type="email" id="librarian-email" class="form-control" readonly style="background:#f1f5f9;" />
+                            </div>
+                            <button type="submit" class="btn btn-primary btn-sm" id="save-org-btn">Apply &amp; Switch Organization</button>
+                        </form>
+                    </div>
+
+                    <div class="card" style="padding:24px;background:#fafbfc;">
+                        <h2 style="font-size:1.15rem;font-weight:700;margin-bottom:12px;">About Multi-Tenancy (RBAC)</h2>
+                        <p style="font-size:0.9rem;color:var(--text-muted);margin-bottom:16px;">
+                            LibriX isolates book collections, checkouts, and patron records per Organization ID. When you add a new title, it will automatically link to your selected Organization ID.
+                        </p>
+                        <div style="background:#fff;padding:16px;border-radius:8px;border:1px solid var(--border);margin-bottom:16px;">
+                            <div style="font-weight:700;font-size:0.9rem;margin-bottom:6px;">Current Role Privileges:</div>
+                            <ul style="padding-left:18px;font-size:0.85rem;color:var(--text-muted);line-height:1.7;">
+                                <li>Add books with automatic Org ID assignment</li>
+                                <li>Delete &amp; update books belonging to active Org ID</li>
+                                <li>Circulate books to enrolled organization patrons</li>
+                                <li>View real-time organization metrics &amp; capacity</li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <script src="../../assets/js/api.js"></script>
+    <script src="../../assets/js/utils.js"></script>
+    <script src="../../assets/js/auth.js"></script>
+    <script>
+        if (!auth.requireLibrarian()) {}
+
+        const user = auth.getUser();
+        if (user) {
+            document.getElementById('user-name-display').textContent = user.name;
+            document.getElementById('user-avatar').textContent = user.name.charAt(0).toUpperCase();
+            document.getElementById('librarian-email').value = user.email;
+        }
+
+        function toggleSidebar() {
+            document.getElementById('sidebar').classList.toggle('is-open');
+        }
+
+        function initSettings() {
+            const orgId = auth.getOrgId();
+            const orgCode = auth.getOrgCode();
+            document.getElementById('active-org-select').value = orgId;
+            document.getElementById('org-code-input').value = orgCode;
+        }
+
+        document.getElementById('active-org-select').addEventListener('change', function() {
+            const orgMap = { 1: 'ORG-MIT-01', 2: 'ORG-OXFORD-02', 3: 'ORG-STANFORD-03', 4: 'ORG-GLOBAL-00' };
+            document.getElementById('org-code-input').value = orgMap[this.value] || 'ORG-CUSTOM';
+        });
+
+        async function handleSaveOrg(e) {
+            e.preventDefault();
+            const newOrgId = parseInt(document.getElementById('active-org-select').value);
+
+            try {
+                const res = await api.librarian.setOrg(newOrgId);
+                utils.toast('Settings Saved', res.message || 'Switched active organization scope.', 'success');
+                setTimeout(() => window.location.href = 'dashboard.html', 1000);
+            } catch (err) {
+                utils.toast('Update Failed', err.message, 'danger');
+            }
+        }
+
+        initSettings();
+    </script>
+</body>
+</html>

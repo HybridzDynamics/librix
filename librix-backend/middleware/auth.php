@@ -2,9 +2,9 @@
 
 // Authentication Middleware
 
-require __DIR__ . "/../config/database.php";
-require __DIR__ . "/../helpers/response.php";
-require __DIR__ . "/../helpers/functions.php";
+require_once __DIR__ . "/../config/database.php";
+require_once __DIR__ . "/../helpers/response.php";
+require_once __DIR__ . "/../helpers/functions.php";
 
 
 // Require Authentication
@@ -30,10 +30,15 @@ function requireAuth()
                 users.name,
                 users.email,
                 users.role,
-                users.status
+                users.status,
+                users.org_id,
+                organizations.name AS org_name,
+                organizations.code AS org_code
              FROM auth_tokens
              INNER JOIN users
                 ON auth_tokens.user_id = users.id
+             LEFT JOIN organizations
+                ON users.org_id = organizations.id
              WHERE auth_tokens.token = ?
              LIMIT 1"
         );
@@ -88,7 +93,10 @@ function requireAuth()
         "name" => $User["name"],
         "email" => $User["email"],
         "role" => $User["role"],
-        "status" => $User["status"]
+        "status" => $User["status"],
+        "org_id" => $User["org_id"] ? (int)$User["org_id"] : null,
+        "org_name" => $User["org_name"] ?? "Global Public Library",
+        "org_code" => $User["org_code"] ?? "ORG-GLOBAL-00"
     ];
 }
 

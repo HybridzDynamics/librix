@@ -1,0 +1,49 @@
+19:39:11 | INFO     | =======================================================
+19:39:11 | INFO     |   LibriX Book Importer v2.0
+19:39:11 | INFO     | =======================================================
+19:39:11 | INFO     | CSV       : C:\Users\moham\Desktop\librix\books_clean.csv
+19:39:11 | INFO     | Total CSV : 10000 rows
+19:39:11 | INFO     | Importing : 10000 rows
+19:39:11 | INFO     | Org ID    : NULL (global / all orgs)
+19:39:11 | INFO     | Dry-run   : False
+19:39:11 | INFO     | Log file  : C:\Users\moham\Desktop\librix\librix-backend\logs\import_20260915_193911.log
+19:39:11 | INFO     | =======================================================
+19:39:11 | INFO     | package: mysql.connector.plugins
+19:39:11 | INFO     | plugin_name: caching_sha2_password
+19:39:11 | INFO     | AUTHENTICATION_PLUGIN_CLASS: MySQLCachingSHA2PasswordAuthPlugin
+19:39:11 | INFO     | Connected to MySQL at localhost:3306/librix
+19:39:11 | INFO     | Added column `users`.`profile_picture_path`
+19:39:11 | INFO     | Authors loaded  : 6
+19:39:11 | INFO     | Categories loaded: 6
+19:39:12 | INFO     |   Progress: 500 inserted, 4 existed, 0 failed
+19:39:12 | INFO     |   Progress: 1000 inserted, 4 existed, 0 failed
+19:39:13 | INFO     |   Progress: 1500 inserted, 5 existed, 0 failed
+19:39:14 | INFO     |   Progress: 2000 inserted, 6 existed, 0 failed
+19:39:14 | INFO     |   Progress: 2500 inserted, 7 existed, 0 failed
+19:39:15 | INFO     |   Progress: 3000 inserted, 7 existed, 0 failed
+19:39:15 | INFO     |   Progress: 3500 inserted, 7 existed, 0 failed
+19:39:16 | INFO     |   Progress: 4000 inserted, 9 existed, 0 failed
+19:39:17 | INFO     |   Progress: 4500 inserted, 12 existed, 0 failed
+19:39:17 | INFO     |   Progress: 5000 inserted, 13 existed, 0 failed
+19:39:18 | INFO     |   Progress: 5500 inserted, 16 existed, 0 failed
+19:39:19 | INFO     |   Progress: 6000 inserted, 19 existed, 0 failed
+19:39:19 | INFO     |   Progress: 6500 inserted, 20 existed, 0 failed
+19:39:20 | INFO     |   Progress: 7000 inserted, 24 existed, 0 failed
+19:39:21 | INFO     |   Progress: 7500 inserted, 27 existed, 0 failed
+19:39:21 | INFO     |   Progress: 8000 inserted, 30 existed, 0 failed
+19:39:22 | INFO     |   Progress: 8500 inserted, 33 existed, 0 failed
+19:39:22 | INFO     |   Progress: 9000 inserted, 36 existed, 0 failed
+19:39:23 | INFO     |   Progress: 9500 inserted, 39 existed, 0 failed
+19:39:24 | INFO     | =======================================================
+19:39:24 | INFO     |   IMPORT COMPLETE
+19:39:24 | INFO     | =======================================================
+19:39:24 | INFO     |   Books inserted         : 9959
+19:39:24 | INFO     |   Already existed        : 41
+19:39:24 | INFO     |   Skipped (invalid)      : 0
+19:39:24 | INFO     |   Failed (errors)        : 0
+19:39:24 | INFO     |   Authors in DB          : 4640
+19:39:24 | INFO     |   Categories in DB       : 300
+19:39:24 | INFO     |   Org ID                 : NULL (global)
+19:39:24 | INFO     |   Log file               : C:\Users\moham\Desktop\librix\librix-backend\logs\import_20260915_193911.log
+19:39:24 | INFO     | =======================================================
+19:39:24 | INFO     | Database connection closed.

@@ -20,6 +20,60 @@ function getJsonInput()
 }
 
 
+// Get Request Body (JSON body OR merged POST fields, whichever is present)
+
+function getRequestBody()
+{
+    $JsonData = getJsonInput();
+
+    if (!empty($JsonData)) {
+        return $JsonData;
+    }
+
+    // Fallback: use POST fields (for multipart/form-data requests)
+    if (!empty($_POST)) {
+        return $_POST;
+    }
+
+    return [];
+}
+
+
+// Write structured log entry to logs/ directory
+
+function writeLog($Level, $Message, $Context = [])
+{
+    $LogDir = dirname(__DIR__) . "/logs";
+
+    if (!is_dir($LogDir)) {
+        @mkdir($LogDir, 0755, true);
+    }
+
+    $LogFile = $LogDir . "/app_" . date("Y-m-d") . ".log";
+
+    $Entry = [
+        "timestamp" => date("Y-m-d H:i:s"),
+        "level"     => strtoupper($Level),
+        "message"   => $Message,
+        "context"   => $Context,
+        "ip"        => getClientIp()
+    ];
+
+    @file_put_contents(
+        $LogFile,
+        json_encode($Entry, JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE) . PHP_EOL,
+        FILE_APPEND | LOCK_EX
+    );
+}
+
+
+// Convenience wrappers
+
+function logInfo($Message, $Context = [])  { writeLog("INFO",    $Message, $Context); }
+function logError($Message, $Context = []) { writeLog("ERROR",   $Message, $Context); }
+function logWarn($Message, $Context = [])  { writeLog("WARNING", $Message, $Context); }
+
+
 // Get Request Header
 
 function getRequestHeader($Name)

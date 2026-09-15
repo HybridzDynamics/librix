@@ -2,12 +2,12 @@
 
 // Configuration
 
-require __DIR__ . "/../../../config/config.php";
-require __DIR__ . "/../../../config/database.php";
-require __DIR__ . "/../../../helpers/response.php";
-require __DIR__ . "/../../../helpers/validation.php";
-require __DIR__ . "/../../../helpers/functions.php";
-require __DIR__ . "/../../../helpers/readability.php";
+require_once __DIR__ . "/../../../config/config.php";
+require_once __DIR__ . "/../../../config/database.php";
+require_once __DIR__ . "/../../../helpers/response.php";
+require_once __DIR__ . "/../../../helpers/validation.php";
+require_once __DIR__ . "/../../../helpers/functions.php";
+require_once __DIR__ . "/../../../helpers/readability.php";
 
 
 // Request Method
@@ -19,7 +19,7 @@ if ($_SERVER["REQUEST_METHOD"] !== "GET") {
 
 // Book ID
 
-$BookId = $_GET["book_id"] ?? ($parts[3] ?? null);
+$BookId = $bookId ?? ($parts[3] ?? ($_GET["book_id"] ?? ($_GET["id"] ?? null)));
 
 $IdError = validatePositiveInteger($BookId, "Book ID");
 if ($IdError !== null) {

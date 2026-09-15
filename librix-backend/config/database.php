@@ -11,6 +11,9 @@ $Password = getenv("DB_PASSWORD") ?: "admin";
 
 // Database Connection
 
+$pdo = null;
+$pdo_error = null;
+
 try {
 
     $pdo = new PDO(
@@ -35,15 +38,25 @@ try {
     );
 
 } catch (PDOException $e) {
+    $pdo = null;
+    $pdo_error = $e->getMessage();
 
-    http_response_code(500);
+    // If this is a direct script execution or non-status/health check, return standardized JSON error
+    $currentScript = $_SERVER["SCRIPT_NAME"] ?? "";
+    $requestUri = $_SERVER["REQUEST_URI"] ?? "";
+    $isHealthOrStatus = str_contains($currentScript, "health.php") || 
+                        str_contains($currentScript, "status.php") ||
+                        str_contains($requestUri, "/health") ||
+                        str_contains($requestUri, "/status");
 
-    echo json_encode([
-        "success" => false,
-        "error" => "Database connection failed"
-    ], JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES);
-
-    exit;
+    if (!$isHealthOrStatus) {
+        http_response_code(500);
+        echo json_encode([
+            "success" => false,
+            "error" => "Database connection failed"
+        ], JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES);
+        exit;
+    }
 }
 
 ?>

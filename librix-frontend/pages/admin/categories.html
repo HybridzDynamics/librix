@@ -139,13 +139,21 @@
         }
 
         async function deleteCategory(id, name) {
-            if (confirm(`Delete category "${name}"? Books in this category will become unassigned.`)) {
-                try {
-                    await api.delete(`/categories/${id}`);
-                    utils.toast("Category Deleted", `Removed "${name}".`, "success");
-                    loadCategories();
-                } catch (err) { utils.toast("Delete Failed", err.message, "error"); }
-            }
+            const confirmed = await utils.confirm({
+                title: 'Delete Book Category',
+                message: `Delete category "${name}"? Books assigned to this category will become unassigned.`,
+                confirmText: 'Delete Category',
+                type: 'danger',
+                icon: 'trash-2'
+            });
+
+            if (!confirmed) return;
+
+            try {
+                await api.delete(`/categories/${id}`);
+                utils.toast("Category Deleted", `Removed "${name}".`, "success");
+                loadCategories();
+            } catch (err) { utils.toast("Delete Failed", err.message, "danger"); }
         }
 
         document.getElementById('category-form').addEventListener('submit', async function(e) {

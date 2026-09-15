@@ -4,10 +4,11 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Circulation & Borrowings | Librix Admin</title>
+    <title>Circulation &amp; Borrowings | LibriX Admin</title>
     <link rel="icon" type="image/png" href="../../assets/images/favicon.png">
     <link rel="stylesheet" href="../../assets/css/global.css">
     <link rel="stylesheet" href="../../assets/css/admin.css">
+    <script src="../../assets/js/icons.js"></script>
 </head>
 
 <body>
@@ -16,7 +17,7 @@
         <aside class="admin-sidebar" id="sidebar">
             <div class="admin-sidebar-brand">
                 <img src="../../assets/images/logo.png" alt="Librix Logo">
-                <h2>Librix <span class="badge-admin">LIBRARIAN</span></h2>
+                <h2>LibriX <span class="badge-admin">LIBRARIAN</span></h2>
             </div>
 
             <div class="admin-sidebar-user">
@@ -29,81 +30,26 @@
 
             <ul class="admin-sidebar-menu">
                 <li class="admin-menu-header">Core Operations</li>
-                <li class="admin-sidebar-item">
-                    <a href="dashboard.html">
-                        <span class="admin-sidebar-icon">📊</span>
-                        <span>Overview Dashboard</span>
-                    </a>
-                </li>
-                <li class="admin-sidebar-item">
-                    <a href="borrowings.html" class="active">
-                        <span class="admin-sidebar-icon">🔄</span>
-                        <span>Circulation & Loans</span>
-                    </a>
-                </li>
-                <li class="admin-sidebar-item">
-                    <a href="reservations.html">
-                        <span class="admin-sidebar-icon">📌</span>
-                        <span>Reservations Queue</span>
-                    </a>
-                </li>
-                <li class="admin-sidebar-item">
-                    <a href="fines.html">
-                        <span class="admin-sidebar-icon">💳</span>
-                        <span>Fines & Overdue Fees</span>
-                    </a>
-                </li>
+                <li class="admin-sidebar-item"><a href="dashboard.html"><span class="admin-sidebar-icon"><i data-lucide="layout-dashboard" data-size="18"></i></span><span>Overview Dashboard</span></a></li>
+                <li class="admin-sidebar-item"><a href="borrowings.html" class="active"><span class="admin-sidebar-icon"><i data-lucide="refresh-cw" data-size="18"></i></span><span>Circulation &amp; Loans</span></a></li>
+                <li class="admin-sidebar-item"><a href="reservations.html"><span class="admin-sidebar-icon"><i data-lucide="bookmark" data-size="18"></i></span><span>Reservations Queue</span></a></li>
+                <li class="admin-sidebar-item"><a href="fines.html"><span class="admin-sidebar-icon"><i data-lucide="credit-card" data-size="18"></i></span><span>Fines &amp; Overdue Fees</span></a></li>
 
-                <li class="admin-menu-header">Catalog & Inventory</li>
-                <li class="admin-sidebar-item">
-                    <a href="books.html">
-                        <span class="admin-sidebar-icon">📚</span>
-                        <span>Manage Books</span>
-                    </a>
-                </li>
-                <li class="admin-sidebar-item">
-                    <a href="authors.html">
-                        <span class="admin-sidebar-icon">✍️</span>
-                        <span>Authors Directory</span>
-                    </a>
-                </li>
-                <li class="admin-sidebar-item">
-                    <a href="categories.html">
-                        <span class="admin-sidebar-icon">🏷️</span>
-                        <span>Categories</span>
-                    </a>
-                </li>
-                <li class="admin-sidebar-item">
-                    <a href="publishers.html">
-                        <span class="admin-sidebar-icon">🏢</span>
-                        <span>Publishers</span>
-                    </a>
-                </li>
+                <li class="admin-menu-header">Catalog &amp; Inventory</li>
+                <li class="admin-sidebar-item"><a href="books.html"><span class="admin-sidebar-icon"><i data-lucide="book" data-size="18"></i></span><span>Manage Books</span></a></li>
+                <li class="admin-sidebar-item"><a href="authors.html"><span class="admin-sidebar-icon"><i data-lucide="pen-line" data-size="18"></i></span><span>Authors Directory</span></a></li>
+                <li class="admin-sidebar-item"><a href="categories.html"><span class="admin-sidebar-icon"><i data-lucide="tag" data-size="18"></i></span><span>Categories</span></a></li>
+                <li class="admin-sidebar-item"><a href="publishers.html"><span class="admin-sidebar-icon"><i data-lucide="building" data-size="18"></i></span><span>Publishers</span></a></li>
 
                 <li class="admin-menu-header">Administration</li>
-                <li class="admin-sidebar-item">
-                    <a href="users.html">
-                        <span class="admin-sidebar-icon">👥</span>
-                        <span>Users & Patrons</span>
-                    </a>
-                </li>
-                <li class="admin-sidebar-item">
-                    <a href="reports.html">
-                        <span class="admin-sidebar-icon">📈</span>
-                        <span>Reports & Analytics</span>
-                    </a>
-                </li>
-                <li class="admin-sidebar-item">
-                    <a href="../catalogue.html" target="_blank">
-                        <span class="admin-sidebar-icon">↗</span>
-                        <span>Live Public Site</span>
-                    </a>
-                </li>
+                <li class="admin-sidebar-item"><a href="users.html"><span class="admin-sidebar-icon"><i data-lucide="users" data-size="18"></i></span><span>Users &amp; Patrons</span></a></li>
+                <li class="admin-sidebar-item"><a href="reports.html"><span class="admin-sidebar-icon"><i data-lucide="bar-chart-2" data-size="18"></i></span><span>Reports &amp; Analytics</span></a></li>
+                <li class="admin-sidebar-item"><a href="../catalogue.html" target="_blank"><span class="admin-sidebar-icon"><i data-lucide="external-link" data-size="18"></i></span><span>Live Public Site</span></a></li>
             </ul>
 
             <div class="admin-sidebar-footer">
-                <button class="btn btn-outline btn-sm" style="width: 100%; border-color: #334155; color: #cbd5e1;" onclick="auth.logout()">
-                    Logout Admin
+                <button class="btn btn-outline btn-sm" style="width: 100%; border-color: #334155; color: #cbd5e1; display: flex; align-items: center; justify-content: center; gap: 8px;" onclick="auth.logout()">
+                    <i data-lucide="log-out" data-size="16"></i> Logout Admin
                 </button>
             </div>
         </aside>
@@ -113,12 +59,12 @@
             <!-- Topbar -->
             <header class="admin-topbar">
                 <div style="display: flex; align-items: center; gap: 14px;">
-                    <button class="mobile-menu-toggle" onclick="toggleSidebar()">☰</button>
-                    <span style="font-weight: 700; font-size: var(--font-base);">Circulation & Borrowings Desk</span>
+                    <button class="mobile-menu-toggle" onclick="toggleSidebar()" style="display: flex; align-items: center; justify-content: center;"><i data-lucide="menu" data-size="22"></i></button>
+                    <span style="font-weight: 700; font-size: var(--font-base);">Circulation &amp; Borrowings Desk</span>
                 </div>
 
-                <button class="btn btn-primary btn-sm" onclick="openIssueModal()">
-                    + Issue Book to Patron
+                <button class="btn btn-primary btn-sm" style="display: flex; align-items: center; gap: 6px;" onclick="openIssueModal()">
+                    <i data-lucide="plus" data-size="16"></i> Issue Book to Patron
                 </button>
             </header>
 
@@ -168,13 +114,17 @@
             <form id="issue-form">
                 <div class="modal-body">
                     <div class="form-group">
-                        <label for="issue-user-id" class="form-label">Patron ID <span class="required">*</span></label>
-                        <input type="number" id="issue-user-id" class="form-input" placeholder="Enter Patron ID (e.g. 1)" required>
+                        <label for="issue-user-select" class="form-label">Select Patron <span class="required">*</span></label>
+                        <select id="issue-user-select" class="form-select" required>
+                            <option value="">Loading patrons...</option>
+                        </select>
                     </div>
 
                     <div class="form-group">
-                        <label for="issue-book-id" class="form-label">Book ID <span class="required">*</span></label>
-                        <input type="number" id="issue-book-id" class="form-input" placeholder="Enter Book ID (e.g. 1)" required>
+                        <label for="issue-book-select" class="form-label">Select Book <span class="required">*</span></label>
+                        <select id="issue-book-select" class="form-select" required>
+                            <option value="">Loading books...</option>
+                        </select>
                     </div>
 
                     <div class="form-group">
@@ -215,6 +165,20 @@
         defaultDue.setDate(defaultDue.getDate() + 14);
         document.getElementById('issue-due-date').value = defaultDue.toISOString().split('T')[0];
 
+        async function loadModalOptions() {
+            try {
+                const uRes = await api.get('/admin/users');
+                const users = Array.isArray(uRes.data) ? uRes.data : [];
+                const uSelect = document.getElementById('issue-user-select');
+                uSelect.innerHTML = users.map(u => `<option value="${u.id}">${utils.escapeHtml(u.name)} (${u.email}) [ID #${u.id}]</option>`).join('');
+
+                const bRes = await api.get('/books', { limit: 100 });
+                const books = bRes.data && bRes.data.books ? bRes.data.books : (Array.isArray(bRes.data) ? bRes.data : []);
+                const bSelect = document.getElementById('issue-book-select');
+                bSelect.innerHTML = books.map(b => `<option value="${b.id}">${utils.escapeHtml(b.title)} - ${b.available_copies} avail [ID #${b.id}]</option>`).join('');
+            } catch (e) {}
+        }
+
         async function loadBorrowings() {
             const container = document.getElementById('borrowings-table-wrap');
             const search = document.getElementById('borrowing-search').value.trim();
@@ -230,7 +194,21 @@
                     status: status
                 });
 
-                const issues = res.data && res.data.issues ? res.data.issues : (Array.isArray(res.data) ? res.data : []);
+                let issues = res.data && res.data.issues ? res.data.issues : (Array.isArray(res.data) ? res.data : []);
+                
+                if (status) {
+                    if (status === 'overdue') {
+                        issues = issues.filter(i => i.status === 'overdue' || (i.status === 'issued' && new Date(i.due_date) < new Date()));
+                    } else {
+                        issues = issues.filter(i => i.status === status);
+                    }
+                }
+
+                if (search) {
+                    const s = search.toLowerCase();
+                    issues = issues.filter(i => (i.user_name || '').toLowerCase().includes(s) || (i.book_title || '').toLowerCase().includes(s));
+                }
+
                 const pagination = res.pagination || (res.data && res.data.pagination) || { total: issues.length, total_pages: 1 };
 
                 if (issues.length === 0) {
@@ -330,26 +308,35 @@
         }
 
         function openIssueModal() {
+            loadModalOptions();
             utils.modal('issue-modal').open();
         }
 
         async function processReturn(issueId, title) {
-            if (confirm(`Process check-in return for loan #${issueId} ("${title}")?`)) {
-                try {
-                    await api.post('/library/return', { issue_id: issueId });
-                    utils.toast("Book Returned", `Check-in complete for "${title}".`, "success");
-                    loadBorrowings();
-                } catch (err) {
-                    utils.toast("Return Error", err.message, "error");
-                }
+            const confirmed = await utils.confirm({
+                title: 'Check-in Book Return',
+                message: `Process check-in return for loan #${issueId} ("${title}") and restore available copies?`,
+                confirmText: 'Check-in Return',
+                type: 'primary',
+                icon: 'check-circle'
+            });
+
+            if (!confirmed) return;
+
+            try {
+                await api.post('/library/return', { issue_id: issueId });
+                utils.toast("Book Returned", `Check-in complete for "${title}".`, "success");
+                loadBorrowings();
+            } catch (err) {
+                utils.toast("Return Error", err.message, "danger");
             }
         }
 
         // Issue form
         document.getElementById('issue-form').addEventListener('submit', async function(e) {
             e.preventDefault();
-            const userId = parseInt(document.getElementById('issue-user-id').value, 10);
-            const bookId = parseInt(document.getElementById('issue-book-id').value, 10);
+            const userId = parseInt(document.getElementById('issue-user-select').value, 10);
+            const bookId = parseInt(document.getElementById('issue-book-select').value, 10);
             const dueDate = document.getElementById('issue-due-date').value;
 
             const btn = document.getElementById('submit-issue-btn');

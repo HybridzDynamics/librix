@@ -151,16 +151,42 @@
         function goToPage(p) { currentPage = p; loadUsers(); }
 
         async function changeRole(id, role, name) {
-            if (confirm(`Change role of "${name}" to ${role.toUpperCase()}?`)) {
-                try { await api.put('/admin/users', { id, role }); utils.toast("Role Updated", `Role changed to ${role} for ${name}.`, "success"); loadUsers(); }
-                catch (err) { utils.toast("Action Failed", err.message, "error"); }
+            const confirmed = await utils.confirm({
+                title: 'Change User Role',
+                message: `Change permission role of "${name}" to ${role.toUpperCase()}?`,
+                confirmText: 'Change Role',
+                type: 'primary',
+                icon: 'shield'
+            });
+
+            if (!confirmed) return;
+
+            try { 
+                await api.put('/admin/users', { id, role }); 
+                utils.toast("Role Updated", `Role changed to ${role} for ${name}.`, "success"); 
+                loadUsers(); 
+            } catch (err) { 
+                utils.toast("Action Failed", err.message, "danger"); 
             }
         }
 
         async function changeStatus(id, status, name) {
-            if (confirm(`Set account status of "${name}" to ${status.toUpperCase()}?`)) {
-                try { await api.put('/admin/users', { id, status }); utils.toast("Status Updated", `Account status changed to ${status}.`, "info"); loadUsers(); }
-                catch (err) { utils.toast("Action Failed", err.message, "error"); }
+            const confirmed = await utils.confirm({
+                title: 'Update User Status',
+                message: `Set account status of "${name}" to ${status.toUpperCase()}?`,
+                confirmText: 'Update Status',
+                type: status === 'suspended' ? 'danger' : 'primary',
+                icon: 'user-check'
+            });
+
+            if (!confirmed) return;
+
+            try { 
+                await api.put('/admin/users', { id, status }); 
+                utils.toast("Status Updated", `Account status changed to ${status}.`, "info"); 
+                loadUsers(); 
+            } catch (err) { 
+                utils.toast("Action Failed", err.message, "danger"); 
             }
         }
 

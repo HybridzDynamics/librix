@@ -125,9 +125,22 @@
         }
 
         async function deletePublisher(id, name) {
-            if (confirm(`Delete publisher "${name}"? Linked catalog titles will remain.`)) {
-                try { await api.delete(`/publishers/${id}`); utils.toast("Publisher Deleted", `Removed "${name}".`, "success"); loadPublishers(); }
-                catch (err) { utils.toast("Delete Failed", err.message, "error"); }
+            const confirmed = await utils.confirm({
+                title: 'Delete Publisher Record',
+                message: `Delete publisher "${name}"? Linked catalog titles will remain.`,
+                confirmText: 'Delete Publisher',
+                type: 'danger',
+                icon: 'trash-2'
+            });
+
+            if (!confirmed) return;
+
+            try { 
+                await api.delete(`/publishers/${id}`); 
+                utils.toast("Publisher Deleted", `Removed "${name}".`, "success"); 
+                loadPublishers(); 
+            } catch (err) { 
+                utils.toast("Delete Failed", err.message, "danger"); 
             }
         }
 

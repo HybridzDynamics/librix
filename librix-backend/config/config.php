@@ -3,7 +3,7 @@
 // LibriX Application Configuration
 
 define("APP_NAME", "LibriX");
-define("APP_VERSION", "1.0.0");
+define("APP_VERSION", "1.1.2");
 define("API_VERSION", "v1");
 define("APP_ENV", getenv("APP_ENV") ?: "development");
 
@@ -29,6 +29,12 @@ define("SESSION_NAME", "LIBRIX_SESSION");
 // CORS
 
 define("CORS_ORIGIN", getenv("CORS_ORIGIN") ?: (APP_ENV === "production" ? "http://127.0.0.1:5500/" : "*"));
+
+// Profile picture upload paths
+// Filesystem path for storing uploaded profile pictures (ensure this directory exists and is writable)
+define("PROFILE_PIC_UPLOAD_PATH", dirname(__DIR__) . "/uploads/profile_pics/");
+// URL path used by frontend to display profile pictures
+define("PROFILE_PIC_URL_PATH", "/uploads/profile_pics/");
 
 
 // Response

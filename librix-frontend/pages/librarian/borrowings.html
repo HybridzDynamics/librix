@@ -1,0 +1,176 @@
+<!doctype html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Org Circulation Desk | LibriX</title>
+    <link rel="icon" type="image/png" href="../../assets/images/favicon.png">
+    <link rel="stylesheet" href="../../assets/css/global.css">
+    <link rel="stylesheet" href="../../assets/css/dashboard.css">
+    <link rel="stylesheet" href="../../assets/css/admin.css">
+    <script src="../../assets/js/icons.js"></script>
+</head>
+
+<body>
+    <div class="dashboard-wrapper">
+        <!-- Sidebar -->
+        <aside class="dashboard-sidebar" id="sidebar">
+            <div class="sidebar-brand">
+                <img src="../../assets/images/logo.png" alt="LibriX Logo">
+                <h2>LibriX</h2>
+            </div>
+            <div class="sidebar-user">
+                <div class="sidebar-avatar" id="user-avatar" style="background:#7e22ce;color:#fff;">L</div>
+                <div class="sidebar-user-info">
+                    <div class="sidebar-user-name" id="user-name-display">Loading...</div>
+                    <div class="sidebar-user-role" style="color:#7e22ce;font-weight:600;">Librarian Officer</div>
+                </div>
+            </div>
+            <ul class="sidebar-menu">
+                <li class="sidebar-item"><a href="dashboard.html"><span class="sidebar-icon"><i data-lucide="layout-dashboard" data-size="18"></i></span><span>Org Dashboard</span></a></li>
+                <li class="sidebar-item"><a href="books.html"><span class="sidebar-icon"><i data-lucide="book-open" data-size="18"></i></span><span>Org Book Collection</span></a></li>
+                <li class="sidebar-item"><a href="borrowings.html" class="active"><span class="sidebar-icon"><i data-lucide="repeat" data-size="18"></i></span><span>Org Circulation</span></a></li>
+                <li class="sidebar-item"><a href="settings.html"><span class="sidebar-icon"><i data-lucide="settings" data-size="18"></i></span><span>Organization Settings</span></a></li>
+                <li class="sidebar-item" style="margin-top:12px;border-top:1px solid var(--border);padding-top:12px;"><a href="../catalogue.html"><span class="sidebar-icon"><i data-lucide="search" data-size="18"></i></span><span>Public Catalogue</span></a></li>
+            </ul>
+            <div class="sidebar-footer">
+                <button class="btn btn-outline btn-sm" style="width:100%;display:flex;align-items:center;justify-content:center;gap:8px;border-color:var(--border);" onclick="auth.logout()"><i data-lucide="log-out" data-size="16"></i> Sign Out</button>
+            </div>
+        </aside>
+
+        <!-- Main Area -->
+        <main class="dashboard-main">
+            <header class="dashboard-topbar">
+                <div style="display:flex;align-items:center;gap:14px;">
+                    <button class="mobile-menu-toggle" onclick="toggleSidebar()" style="display:flex;align-items:center;justify-content:center;"><i data-lucide="menu" data-size="22"></i></button>
+                    <span style="font-weight:700;font-size:var(--font-base);">Organization Circulation Desk</span>
+                </div>
+                <div class="topbar-actions" style="display:flex;align-items:center;gap:10px;">
+                    <span class="badge badge-accent" id="active-org-badge" style="background:#f3e8ff;color:#7e22ce;font-weight:600;padding:6px 12px;">ORG-MIT-01</span>
+                </div>
+            </header>
+
+            <div class="dashboard-body">
+                <div class="page-header" style="display:flex;justify-content:space-between;align-items:flex-end;flex-wrap:wrap;gap:12px;">
+                    <div>
+                        <h1 class="page-title">Active Circulation &amp; Loans</h1>
+                        <p class="page-subtitle">Track loans, process check-ins, and manage patron borrowing in <strong id="org-name-header">Active Org</strong>.</p>
+                    </div>
+                </div>
+
+                <div class="card" style="padding:24px;">
+                    <div class="table-responsive">
+                        <table class="table">
+                            <thead>
+                                <tr>
+                                    <th>Loan ID</th>
+                                    <th>Book Information</th>
+                                    <th>Patron Member</th>
+                                    <th>Issue Date</th>
+                                    <th>Due Date</th>
+                                    <th>Status</th>
+                                    <th style="text-align:right;">Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody id="circulation-tbody">
+                                <tr><td colspan="7" style="text-align:center;padding:40px;"><div class="spinner"></div></td></tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <script src="../../assets/js/api.js"></script>
+    <script src="../../assets/js/utils.js"></script>
+    <script src="../../assets/js/auth.js"></script>
+    <script>
+        if (!auth.requireLibrarian()) {}
+
+        const user = auth.getUser();
+        if (user) {
+            document.getElementById('user-name-display').textContent = user.name;
+            document.getElementById('user-avatar').textContent = user.name.charAt(0).toUpperCase();
+        }
+
+        function toggleSidebar() {
+            document.getElementById('sidebar').classList.toggle('is-open');
+        }
+
+        async function processReturn(issueId, title) {
+            const confirmed = await utils.confirm({
+                title: 'Check-in Book',
+                message: `Confirm check-in and return of "${title}" to the organization inventory?`,
+                confirmText: 'Check In',
+                type: 'primary',
+                icon: 'check-circle'
+            });
+
+            if (!confirmed) return;
+
+            try {
+                await api.post('/library/return', { issue_id: issueId });
+                utils.toast('Book Checked In', `"${title}" is now back in inventory.`, 'success');
+                loadCirculation();
+            } catch (err) {
+                utils.toast('Check-in Error', err.message, 'danger');
+            }
+        }
+
+        async function loadCirculation() {
+            const orgId = auth.getOrgId();
+            document.getElementById('active-org-badge').textContent = auth.getOrgCode();
+            document.getElementById('org-name-header').textContent = auth.getOrgName();
+
+            const tbody = document.getElementById('circulation-tbody');
+
+            try {
+                const res = await api.get('/admin/borrowings');
+                const list = res.data && res.data.issues ? res.data.issues : [];
+
+                if (list.length === 0) {
+                    tbody.innerHTML = `<tr><td colspan="7" style="text-align:center;padding:40px;color:var(--text-muted);">No active borrowings currently recorded for this organization.</td></tr>`;
+                    return;
+                }
+
+                tbody.innerHTML = list.map(item => `
+                    <tr>
+                        <td style="font-family:monospace;font-weight:700;">#${item.id}</td>
+                        <td>
+                            <div style="font-weight:700;color:var(--text-main);">${utils.escapeHtml(item.book_title || item.title || 'Book')}</div>
+                            <div style="font-size:12px;color:var(--text-muted);">${utils.escapeHtml(item.author_name || 'Academic Author')}</div>
+                        </td>
+                        <td>
+                            <div style="font-weight:600;">${utils.escapeHtml(item.user_name || 'Jane Patron')}</div>
+                            <div style="font-size:11px;color:var(--text-muted);">ID: ${item.user_id}</div>
+                        </td>
+                        <td>${utils.formatDate(item.issued_at)}</td>
+                        <td><strong style="color:${new Date(item.due_date) < new Date() ? 'var(--danger)' : 'var(--text-main)'};">${utils.formatDate(item.due_date)}</strong></td>
+                        <td>
+                            ${item.status === 'issued' ? '<span class="badge badge-primary">Active Loan</span>' : '<span class="badge badge-success">Returned</span>'}
+                        </td>
+                        <td style="text-align:right;">
+                            ${item.status === 'issued' ? `
+                                <button class="btn btn-outline btn-sm" onclick="processReturn(${item.id}, '${utils.escapeHtml(item.book_title || item.title)}')">
+                                    <i data-lucide="corner-down-left" data-size="14"></i> Return
+                                </button>
+                            ` : '<span style="color:var(--text-muted);font-size:12px;">Completed</span>'}
+                        </td>
+                    </tr>
+                `).join('');
+
+                if (window.lucide) {
+                    lucide.createIcons();
+                }
+
+            } catch (err) {
+                tbody.innerHTML = `<tr><td colspan="7" style="text-align:center;padding:30px;color:var(--danger);">Error loading circulation records.</td></tr>`;
+            }
+        }
+
+        loadCirculation();
+    </script>
+</body>
+</html>

@@ -2,13 +2,13 @@
 
 // Configuration
 
-require __DIR__ . "/../../../config/config.php";
-require __DIR__ . "/../../../config/database.php";
-require __DIR__ . "/../../../helpers/response.php";
-require __DIR__ . "/../../../helpers/validation.php";
-require __DIR__ . "/../../../helpers/functions.php";
-require __DIR__ . "/../../../middleware/auth.php";
-require __DIR__ . "/../../../middleware/admin.php";
+require_once __DIR__ . "/../../../config/config.php";
+require_once __DIR__ . "/../../../config/database.php";
+require_once __DIR__ . "/../../../helpers/response.php";
+require_once __DIR__ . "/../../../helpers/validation.php";
+require_once __DIR__ . "/../../../helpers/functions.php";
+require_once __DIR__ . "/../../../middleware/auth.php";
+require_once __DIR__ . "/../../../middleware/admin.php";
 
 
 // Authentication
@@ -55,8 +55,8 @@ if ($Method === "PUT" || $Method === "PATCH") {
     $NewStatus = $RequestData["status"] ?? $ExistingTarget["status"];
     $NewRole = $RequestData["role"] ?? $ExistingTarget["role"];
 
-    $ValidStatuses = ["active", "inactive", "suspended"];
-    $ValidRoles = ["user", "admin"];
+    $ValidStatuses = ["active", "inactive", "suspended", "pending"];
+    $ValidRoles = ["user", "librarian", "admin"];
 
     if (!in_array($NewStatus, $ValidStatuses, true)) {
         errorResponse("Invalid status value. Allowed: " . implode(", ", $ValidStatuses), 422);
