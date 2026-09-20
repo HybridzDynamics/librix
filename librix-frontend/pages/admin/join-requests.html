@@ -1,0 +1,360 @@
+<!doctype html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Organization Join Requests | Librix Admin</title>
+    <meta name="description" content="Manage organization join requests.">
+    <link rel="icon" type="image/png" href="../../assets/images/favicon.png">
+    <link rel="stylesheet" href="../../assets/css/global.css">
+    <link rel="stylesheet" href="../../assets/css/style.css">
+</head>
+
+<body>
+    <!-- Navigation Bar -->
+    <nav id="nav-bar">
+        <div class="nav-brand">
+            <a href="../../index.html" style="display: flex; align-items: center; gap: 10px; text-decoration: none;">
+                <img src="../../assets/images/logo.png" alt="Librix Logo" id="logo">
+                <h1 style="margin: 0;">Librix</h1>
+            </a>
+        </div>
+        <div class="nav-links">
+            <a href="../../index.html">Home</a>
+            <a href="../catalogue.html">Catalogue</a>
+            <a href="dashboard.html" class="active">Admin</a>
+        </div>
+        <div class="nav-auth" id="nav-auth-container">
+            <a href="#" onclick="auth.logout()" class="btn btn-primary btn-sm">Logout</a>
+        </div>
+    </nav>
+
+    <!-- Main Content -->
+    <main class="container" style="padding: 40px 20px;">
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 32px;">
+            <div>
+                <h1 style="margin-bottom: 8px;">Organization Join Requests</h1>
+                <p style="color: var(--text-muted);">Review and approve user requests to join organizations</p>
+            </div>
+            <div style="display: flex; gap: 12px;">
+                <select id="status-filter" class="form-select" style="width: auto;">
+                    <option value="">All Statuses</option>
+                    <option value="pending" selected>Pending</option>
+                    <option value="approved">Approved</option>
+                    <option value="rejected">Rejected</option>
+                </select>
+                <button class="btn btn-outline btn-sm" onclick="loadRequests()">
+                    Refresh
+                </button>
+            </div>
+        </div>
+
+        <!-- Stats -->
+        <div class="grid grid-3" style="margin-bottom: 32px;">
+            <div class="card" style="padding: 20px; text-align: center;">
+                <div style="font-size: 32px; font-weight: 700; color: var(--warning);" id="pending-count">0</div>
+                <div style="color: var(--text-muted); font-size: var(--font-sm);">Pending</div>
+            </div>
+            <div class="card" style="padding: 20px; text-align: center;">
+                <div style="font-size: 32px; font-weight: 700; color: var(--success);" id="approved-count">0</div>
+                <div style="color: var(--text-muted); font-size: var(--font-sm);">Approved</div>
+            </div>
+            <div class="card" style="padding: 20px; text-align: center;">
+                <div style="font-size: 32px; font-weight: 700; color: var(--danger);" id="rejected-count">0</div>
+                <div style="color: var(--text-muted); font-size: var(--font-sm);">Rejected</div>
+            </div>
+        </div>
+
+        <!-- Requests List -->
+        <div id="requests-container">
+            <div style="text-align: center; padding: 60px 20px;">
+                <div class="skeleton" style="height: 20px; width: 200px; margin: 0 auto 16px;"></div>
+                <div class="skeleton" style="height: 20px; width: 150px; margin: 0 auto;"></div>
+            </div>
+        </div>
+
+        <!-- Pagination -->
+        <div id="pagination-container" class="pagination-wrapper" style="display: none;"></div>
+    </main>
+
+    <!-- Approval Modal -->
+    <div id="approval-modal" class="modal" style="display: none;">
+        <div class="modal-content" style="max-width: 500px;">
+            <div class="modal-header">
+                <h3 id="modal-title">Process Join Request</h3>
+                <button class="modal-close" onclick="closeModal()">&times;</button>
+            </div>
+            <div class="modal-body">
+                <div id="modal-request-details" style="margin-bottom: 20px;"></div>
+                
+                <div class="form-group">
+                    <label for="action-select">Action</label>
+                    <select id="action-select" class="form-select">
+                        <option value="approve">Approve Request</option>
+                        <option value="reject">Reject Request</option>
+                    </select>
+                </div>
+
+                <div class="form-group">
+                    <label for="admin-notes">Admin Notes</label>
+                    <textarea id="admin-notes" class="form-textarea" rows="3" placeholder="Add any notes about this decision..."></textarea>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-outline" onclick="closeModal()">Cancel</button>
+                <button class="btn btn-primary" onclick="processRequest()">Submit Decision</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Footer -->
+    <footer style="background: #0f172a; color: #94a3b8; padding: 40px 0 20px; border-top: 1px solid #1e293b;">
+        <div class="container" style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 16px; font-size: var(--font-sm);">
+            <div style="display: flex; align-items: center; gap: 8px;">
+                <img src="../../assets/images/logo.png" alt="Librix Logo" style="width: 24px; height: 24px;">
+                <span style="color: #fff; font-weight: 700;">Librix</span>
+                <span>&copy; 2026 All rights reserved.</span>
+            </div>
+            <div style="display: flex; gap: 16px;">
+                <a href="../about.html" style="color: #94a3b8;">About</a>
+                <a href="../contact.html" style="color: #94a3b8;">Contact</a>
+                <a href="../status.html" style="color: #94a3b8;">Status</a>
+            </div>
+        </div>
+    </footer>
+
+    <!-- Scripts -->
+    <script src="../../assets/js/api.js"></script>
+    <script src="../../assets/js/utils.js"></script>
+    <script src="../../assets/js/auth.js"></script>
+    <script>
+        let currentPage = 1;
+        const pageSize = 20;
+        let totalPages = 1;
+        let currentRequestId = null;
+
+        // Check authentication and admin role
+        if (!auth.isLoggedIn()) {
+            window.location.href = "../login.html?redirect=" + encodeURIComponent(window.location.href);
+        }
+
+        const user = auth.getUser();
+        if (user.role !== 'admin') {
+            utils.toast("Access Denied", "This page is only accessible to administrators.", "error");
+            setTimeout(() => {
+                window.location.href = "../user/dashboard.html";
+            }, 1500);
+        }
+
+        // Load requests
+        async function loadRequests() {
+            const statusFilter = document.getElementById('status-filter').value;
+            const container = document.getElementById('requests-container');
+            
+            container.innerHTML = `
+                <div style="text-align: center; padding: 60px 20px;">
+                    <div class="skeleton" style="height: 20px; width: 200px; margin: 0 auto 16px;"></div>
+                    <div class="skeleton" style="height: 20px; width: 150px; margin: 0 auto;"></div>
+                </div>
+            `;
+
+            try {
+                const query = {
+                    page: currentPage,
+                    limit: pageSize
+                };
+                
+                if (statusFilter) {
+                    query.status = statusFilter;
+                }
+
+                const res = await api.get('/join/requests', query);
+                const requests = res.data || [];
+                const pagination = res.pagination || { total: 0, total_pages: 1 };
+
+                totalPages = pagination.total_pages || 1;
+                updateStats(requests);
+
+                if (requests.length === 0) {
+                    renderEmptyState();
+                    return;
+                }
+
+                renderRequests(requests);
+                renderPagination(pagination.page || currentPage, totalPages);
+
+            } catch (err) {
+                container.innerHTML = `
+                    <div style="text-align: center; padding: 60px 20px;">
+                        <p style="color: var(--danger); font-weight: 600; margin-bottom: 12px;">Failed to load requests.</p>
+                        <button class="btn btn-outline btn-sm" onclick="loadRequests()">Try Again</button>
+                    </div>
+                `;
+            }
+        }
+
+        function updateStats(requests) {
+            const pending = requests.filter(r => r.status === 'pending').length;
+            const approved = requests.filter(r => r.status === 'approved').length;
+            const rejected = requests.filter(r => r.status === 'rejected').length;
+
+            document.getElementById('pending-count').textContent = pending;
+            document.getElementById('approved-count').textContent = approved;
+            document.getElementById('rejected-count').textContent = rejected;
+        }
+
+        function renderRequests(requests) {
+            const container = document.getElementById('requests-container');
+            
+            container.innerHTML = requests.map(request => {
+                const statusBadge = getStatusBadge(request.status);
+                const createdDate = new Date(request.created_at).toLocaleDateString();
+                
+                return `
+                    <div class="card" style="padding: 24px; margin-bottom: 16px;">
+                        <div style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 16px;">
+                            <div>
+                                <h3 style="margin-bottom: 4px;">${utils.escapeHtml(request.user_name)}</h3>
+                                <div style="color: var(--text-muted); font-size: var(--font-sm);">
+                                    ${utils.escapeHtml(request.user_email)} wants to join ${utils.escapeHtml(request.org_name)}
+                                </div>
+                            </div>
+                            <div style="display: flex; gap: 8px; align-items: center;">
+                                ${statusBadge}
+                                <span style="color: var(--text-muted); font-size: var(--font-sm);">${createdDate}</span>
+                            </div>
+                        </div>
+                        
+                        <div style="margin-bottom: 8px;">
+                            <strong>Organization:</strong> ${utils.escapeHtml(request.org_name)} (${utils.escapeHtml(request.org_code)})
+                        </div>
+                        
+                        ${request.message ? `
+                            <div style="margin-bottom: 16px; padding: 12px; background: var(--bg-light); border-radius: 8px;">
+                                <strong>Message:</strong> ${utils.escapeHtml(request.message)}
+                            </div>
+                        ` : ''}
+                        
+                        ${request.status === 'pending' ? `
+                            <div style="display: flex; gap: 8px;">
+                                <button class="btn btn-success btn-sm" onclick="openApprovalModal(${request.id}, 'approve')">
+                                    Approve
+                                </button>
+                                <button class="btn btn-danger btn-sm" onclick="openApprovalModal(${request.id}, 'reject')">
+                                    Reject
+                                </button>
+                            </div>
+                        ` : ''}
+                    </div>
+                `;
+            }).join('');
+        }
+
+        function getStatusBadge(status) {
+            const badges = {
+                pending: '<span class="badge badge-warning">Pending</span>',
+                approved: '<span class="badge badge-success">Approved</span>',
+                rejected: '<span class="badge badge-danger">Rejected</span>'
+            };
+            return badges[status] || '<span class="badge badge-secondary">Unknown</span>';
+        }
+
+        function renderEmptyState() {
+            document.getElementById('requests-container').innerHTML = `
+                <div style="grid-column: 1/-1;" class="empty-state">
+                    <div class="empty-state-icon">📋</div>
+                    <div class="empty-state-title">No join requests found</div>
+                    <div class="empty-state-desc">There are no requests matching your current filter.</div>
+                </div>
+            `;
+            document.getElementById('pagination-container').style.display = "none";
+        }
+
+        function renderPagination(current, total) {
+            if (total <= 1) {
+                document.getElementById('pagination-container').style.display = "none";
+                return;
+            }
+
+            document.getElementById('pagination-container').style.display = "flex";
+            let html = `
+                <button class="page-btn" ${current <= 1 ? 'disabled' : ''} onclick="goToPage(${current - 1})">
+                    ← Prev
+                </button>
+            `;
+
+            for (let i = 1; i <= total; i++) {
+                if (i === 1 || i === total || (i >= current - 2 && i <= current + 2)) {
+                    html += `
+                        <button class="page-btn ${i === current ? 'is-active' : ''}" onclick="goToPage(${i})">
+                            ${i}
+                        </button>
+                    `;
+                } else if (i === current - 3 || i === current + 3) {
+                    html += `<span style="padding: 0 4px; color: var(--text-subtle);">...</span>`;
+                }
+            }
+
+            html += `
+                <button class="page-btn" ${current >= total ? 'disabled' : ''} onclick="goToPage(${current + 1})">
+                    Next →
+                </button>
+            `;
+
+            document.getElementById('pagination-container').innerHTML = html;
+        }
+
+        function goToPage(page) {
+            currentPage = page;
+            loadRequests();
+            window.scrollTo({ top: 200, behavior: 'smooth' });
+        }
+
+        function openApprovalModal(requestId, action) {
+            currentRequestId = requestId;
+            const actionSelect = document.getElementById('action-select');
+            actionSelect.value = action;
+            document.getElementById('approval-modal').style.display = 'flex';
+        }
+
+        function closeModal() {
+            document.getElementById('approval-modal').style.display = 'none';
+            currentRequestId = null;
+            document.getElementById('admin-notes').value = '';
+        }
+
+        async function processRequest() {
+            if (!currentRequestId) return;
+
+            const action = document.getElementById('action-select').value;
+            const adminNotes = document.getElementById('admin-notes').value.trim();
+
+            try {
+                await api.post('/join/approve', {
+                    request_id: currentRequestId,
+                    action: action,
+                    admin_notes: adminNotes
+                });
+
+                utils.toast("Success", `Request ${action}ed successfully`, "success");
+                closeModal();
+                loadRequests();
+
+            } catch (err) {
+                utils.toast("Error", err.message || "Failed to process request", "error");
+            }
+        }
+
+        // Event listeners
+        document.getElementById('status-filter').addEventListener('change', () => {
+            currentPage = 1;
+            loadRequests();
+        });
+
+        // Initialize
+        loadRequests();
+    </script>
+</body>
+
+</html>

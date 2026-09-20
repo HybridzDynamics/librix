@@ -53,6 +53,24 @@
                 </div>
 
                 <div class="grid grid-2" style="gap:32px;align-items:start;">
+                    <!-- Profile Picture Card -->
+                    <div class="card" style="padding:28px;text-align:center;">
+                        <h3 style="font-size:var(--font-lg);font-weight:700;margin-bottom:20px;display:flex;align-items:center;gap:8px;justify-content:center;">
+                            <i data-lucide="camera" data-size="20"></i> Profile Picture
+                        </h3>
+                        <div style="margin-bottom:20px;">
+                            <div id="profile-picture-preview" style="width:120px;height:120px;border-radius:50%;background:#f1f5f9;margin:0 auto;overflow:hidden;display:flex;align-items:center;justify-content:center;border:3px solid var(--border);">
+                                <span id="profile-picture-placeholder" style="font-size:48px;color:#94a3b8;">👤</span>
+                                <img id="profile-picture-img" src="" alt="Profile Picture" style="width:100%;height:100%;object-fit:cover;display:none;">
+                            </div>
+                        </div>
+                        <input type="file" id="profile-picture-input" accept="image/jpeg,image/jpg,image/png,image/gif,image/webp" style="display:none;">
+                        <button type="button" id="upload-profile-btn" class="btn btn-outline btn-sm" style="width:100%;display:flex;align-items:center;justify-content:center;gap:6px;">
+                            <i data-lucide="upload" data-size="16"></i> Upload New Picture
+                        </button>
+                        <span class="form-hint" style="display:block;margin-top:8px;">JPG, PNG, GIF, WebP (max 5MB)</span>
+                    </div>
+
                     <!-- Edit Profile Card -->
                     <div class="card" style="padding:28px;">
                         <h3 style="font-size:var(--font-lg);font-weight:700;margin-bottom:20px;display:flex;align-items:center;gap:8px;">
@@ -67,6 +85,18 @@
                                 <label for="profile-email" class="form-label">Email Address (Read-Only)</label>
                                 <input type="email" id="profile-email" class="form-input" disabled style="background-color:#f1f5f9;cursor:not-allowed;">
                                 <span class="form-hint">Email address is tied to your library card identity.</span>
+                            </div>
+                            <div class="form-group">
+                                <label for="profile-phone" class="form-label">Phone Number</label>
+                                <input type="tel" id="profile-phone" class="form-input" placeholder="+1 234 567 8900">
+                            </div>
+                            <div class="form-group">
+                                <label for="profile-address" class="form-label">Address</label>
+                                <textarea id="profile-address" class="form-input" rows="3" placeholder="Your address"></textarea>
+                            </div>
+                            <div class="form-group">
+                                <label for="profile-bio" class="form-label">Bio</label>
+                                <textarea id="profile-bio" class="form-input" rows="2" placeholder="Tell us about yourself"></textarea>
                             </div>
                             <div class="form-group">
                                 <label class="form-label">Account Role &amp; Status</label>
@@ -112,6 +142,7 @@
     <script src="../../assets/js/api.js"></script>
     <script src="../../assets/js/utils.js"></script>
     <script src="../../assets/js/auth.js"></script>
+    <script src="../../assets/js/upload.js"></script>
     <script>
         if (!auth.requireAuth()) {}
         const user = auth.getUser();
@@ -122,24 +153,83 @@
             document.getElementById('profile-email').value = user.email;
             document.getElementById('profile-role').textContent = (user.role || 'patron').toUpperCase();
             document.getElementById('profile-status').textContent = (user.status || 'active').toUpperCase();
+            
+            // Load additional profile fields
+            if (user.phone) document.getElementById('profile-phone').value = user.phone;
+            if (user.address) document.getElementById('profile-address').value = user.address;
+            if (user.bio) document.getElementById('profile-bio').value = user.bio;
+            
+            // Load profile picture
+            if (user.profile_picture_url) {
+                const img = document.getElementById('profile-picture-img');
+                img.src = user.profile_picture_url;
+                img.style.display = 'block';
+                document.getElementById('profile-picture-placeholder').style.display = 'none';
+            }
         }
         function toggleSidebar() { document.getElementById('sidebar').classList.toggle('is-open'); }
+
+        // Profile picture upload
+        document.getElementById('upload-profile-btn').addEventListener('click', function() {
+            document.getElementById('profile-picture-input').click();
+        });
+
+        document.getElementById('profile-picture-input').addEventListener('change', async function(e) {
+            const file = e.target.files[0];
+            if (!file) return;
+
+            try {
+                upload.validateImage(file);
+                
+                // Show preview
+                upload.previewImage(file, document.getElementById('profile-picture-img'));
+                document.getElementById('profile-picture-placeholder').style.display = 'none';
+                
+                // Upload
+                const result = await upload.uploadProfilePicture(file);
+                
+                // Update user data
+                user.profile_picture_url = result.file_url;
+                localStorage.setItem('librix_user', JSON.stringify(user));
+                
+                // Update avatar in sidebar
+                document.getElementById('user-avatar').style.backgroundImage = `url(${result.file_url})`;
+                document.getElementById('user-avatar').style.backgroundSize = 'cover';
+                document.getElementById('user-avatar').textContent = '';
+                
+                utils.toast("Success", "Profile picture uploaded successfully", "success");
+            } catch (error) {
+                utils.toast("Upload Error", error.message, "error");
+                // Reset preview on error
+                document.getElementById('profile-picture-img').style.display = 'none';
+                document.getElementById('profile-picture-placeholder').style.display = 'block';
+            }
+        });
 
         document.getElementById('profile-form').addEventListener('submit', async function(e) {
             e.preventDefault();
             const name = document.getElementById('profile-name').value.trim();
+            const phone = document.getElementById('profile-phone').value.trim();
+            const address = document.getElementById('profile-address').value.trim();
+            const bio = document.getElementById('profile-bio').value.trim();
+            
             if (!name) { utils.toast("Validation Error", "Full name cannot be empty.", "warning"); return; }
+            
             const btn = document.getElementById('save-profile-btn');
             btn.disabled = true;
+            
             try {
-                await api.put('/users/update', { name });
+                await api.put('/users/update', { name, phone, address, bio });
                 user.name = name;
+                user.phone = phone;
+                user.address = address;
+                user.bio = bio;
                 localStorage.setItem('librix_user', JSON.stringify(user));
                 document.getElementById('user-name-display').textContent = name;
                 document.getElementById('user-avatar').textContent = name.charAt(0).toUpperCase();
-                utils.toast("Profile Updated", "Your account name has been updated.", "success");
+                utils.toast("Profile Updated", "Your account has been updated.", "success");
             } catch (err) {
-                utils.toast("Profile Updated", "Profile updated successfully.", "success");
+                utils.toast("Error", err.message || "Failed to update profile.", "error");
             } finally { btn.disabled = false; }
         });
 

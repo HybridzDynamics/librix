@@ -7,6 +7,7 @@ require_once __DIR__ . "/../../../config/database.php";
 require_once __DIR__ . "/../../../helpers/response.php";
 require_once __DIR__ . "/../../../helpers/validation.php";
 require_once __DIR__ . "/../../../helpers/functions.php";
+require_once __DIR__ . "/../../../helpers/email.php";
 require_once __DIR__ . "/../../../middleware/auth.php";
 require_once __DIR__ . "/../../../middleware/admin.php";
 
@@ -104,9 +105,9 @@ try {
             $FinalOrgId = (int)$pdo->lastInsertId();
         }
         
-        // Update user to librarian role and assign to org
+        // Update user to librarian role and assign to org (preserve admin role)
         $Stmt = $pdo->prepare(
-            "UPDATE users SET role = 'librarian', org_id = ?, status = 'active' WHERE id = ?"
+            "UPDATE users SET role = CASE WHEN role = 'admin' THEN 'admin' ELSE 'librarian' END, org_id = ?, status = 'active' WHERE id = ?"
         );
         $Stmt->execute([$FinalOrgId, $Request["user_id"]]);
         
@@ -118,6 +119,14 @@ try {
         
         logAudit($User["id"], "librarian_approved", "librarian_requests", $RequestId, "Approved librarian request ID: $RequestId");
         
+        // Send email notification
+        $OrgStmt = $pdo->prepare("SELECT name FROM organizations WHERE id = ? LIMIT 1");
+        $OrgStmt->execute([$FinalOrgId]);
+        $Org = $OrgStmt->fetch();
+        $OrgName = $Org ? $Org["name"] : "Library";
+        
+        sendLibrarianApprovalNotification($Request["user_id"], $OrgName, "approved");
+        
     } else {
         // Reject request
         $Stmt = $pdo->prepare(
@@ -126,6 +135,9 @@ try {
         $Stmt->execute([$AdminNotes ?: null, (int)$RequestId]);
         
         logAudit($User["id"], "librarian_rejected", "librarian_requests", $RequestId, "Rejected librarian request ID: $RequestId");
+        
+        // Send email notification
+        sendLibrarianApprovalNotification($Request["user_id"], "Library", "rejected");
     }
     
     $pdo->commit();

@@ -46,6 +46,10 @@ $RequestData = getJsonInput();
 $Name = array_key_exists("name", $RequestData) ? trim($RequestData["name"]) : $ExistingUser["name"];
 $Email = array_key_exists("email", $RequestData) ? trim($RequestData["email"]) : $ExistingUser["email"];
 $Password = array_key_exists("password", $RequestData) && !empty($RequestData["password"]) ? $RequestData["password"] : null;
+$CurrentPassword = array_key_exists("current_password", $RequestData) ? $RequestData["current_password"] : null;
+$Phone = array_key_exists("phone", $RequestData) ? trim($RequestData["phone"]) : null;
+$Address = array_key_exists("address", $RequestData) ? trim($RequestData["address"]) : null;
+$Bio = array_key_exists("bio", $RequestData) ? trim($RequestData["bio"]) : null;
 
 
 // Validation
@@ -95,7 +99,16 @@ if ($EmailError !== null) {
 }
 
 if ($Password !== null) {
-    $PasswordError = minLength($Password, 8, "Password");
+    // Verify current password if provided
+    if ($CurrentPassword !== null) {
+        if (!password_verify($CurrentPassword, $ExistingUser["password"])) {
+            $Errors["current_password"] = "Current password is incorrect";
+        }
+    } else {
+        $Errors["current_password"] = "Current password is required to change password";
+    }
+    
+    $PasswordError = minLength($Password, 6, "Password");
 
     if ($PasswordError !== null) {
         $Errors["password"] = $PasswordError;
@@ -103,7 +116,7 @@ if ($Password !== null) {
 }
 
 if (hasValidationErrors($Errors)) {
-    ValidationerrorResponse($Errors);
+    validationErrorResponse($Errors);
 }
 
 
@@ -117,7 +130,10 @@ try {
             "UPDATE users
              SET name = ?,
                  email = ?,
-                 password = ?
+                 password = ?,
+                 phone = ?,
+                 address = ?,
+                 bio = ?
              WHERE id = ?"
         );
 
@@ -125,6 +141,9 @@ try {
             $Name,
             $Email,
             $HashedPassword,
+            $Phone,
+            $Address,
+            $Bio,
             $UserId
         ]);
 
@@ -132,13 +151,19 @@ try {
         $Stmt = $pdo->prepare(
             "UPDATE users
              SET name = ?,
-                 email = ?
+                 email = ?,
+                 phone = ?,
+                 address = ?,
+                 bio = ?
              WHERE id = ?"
         );
 
         $Stmt->execute([
             $Name,
             $Email,
+            $Phone,
+            $Address,
+            $Bio,
             $UserId
         ]);
     }
@@ -152,7 +177,7 @@ try {
 
 try {
     $Stmt = $pdo->prepare(
-        "SELECT id, name, email, role, status, created_at, updated_at
+        "SELECT id, name, email, role, status, profile_picture_url, phone, address, bio, created_at, updated_at
          FROM users
          WHERE id = ?
          LIMIT 1"

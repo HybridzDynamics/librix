@@ -23,6 +23,62 @@
     transition: transform var(--transition-base);
 }
 
+@media (max-width: 768px) {
+    .dashboard-sidebar {
+        position: fixed;
+        left: -100%;
+        width: 280px;
+        transform: translateX(0);
+    }
+    
+    .dashboard-sidebar.is-open {
+        transform: translateX(100%);
+        box-shadow: var(--shadow-xl);
+    }
+    
+    .mobile-menu-toggle {
+        display: flex !important;
+    }
+    
+    .dashboard-main {
+        margin-left: 0;
+    }
+    
+    .dashboard-topbar {
+        padding: 0 16px;
+    }
+    
+    .dashboard-body {
+        padding: 20px 16px;
+    }
+}
+
+@media (max-width: 640px) {
+    .dashboard-sidebar {
+        width: 100%;
+    }
+    
+    .sidebar-brand {
+        padding: 16px;
+    }
+    
+    .sidebar-user {
+        padding: 16px;
+    }
+    
+    .dashboard-body {
+        padding: 16px 12px;
+    }
+    
+    .page-header {
+        margin-bottom: 20px;
+    }
+    
+    .page-title {
+        font-size: var(--font-xl);
+    }
+}
+
 .sidebar-brand {
     padding: 24px;
     display: flex;
@@ -214,23 +270,75 @@
     font-size: 24px;
     cursor: pointer;
     color: var(--text-main);
+    padding: 8px;
 }
 
-@media (max-width: 900px) {
+@media (max-width: 768px) {
     .dashboard-sidebar {
         position: fixed;
-        left: -260px;
-    }
-    .dashboard-sidebar.is-open {
-        transform: translateX(260px);
+        left: -100%;
+        width: 280px;
+        transform: translateX(0);
         box-shadow: var(--shadow-xl);
+        z-index: 1000;
     }
+    
+    .dashboard-sidebar.is-open {
+        transform: translateX(100%);
+    }
+    
     .mobile-menu-toggle {
-        display: block;
+        display: flex !important;
     }
+    
+    .dashboard-main {
+        margin-left: 0;
+    }
+    
     .dashboard-topbar {
         padding: 0 16px;
     }
+    
+    .dashboard-body {
+        padding: 20px 16px;
+    }
+}
+
+@media (max-width: 640px) {
+    .dashboard-sidebar {
+        width: 100%;
+    }
+    
+    .sidebar-brand {
+        padding: 16px;
+    }
+    
+    .sidebar-user {
+        padding: 16px;
+    }
+    
+    .dashboard-body {
+        padding: 16px 12px;
+    }
+    
+    .page-header {
+        margin-bottom: 20px;
+    }
+    
+    .page-title {
+        font-size: var(--font-xl);
+    }
+}
+
+@media (max-width: 900px) {
+    .dashboard-main {
+        margin-left: 0;
+    }
+    
+    .dashboard-topbar {
+        padding: 0 16px;
+    }
+    
     .dashboard-body {
         padding: 20px 16px;
     }

@@ -1,0 +1,192 @@
+<!doctype html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Librarian Request | Librix</title>
+    <meta name="description" content="Request librarian privileges for your library organization.">
+    <link rel="icon" type="image/png" href="../assets/images/favicon.png">
+    <link rel="stylesheet" href="../assets/css/global.css">
+    <link rel="stylesheet" href="../assets/css/style.css">
+</head>
+
+<body>
+    <!-- Navigation Bar -->
+    <nav id="nav-bar">
+        <div class="nav-brand">
+            <a href="../index.html" style="display: flex; align-items: center; gap: 10px; text-decoration: none;">
+                <img src="../assets/images/logo.png" alt="Librix Logo" id="logo">
+                <h1 style="margin: 0;">Librix</h1>
+            </a>
+        </div>
+        <div class="nav-links">
+            <a href="../index.html">Home</a>
+            <a href="catalogue.html">Catalogue</a>
+            <a href="about.html">About</a>
+            <a href="contact.html">Contact</a>
+        </div>
+        <div class="nav-auth" id="nav-auth-container">
+            <a href="login.html" class="btn btn-outline btn-sm">Login</a>
+            <a href="register.html" class="btn btn-primary btn-sm">Sign Up</a>
+        </div>
+    </nav>
+
+    <!-- Main Content -->
+    <main class="container" style="padding: 60px 20px; max-width: 800px;">
+        <div class="card" style="padding: 40px;">
+            <div style="text-align: center; margin-bottom: 40px;">
+                <div style="font-size: 48px; margin-bottom: 16px;">📚</div>
+                <h1 style="margin-bottom: 12px;">Become a Librarian</h1>
+                <p style="color: var(--text-muted); max-width: 500px; margin: 0 auto;">
+                    Request librarian privileges to manage your library's collection, users, and operations. 
+                    Your request will be reviewed by system administrators.
+                </p>
+            </div>
+
+            <form id="librarian-request-form">
+                <div class="form-group">
+                    <label for="library-name">Library Name *</label>
+                    <input
+                        type="text"
+                        id="library-name"
+                        name="library_name"
+                        class="form-input"
+                        placeholder="e.g., City Public Library"
+                        required
+                    >
+                    <small class="form-help">The official name of your library or organization</small>
+                </div>
+
+                <div class="form-group">
+                    <label for="library-address">Library Address</label>
+                    <textarea
+                        id="library-address"
+                        name="library_address"
+                        class="form-textarea"
+                        rows="3"
+                        placeholder="e.g., 123 Main Street, City, State 12345"
+                    ></textarea>
+                    <small class="form-help">Physical address of your library (optional)</small>
+                </div>
+
+                <div class="form-group">
+                    <label for="library-phone">Library Phone</label>
+                    <input
+                        type="tel"
+                        id="library-phone"
+                        name="library_phone"
+                        class="form-input"
+                        placeholder="e.g., (555) 123-4567"
+                    >
+                    <small class="form-help">Contact phone number (optional)</small>
+                </div>
+
+                <div class="form-group">
+                    <label for="message">Additional Information</label>
+                    <textarea
+                        id="message"
+                        name="message"
+                        class="form-textarea"
+                        rows="4"
+                        placeholder="Tell us about your library, expected number of users, or any specific requirements..."
+                    ></textarea>
+                    <small class="form-help">Any additional information that might help with your approval</small>
+                </div>
+
+                <div style="background: var(--info-bg); border: 1px solid var(--info-border); padding: 16px; border-radius: 8px; margin-bottom: 24px;">
+                    <h4 style="margin: 0 0 8px 0; color: var(--info-color);">What happens next?</h4>
+                    <ul style="margin: 0; padding-left: 20px; color: var(--text-muted); font-size: var(--font-sm);">
+                        <li>Your request will be reviewed by system administrators</li>
+                        <li>Upon approval, you'll receive librarian privileges</li>
+                        <li>You can then manage your organization's books and users</li>
+                        <li>You'll be able to add your organization logo and customize settings</li>
+                    </ul>
+                </div>
+
+                <div class="form-actions">
+                    <button type="submit" class="btn btn-primary" id="submit-btn">
+                        Submit Request
+                    </button>
+                    <a href="user/dashboard.html" class="btn btn-outline">
+                        Cancel
+                    </a>
+                </div>
+            </form>
+        </div>
+    </main>
+
+    <!-- Footer -->
+    <footer style="background: #0f172a; color: #94a3b8; padding: 40px 0 20px; border-top: 1px solid #1e293b;">
+        <div class="container" style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 16px; font-size: var(--font-sm);">
+            <div style="display: flex; align-items: center; gap: 8px;">
+                <img src="../assets/images/logo.png" alt="Librix Logo" style="width: 24px; height: 24px;">
+                <span style="color: #fff; font-weight: 700;">Librix</span>
+                <span>&copy; 2026 All rights reserved.</span>
+            </div>
+            <div style="display: flex; gap: 16px;">
+                <a href="about.html" style="color: #94a3b8;">About</a>
+                <a href="contact.html" style="color: #94a3b8;">Contact</a>
+                <a href="status.html" style="color: #94a3b8;">Status</a>
+            </div>
+        </div>
+    </footer>
+
+    <!-- Scripts -->
+    <script src="../assets/js/api.js"></script>
+    <script src="../assets/js/utils.js"></script>
+    <script src="../assets/js/auth.js"></script>
+    <script>
+        // Check authentication
+        if (!auth.isLoggedIn()) {
+            utils.toast("Authentication Required", "Please log in to request librarian privileges.", "warning");
+            setTimeout(() => {
+                window.location.href = "login.html?redirect=" + encodeURIComponent(window.location.href);
+            }, 1500);
+        }
+
+        // Update navigation based on auth state
+        if (auth.isLoggedIn()) {
+            const user = auth.getUser();
+            document.getElementById('nav-auth-container').innerHTML = `
+                <a href="user/dashboard.html" class="btn btn-outline btn-sm">Dashboard</a>
+                <a href="#" onclick="auth.logout()" class="btn btn-primary btn-sm">Logout</a>
+            `;
+        }
+
+        // Form submission
+        document.getElementById('librarian-request-form').addEventListener('submit', async function(e) {
+            e.preventDefault();
+            
+            const submitBtn = document.getElementById('submit-btn');
+            const originalText = submitBtn.textContent;
+            submitBtn.disabled = true;
+            submitBtn.textContent = 'Submitting...';
+
+            const formData = {
+                library_name: document.getElementById('library-name').value.trim(),
+                library_address: document.getElementById('library-address').value.trim(),
+                library_phone: document.getElementById('library-phone').value.trim(),
+                message: document.getElementById('message').value.trim()
+            };
+
+            try {
+                const response = await api.post('/librarian/request', formData);
+                
+                utils.toast("Request Submitted", "Your librarian request has been submitted for review. You'll be notified when it's approved.", "success");
+                
+                // Redirect to dashboard after delay
+                setTimeout(() => {
+                    window.location.href = "user/dashboard.html";
+                }, 2000);
+                
+            } catch (error) {
+                utils.toast("Submission Failed", error.message || "Failed to submit librarian request. Please try again.", "error");
+                submitBtn.disabled = false;
+                submitBtn.textContent = originalText;
+            }
+        });
+    </script>
+</body>
+
+</html>

@@ -50,16 +50,6 @@ if ($basePath !== "" && !str_contains($path, "api")) {
 }
 
 
-// Docs Route (HTML documentation)
-
-if (
-    isset($parts[0]) &&
-    $parts[0] === "docs"
-) {
-    require_once __DIR__ . "/docs/index.php";
-    exit;
-}
-
 // Remove index.php from path if present
 if (str_starts_with($path, "index.php")) {
     $path = trim(substr($path, strlen("index.php")), "/");
@@ -72,6 +62,17 @@ $path = ltrim($path, "/");
 // Path Parts
 
 $parts = $path === "" ? [] : explode("/", $path);
+
+
+// Docs Route (HTML documentation)
+
+if (
+    isset($parts[0]) &&
+    $parts[0] === "docs"
+) {
+    require_once __DIR__ . "/docs/index.php";
+    exit;
+}
 
 
 // Home
@@ -181,24 +182,19 @@ if (
     $parts[2] === "books"
 ) {
     $bookId = $parts[3] ?? null;
+    $bookSubRoute = $parts[3] ?? null;
 
-    if ($method === "GET" && $bookId === null) {
+    if ($method === "GET" && $bookSubRoute === "search") {
+        require_once __DIR__ . "/api/v1/books/search.php";
+    } elseif ($method === "GET" && $bookId === null) {
         require_once __DIR__ . "/api/v1/books/get.php";
-    }
-
-    if ($method === "POST" && $bookId === null) {
+    } elseif ($method === "POST" && $bookId === null) {
         require_once __DIR__ . "/api/v1/books/create.php";
-    }
-
-    if ($method === "GET" && $bookId !== null) {
+    } elseif ($method === "GET" && $bookId !== null) {
         require_once __DIR__ . "/api/v1/books/get.php";
-    }
-
-    if ($method === "PUT" && $bookId !== null) {
+    } elseif ($method === "PUT" && $bookId !== null) {
         require_once __DIR__ . "/api/v1/books/update.php";
-    }
-
-    if ($method === "DELETE" && $bookId !== null) {
+    } elseif ($method === "DELETE" && $bookId !== null) {
         require_once __DIR__ . "/api/v1/books/delete.php";
     }
 
@@ -331,7 +327,7 @@ if (
     }
 
     if ($method === "POST") {
-        require_once __DIR__ . "/api/v1/reviews/create.php";
+        require_once __DIR__ . "/api/v1/reviews/post.php";
     }
 
     if ($method === "DELETE") {
@@ -456,6 +452,80 @@ if (
         default:
             notFoundResponse("Library route not found");
     }
+}
+
+
+// Recommendations Routes
+
+if (
+    isset($parts[0], $parts[1], $parts[2]) &&
+    $parts[0] === "api" &&
+    $parts[1] === API_VERSION &&
+    $parts[2] === "recommendations"
+) {
+    if ($method === "GET") {
+        require_once __DIR__ . "/api/v1/recommendations/get.php";
+    }
+
+    methodNotAllowedResponse(["GET"]);
+}
+
+
+// Fines Routes
+
+if (
+    isset($parts[0], $parts[1], $parts[2]) &&
+    $parts[0] === "api" &&
+    $parts[1] === API_VERSION &&
+    $parts[2] === "fines"
+) {
+    $fineSubRoute = $parts[3] ?? null;
+    
+    if ($method === "GET" && $fineSubRoute === null) {
+        require_once __DIR__ . "/api/v1/fines/get.php";
+    }
+
+    if ($method === "POST" && $fineSubRoute === "pay") {
+        require_once __DIR__ . "/api/v1/fines/pay.php";
+    }
+
+    methodNotAllowedResponse(["GET", "POST"]);
+}
+
+
+// Upload Routes
+
+if (
+    isset($parts[0], $parts[1], $parts[2]) &&
+    $parts[0] === "api" &&
+    $parts[1] === API_VERSION &&
+    $parts[2] === "upload"
+) {
+    if ($method === "POST") {
+        require_once __DIR__ . "/api/v1/upload/index.php";
+    }
+
+    methodNotAllowedResponse(["POST"]);
+}
+
+
+// File Upload Routes (Serve uploaded files)
+
+if (
+    isset($parts[0]) &&
+    $parts[0] === "uploads"
+) {
+    $FilePath = __DIR__ . "/" . implode("/", $parts);
+    
+    if (file_exists($FilePath) && is_file($FilePath)) {
+        $MimeType = mime_content_type($FilePath);
+        header("Content-Type: $MimeType");
+        header("Content-Length: " . filesize($FilePath));
+        readfile($FilePath);
+        exit;
+    }
+    
+    notFoundResponse("File not found");
 }
 
 

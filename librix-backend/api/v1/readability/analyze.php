@@ -18,48 +18,63 @@ if ($_SERVER["REQUEST_METHOD"] !== "POST") {
 }
 
 
-// Authentication (requires auth, preferably admin or authenticated user)
+// Authentication
 
 $User = requireAuth();
-$UserId = (int)$User["id"];
 
 
 // Request Data
 
-$Input = getJsonInput();
-$BookId = $Input["book_id"] ?? null;
-$Text = $Input["text"] ?? null;
+$RequestData = getJsonInput();
+
+$BookId = $RequestData["book_id"] ?? null;
+$Text = trim($RequestData["text"] ?? "");
 
 
 // Validation
 
+$Errors = [];
+
 $IdError = validatePositiveInteger($BookId, "Book ID");
 if ($IdError !== null) {
-    errorResponse($IdError, 400);
+    $Errors["book_id"] = $IdError;
 }
 
-$BookId = (int)$BookId;
+if (empty($Text)) {
+    $Errors["text"] = "Text is required for analysis";
+}
 
-if (empty($Text) || !is_string($Text)) {
-    errorResponse("Sample text is required for readability analysis", 400);
+if (hasValidationErrors($Errors)) {
+    validationErrorResponse($Errors);
 }
 
 
-// Verify Book Exists
+// Check if book exists
 
 try {
-    $BookStmt = $pdo->prepare("SELECT id, title FROM books WHERE id = ? LIMIT 1");
-    $BookStmt->execute([$BookId]);
-    $Book = $BookStmt->fetch();
-
+    $Stmt = $pdo->prepare("SELECT id, title FROM books WHERE id = ? LIMIT 1");
+    $Stmt->execute([(int)$BookId]);
+    $Book = $Stmt->fetch();
+    
     if (!$Book) {
         notFoundResponse("Book not found");
     }
+    
+} catch (PDOException $e) {
+    errorResponse("Database error", 500);
+}
 
-    // Run Analysis
-    $Analysis = AnalyzeTextReadability($Text);
 
-    // Save to Database
+// Analyze Text
+
+$Analysis = AnalyzeTextReadability($Text);
+
+
+// Store Analysis
+
+try {
+    $SampleText = mb_substr($Text, 0, 1000);
+    
     $Stmt = $pdo->prepare(
         "INSERT INTO readability_analysis 
          (book_id, sample_text, word_count, sentence_count, syllable_count, flesch_reading_ease, flesch_kincaid_grade, difficulty_level, estimated_reading_minutes)
@@ -73,13 +88,12 @@ try {
             flesch_kincaid_grade = VALUES(flesch_kincaid_grade),
             difficulty_level = VALUES(difficulty_level),
             estimated_reading_minutes = VALUES(estimated_reading_minutes),
-            analyzed_at = CURRENT_TIMESTAMP"
+            created_at = CURRENT_TIMESTAMP"
     );
-
-    $SampleTextSnippet = mb_substr($Text, 0, 1000);
+    
     $Stmt->execute([
-        $BookId,
-        $SampleTextSnippet,
+        (int)$BookId,
+        $SampleText,
         $Analysis["word_count"],
         $Analysis["sentence_count"],
         $Analysis["syllable_count"],
@@ -88,16 +102,17 @@ try {
         $Analysis["difficulty_level"],
         $Analysis["estimated_reading_minutes"]
     ]);
-
-    $Analysis["book_id"] = $BookId;
-    $Analysis["book_title"] = $Book["title"];
-
-    logAudit($UserId, "analyze_readability", "readability_analysis", $BookId, "Analyzed readability for book #{$BookId}");
-
-    successResponse($Analysis, "Readability analysis completed successfully", 200);
-
+    
+    logAudit($User["id"], "readability_analyzed", "readability_analysis", (int)$BookId, "Analyzed readability for book: {$Book['title']}");
+    
 } catch (PDOException $e) {
-    errorResponse("Database error", 500);
+    errorResponse("Failed to store analysis", 500);
 }
+
+
+$Analysis["book_id"] = (int)$BookId;
+$Analysis["book_title"] = $Book["title"];
+
+successResponse($Analysis, "Readability analysis completed");
 
 ?>

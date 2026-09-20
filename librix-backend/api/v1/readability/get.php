@@ -19,7 +19,7 @@ if ($_SERVER["REQUEST_METHOD"] !== "GET") {
 
 // Book ID
 
-$BookId = $bookId ?? ($parts[3] ?? ($_GET["book_id"] ?? ($_GET["id"] ?? null)));
+$BookId = $_GET["book_id"] ?? null;
 
 $IdError = validatePositiveInteger($BookId, "Book ID");
 if ($IdError !== null) {
@@ -43,7 +43,7 @@ try {
             readability_analysis.flesch_kincaid_grade,
             readability_analysis.difficulty_level,
             readability_analysis.estimated_reading_minutes,
-            readability_analysis.analyzed_at,
+            readability_analysis.created_at AS analyzed_at,
             books.title AS book_title
          FROM readability_analysis
          INNER JOIN books ON readability_analysis.book_id = books.id
@@ -92,7 +92,7 @@ try {
                 flesch_kincaid_grade = VALUES(flesch_kincaid_grade),
                 difficulty_level = VALUES(difficulty_level),
                 estimated_reading_minutes = VALUES(estimated_reading_minutes),
-                analyzed_at = CURRENT_TIMESTAMP"
+                created_at = CURRENT_TIMESTAMP"
         );
 
         $SampleText = mb_substr($Book["description"], 0, 1000);

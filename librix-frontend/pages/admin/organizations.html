@@ -1,0 +1,405 @@
+<!doctype html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Organizations | Librix Admin</title>
+    <meta name="description" content="Manage library organizations.">
+    <link rel="icon" type="image/png" href="../../assets/images/favicon.png">
+    <link rel="stylesheet" href="../../assets/css/global.css">
+    <link rel="stylesheet" href="../../assets/css/style.css">
+</head>
+
+<body>
+    <!-- Navigation Bar -->
+    <nav id="nav-bar">
+        <div class="nav-brand">
+            <a href="../../index.html" style="display: flex; align-items: center; gap: 10px; text-decoration: none;">
+                <img src="../../assets/images/logo.png" alt="Librix Logo" id="logo">
+                <h1 style="margin: 0;">Librix</h1>
+            </a>
+        </div>
+        <div class="nav-links">
+            <a href="../../index.html">Home</a>
+            <a href="../catalogue.html">Catalogue</a>
+            <a href="dashboard.html" class="active">Admin</a>
+        </div>
+        <div class="nav-auth" id="nav-auth-container">
+            <a href="#" onclick="auth.logout()" class="btn btn-primary btn-sm">Logout</a>
+        </div>
+    </nav>
+
+    <!-- Main Content -->
+    <main class="container" style="padding: 40px 20px;">
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 32px;">
+            <div>
+                <h1 style="margin-bottom: 8px;">Organizations</h1>
+                <p style="color: var(--text-muted);">Manage library organizations and their settings</p>
+            </div>
+            <button class="btn btn-primary" onclick="openCreateModal()">
+                + Create Organization
+            </button>
+        </div>
+
+        <!-- Organizations List -->
+        <div id="organizations-container">
+            <div style="text-align: center; padding: 60px 20px;">
+                <div class="skeleton" style="height: 20px; width: 200px; margin: 0 auto 16px;"></div>
+                <div class="skeleton" style="height: 20px; width: 150px; margin: 0 auto;"></div>
+            </div>
+        </div>
+    </main>
+
+    <!-- Create/Edit Modal -->
+    <div id="org-modal" class="modal" style="display: none;">
+        <div class="modal-content" style="max-width: 600px;">
+            <div class="modal-header">
+                <h3 id="modal-title">Create Organization</h3>
+                <button class="modal-close" onclick="closeModal()">&times;</button>
+            </div>
+            <div class="modal-body">
+                <form id="org-form">
+                    <input type="hidden" id="org-id" name="id">
+                    
+                    <div class="form-group">
+                        <label for="org-name">Organization Name *</label>
+                        <input type="text" id="org-name" name="name" class="form-input" required>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="org-code">Organization Code *</label>
+                        <input type="text" id="org-code" name="code" class="form-input" required>
+                        <small class="form-help">Unique code used for organization identification</small>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="org-description">Description</label>
+                        <textarea id="org-description" name="description" class="form-textarea" rows="3"></textarea>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="org-contact-email">Contact Email</label>
+                        <input type="email" id="org-contact-email" name="contact_email" class="form-input">
+                    </div>
+
+                    <div class="form-group">
+                        <label for="org-logo-url">Logo URL</label>
+                        <input type="url" id="org-logo-url" name="logo_url" class="form-input">
+                        <small class="form-help">URL to organization logo image</small>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="org-logo-upload">Or Upload Logo</label>
+                        <input type="file" id="org-logo-upload" accept="image/jpeg,image/jpg,image/png,image/gif,image/webp" class="form-input">
+                        <small class="form-help">JPG, PNG, GIF, WebP (max 5MB)</small>
+                        <div id="logo-preview" style="margin-top: 10px; display: none;">
+                            <img id="logo-preview-img" src="" alt="Logo Preview" style="max-width: 100px; max-height: 100px; object-fit: contain; border: 1px solid var(--border); border-radius: 4px;">
+                        </div>
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-outline" onclick="closeModal()">Cancel</button>
+                <button class="btn btn-primary" onclick="saveOrganization()">Save Organization</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Delete Confirmation Modal -->
+    <div id="delete-modal" class="modal" style="display: none;">
+        <div class="modal-content" style="max-width: 400px;">
+            <div class="modal-header">
+                <h3>Delete Organization</h3>
+                <button class="modal-close" onclick="closeDeleteModal()">&times;</button>
+            </div>
+            <div class="modal-body">
+                <p>Are you sure you want to delete this organization?</p>
+                <p style="color: var(--danger); font-size: var(--font-sm); margin-top: 8px;">
+                    This action cannot be undone. Organizations with existing books or users cannot be deleted.
+                </p>
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-outline" onclick="closeDeleteModal()">Cancel</button>
+                <button class="btn btn-danger" onclick="confirmDelete()">Delete</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Footer -->
+    <footer style="background: #0f172a; color: #94a3b8; padding: 40px 0 20px; border-top: 1px solid #1e293b;">
+        <div class="container" style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 16px; font-size: var(--font-sm);">
+            <div style="display: flex; align-items: center; gap: 8px;">
+                <img src="../../assets/images/logo.png" alt="Librix Logo" style="width: 24px; height: 24px;">
+                <span style="color: #fff; font-weight: 700;">Librix</span>
+                <span>&copy; 2026 All rights reserved.</span>
+            </div>
+            <div style="display: flex; gap: 16px;">
+                <a href="../about.html" style="color: #94a3b8;">About</a>
+                <a href="../contact.html" style="color: #94a3b8;">Contact</a>
+                <a href="../status.html" style="color: #94a3b8;">Status</a>
+            </div>
+        </div>
+    </footer>
+
+    <!-- Scripts -->
+    <script src="../../assets/js/api.js"></script>
+    <script src="../../assets/js/utils.js"></script>
+    <script src="../../assets/js/auth.js"></script>
+    <script src="../../assets/js/upload.js"></script>
+    <script>
+        let currentOrgId = null;
+        let deleteOrgId = null;
+        let uploadedLogoUrl = null;
+
+        // Check authentication and admin role
+        if (!auth.isLoggedIn()) {
+            window.location.href = "../login.html?redirect=" + encodeURIComponent(window.location.href);
+        }
+
+        const user = auth.getUser();
+        if (user.role !== 'admin') {
+            utils.toast("Access Denied", "This page is only accessible to administrators.", "error");
+            setTimeout(() => {
+                window.location.href = "../user/dashboard.html";
+            }, 1500);
+        }
+
+        // Load organizations
+        async function loadOrganizations() {
+            const container = document.getElementById('organizations-container');
+            
+            container.innerHTML = `
+                <div style="text-align: center; padding: 60px 20px;">
+                    <div class="skeleton" style="height: 20px; width: 200px; margin: 0 auto 16px;"></div>
+                    <div class="skeleton" style="height: 20px; width: 150px; margin: 0 auto;"></div>
+                </div>
+            `;
+
+            try {
+                const res = await api.get('/organizations');
+                const organizations = Array.isArray(res.data) ? res.data : [];
+
+                if (organizations.length === 0) {
+                    renderEmptyState();
+                    return;
+                }
+
+                renderOrganizations(organizations);
+
+            } catch (err) {
+                container.innerHTML = `
+                    <div style="text-align: center; padding: 60px 20px;">
+                        <p style="color: var(--danger); font-weight: 600; margin-bottom: 12px;">Failed to load organizations.</p>
+                        <button class="btn btn-outline btn-sm" onclick="loadOrganizations()">Try Again</button>
+                    </div>
+                `;
+            }
+        }
+
+        function renderOrganizations(organizations) {
+            const container = document.getElementById('organizations-container');
+            
+            container.innerHTML = `
+                <div class="grid grid-2">
+                    ${organizations.map(org => `
+                        <div class="card" style="padding: 24px;">
+                            <div style="display: flex; align-items: center; gap: 16px; margin-bottom: 16px;">
+                                ${org.logo_url ? `
+                                    <img src="${org.logo_url}" alt="${utils.escapeHtml(org.name)}" style="width: 64px; height: 64px; object-fit: cover; border-radius: 8px;">
+                                ` : `
+                                    <div style="width: 64px; height: 64px; background: var(--bg-light); border-radius: 8px; display: flex; align-items: center; justify-content: center; font-size: 24px;">🏛️</div>
+                                `}
+                                <div style="flex: 1;">
+                                    <h3 style="margin-bottom: 4px;">${utils.escapeHtml(org.name)}</h3>
+                                    <div style="color: var(--text-muted); font-size: var(--font-sm);">
+                                        Code: <code>${utils.escapeHtml(org.code)}</code>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            ${org.description ? `
+                                <p style="color: var(--text-muted); margin-bottom: 16px;">${utils.escapeHtml(org.description)}</p>
+                            ` : ''}
+                            
+                            <div style="display: flex; gap: 24px; margin-bottom: 16px; font-size: var(--font-sm);">
+                                <div>
+                                    <strong>${org.total_books || 0}</strong> Books
+                                </div>
+                                <div>
+                                    <strong>${org.total_members || 0}</strong> Members
+                                </div>
+                            </div>
+                            
+                            ${org.contact_email ? `
+                                <div style="margin-bottom: 16px; color: var(--text-muted); font-size: var(--font-sm);">
+                                    📧 ${utils.escapeHtml(org.contact_email)}
+                                </div>
+                            ` : ''}
+                            
+                            <div style="display: flex; gap: 8px;">
+                                <button class="btn btn-outline btn-sm" onclick="openEditModal(${org.id})">
+                                    Edit
+                                </button>
+                                <button class="btn btn-danger btn-sm" onclick="openDeleteModal(${org.id})">
+                                    Delete
+                                </button>
+                            </div>
+                        </div>
+                    `).join('')}
+                </div>
+            `;
+        }
+
+        function renderEmptyState() {
+            document.getElementById('organizations-container').innerHTML = `
+                <div class="empty-state">
+                    <div class="empty-state-icon">🏛️</div>
+                    <div class="empty-state-title">No organizations found</div>
+                    <div class="empty-state-desc">Create your first organization to get started.</div>
+                    <button class="btn btn-primary btn-sm" onclick="openCreateModal()">Create Organization</button>
+                </div>
+            `;
+        }
+
+        function openCreateModal() {
+            currentOrgId = null;
+            uploadedLogoUrl = null;
+            document.getElementById('modal-title').textContent = 'Create Organization';
+            document.getElementById('org-form').reset();
+            document.getElementById('org-id').value = '';
+            document.getElementById('logo-preview').style.display = 'none';
+            document.getElementById('org-modal').style.display = 'flex';
+        }
+
+        function openEditModal(orgId) {
+            currentOrgId = orgId;
+            uploadedLogoUrl = null;
+            document.getElementById('modal-title').textContent = 'Edit Organization';
+            
+            // Load organization details
+            api.get(`/organizations?id=${orgId}`)
+                .then(res => {
+                    const org = res.data;
+                    document.getElementById('org-id').value = org.id;
+                    document.getElementById('org-name').value = org.name;
+                    document.getElementById('org-code').value = org.code;
+                    document.getElementById('org-description').value = org.description || '';
+                    document.getElementById('org-contact-email').value = org.contact_email || '';
+                    document.getElementById('org-logo-url').value = org.logo_url || '';
+                    
+                    // Show logo preview if exists
+                    if (org.logo_url) {
+                        document.getElementById('logo-preview-img').src = org.logo_url;
+                        document.getElementById('logo-preview').style.display = 'block';
+                    } else {
+                        document.getElementById('logo-preview').style.display = 'none';
+                    }
+                    
+                    document.getElementById('org-modal').style.display = 'flex';
+                })
+                .catch(err => {
+                    utils.toast("Error", "Failed to load organization details", "error");
+                });
+        }
+
+        // Logo upload handler
+        document.getElementById('org-logo-upload').addEventListener('change', async function(e) {
+            const file = e.target.files[0];
+            if (!file) return;
+
+            try {
+                upload.validateImage(file);
+                
+                // Show preview
+                upload.previewImage(file, document.getElementById('logo-preview-img'));
+                document.getElementById('logo-preview').style.display = 'block';
+                
+                // Upload
+                const result = await upload.uploadOrgLogo(file);
+                uploadedLogoUrl = result.file_url;
+                
+                // Update URL field
+                document.getElementById('org-logo-url').value = result.file_url;
+                
+                utils.toast("Success", "Logo uploaded successfully", "success");
+            } catch (error) {
+                utils.toast("Upload Error", error.message, "error");
+                // Reset preview on error
+                document.getElementById('logo-preview').style.display = 'none';
+                document.getElementById('org-logo-upload').value = '';
+            }
+        });
+
+        function closeModal() {
+            document.getElementById('org-modal').style.display = 'none';
+            currentOrgId = null;
+            uploadedLogoUrl = null;
+            document.getElementById('logo-preview').style.display = 'none';
+            document.getElementById('org-logo-upload').value = '';
+        }
+
+        async function saveOrganization() {
+            const form = document.getElementById('org-form');
+            if (!form.checkValidity()) {
+                form.reportValidity();
+                return;
+            }
+
+            const data = {
+                name: document.getElementById('org-name').value.trim(),
+                code: document.getElementById('org-code').value.trim(),
+                description: document.getElementById('org-description').value.trim(),
+                contact_email: document.getElementById('org-contact-email').value.trim(),
+                logo_url: uploadedLogoUrl || document.getElementById('org-logo-url').value.trim()
+            };
+
+            try {
+                if (currentOrgId) {
+                    // Update existing
+                    await api.put(`/organizations?id=${currentOrgId}`, data);
+                    utils.toast("Success", "Organization updated successfully", "success");
+                } else {
+                    // Create new
+                    await api.post('/organizations', data);
+                    utils.toast("Success", "Organization created successfully", "success");
+                }
+
+                closeModal();
+                loadOrganizations();
+
+            } catch (err) {
+                utils.toast("Error", err.message || "Failed to save organization", "error");
+            }
+        }
+
+        function openDeleteModal(orgId) {
+            deleteOrgId = orgId;
+            document.getElementById('delete-modal').style.display = 'flex';
+        }
+
+        function closeDeleteModal() {
+            document.getElementById('delete-modal').style.display = 'none';
+            deleteOrgId = null;
+        }
+
+        async function confirmDelete() {
+            if (!deleteOrgId) return;
+
+            try {
+                await api.delete(`/organizations?id=${deleteOrgId}`);
+                utils.toast("Success", "Organization deleted successfully", "success");
+                closeDeleteModal();
+                loadOrganizations();
+
+            } catch (err) {
+                utils.toast("Error", err.message || "Failed to delete organization", "error");
+            }
+        }
+
+        // Initialize
+        loadOrganizations();
+    </script>
+</body>
+
+</html>

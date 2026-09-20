@@ -507,7 +507,11 @@
                             let filtered = [...books];
                             if (queryParams.search) {
                                 const s = queryParams.search.toLowerCase();
-                                filtered = filtered.filter(b => b.title.toLowerCase().includes(s) || (b.isbn && b.isbn.includes(s)) || (b.author_name && b.author_name.toLowerCase().includes(s)));
+                                filtered = filtered.filter(b => (b.title && b.title.toLowerCase().includes(s)) || (b.isbn && b.isbn.includes(s)) || (b.author_name && b.author_name.toLowerCase().includes(s)));
+                            }
+                            if (queryParams.category) {
+                                const catLower = queryParams.category.toLowerCase();
+                                filtered = filtered.filter(b => b.category && b.category.toLowerCase() === catLower);
                             }
                             if (queryParams.category_id) {
                                 filtered = filtered.filter(b => b.category_id === parseInt(queryParams.category_id));
@@ -515,12 +519,49 @@
                             if (queryParams.org_id) {
                                 filtered = filtered.filter(b => b.org_id === parseInt(queryParams.org_id));
                             }
+                            if (queryParams.available) {
+                                filtered = filtered.filter(b => (b.available_copies || 0) > 0);
+                            }
+
+                            // Sorting
+                            const sortVal = queryParams.sort || 'id_asc';
+                            if (sortVal === 'title_asc') {
+                                filtered.sort((a, b) => (a.title || '').localeCompare(b.title || ''));
+                            } else if (sortVal === 'title_desc') {
+                                filtered.sort((a, b) => (b.title || '').localeCompare(a.title || ''));
+                            } else if (sortVal === 'year_desc') {
+                                filtered.sort((a, b) => (b.publication_year || 0) - (a.publication_year || 0));
+                            } else if (sortVal === 'available_desc') {
+                                filtered.sort((a, b) => (b.available_copies || 0) - (a.available_copies || 0));
+                            } else if (sortVal === 'rating_desc') {
+                                filtered.sort((a, b) => (b.average_rating || 0) - (a.average_rating || 0));
+                            }
+
+                            // Pagination
+                            const page = parseInt(queryParams.page) || 1;
+                            const limit = parseInt(queryParams.limit) || 12;
+                            const total = filtered.length;
+                            const totalPages = Math.ceil(total / limit) || 1;
+                            const offset = (page - 1) * limit;
+                            const pagedBooks = filtered.slice(offset, offset + limit);
 
                             return resolve({
                                 success: true,
                                 data: {
-                                    total: filtered.length,
-                                    books: filtered
+                                    total: total,
+                                    books: pagedBooks,
+                                    pagination: {
+                                        page: page,
+                                        limit: limit,
+                                        total: total,
+                                        total_pages: totalPages
+                                    }
+                                },
+                                pagination: {
+                                    page: page,
+                                    limit: limit,
+                                    total: total,
+                                    total_pages: totalPages
                                 }
                             });
                         }
@@ -528,7 +569,17 @@
                         if (sub === 'create' || (method === 'POST' && !sub)) {
                             const newBook = {
                                 id: books.length ? Math.max(...books.map(b => b.id)) + 1 : 1,
-                                ...body,
+                                org_id: parseInt(body.org_id) || 1,
+                                title: body.title,
+                                author_name: body.author_name || 'Academic Author',
+                                category: body.category || 'General Fiction',
+                                isbn: body.isbn || ('978' + Math.floor(1000000000 + Math.random() * 9000000000)),
+                                publication_year: parseInt(body.publication_year) || 2026,
+                                language: body.language || 'English',
+                                total_copies: parseInt(body.total_copies) || 3,
+                                available_copies: parseInt(body.available_copies !== undefined ? body.available_copies : (body.total_copies || 3)),
+                                cover_image: body.cover_image || 'https://images.unsplash.com/photo-1543002588-bfa74002ed7e?w=500&q=80',
+                                description: body.description || 'Catalogue title added to library collection.',
                                 average_rating: 4.8,
                                 rating_count: 1,
                                 created_at: new Date().toISOString().replace('T', ' ').substr(0, 19)
@@ -538,8 +589,23 @@
                             return resolve({ success: true, message: 'Book created successfully', data: newBook });
                         }
 
+                        if (method === 'PUT' || sub === 'update') {
+                            const updateId = parseInt(body.id || paramId || queryParams.id);
+                            const bIdx = books.findIndex(b => b.id === updateId);
+                            if (bIdx === -1) return reject(new Error('Book not found'));
+
+                            books[bIdx] = {
+                                ...books[bIdx],
+                                ...body,
+                                id: updateId,
+                                updated_at: new Date().toISOString().replace('T', ' ').substr(0, 19)
+                            };
+                            db.set('books', books);
+                            return resolve({ success: true, message: 'Book updated successfully', data: books[bIdx] });
+                        }
+
                         if (sub === 'delete' || method === 'DELETE') {
-                            const delId = parseInt(body.id || queryParams.id || parts[1]);
+                            const delId = parseInt(body.id || paramId || queryParams.id || parts[1]);
                             books = books.filter(b => b.id !== delId);
                             db.set('books', books);
                             return resolve({ success: true, message: 'Book deleted successfully' });
@@ -746,6 +812,199 @@
                             else favs = favs.filter(id => id !== bookId);
                             db.set('favorites', favs);
                             return resolve({ success: true, is_favorite: favs.includes(bookId) });
+                        }
+                    }
+
+                    // --- ADMIN PORTAL API ---
+                    if (root === 'admin') {
+                        let books = db.get('books', INITIAL_BOOKS);
+                        let issues = db.get('issues', INITIAL_ISSUES);
+                        let reservations = db.get('reservations', INITIAL_RESERVATIONS);
+                        let fines = db.get('fines', INITIAL_FINES);
+                        let users = db.get('users', INITIAL_USERS);
+
+                        if (sub === 'statistics') {
+                            const totalTitles = books.length;
+                            const totalCopies = books.reduce((s, b) => s + (b.total_copies || 1), 0);
+                            const availCopies = books.reduce((s, b) => s + (b.available_copies || 0), 0);
+                            const issuedCopies = Math.max(0, totalCopies - availCopies);
+
+                            const activeLoans = issues.filter(i => i.status === 'issued').length;
+                            const overdueLoans = issues.filter(i => i.status === 'overdue' || (i.status === 'issued' && new Date(i.due_date) < new Date())).length;
+                            const returnedLoans = issues.filter(i => i.status === 'returned').length;
+
+                            const activeUsers = users.filter(u => u.status === 'active').length;
+                            const activeRes = reservations.filter(r => r.status === 'active').length;
+
+                            const unpaidFines = fines.filter(f => f.status === 'unpaid').reduce((sum, f) => sum + parseFloat(f.amount || 0), 0);
+                            const paidFines = fines.filter(f => f.status === 'paid').reduce((sum, f) => sum + parseFloat(f.amount || 0), 0);
+                            const totalFines = unpaidFines + paidFines;
+
+                            return resolve({
+                                success: true,
+                                data: {
+                                    total_books: totalTitles,
+                                    total_copies: totalCopies,
+                                    available_copies: availCopies,
+                                    issued_copies: issuedCopies,
+                                    total_issues: issues.length,
+                                    active_issues: activeLoans,
+                                    returned_issues: returnedLoans,
+                                    overdue_issues: overdueLoans,
+                                    total_fines: totalFines,
+                                    unpaid_fines: unpaidFines,
+                                    paid_fines: paidFines,
+                                    books: {
+                                        total_books: totalTitles,
+                                        total_titles: totalTitles,
+                                        total_copies: totalCopies,
+                                        available_copies: availCopies,
+                                        issued_copies: issuedCopies
+                                    },
+                                    users: {
+                                        total: users.length,
+                                        active: activeUsers,
+                                        active_users: activeUsers
+                                    },
+                                    issues: {
+                                        total: issues.length,
+                                        currently_issued: activeLoans,
+                                        active: activeLoans,
+                                        overdue: overdueLoans,
+                                        overdue_issues: overdueLoans
+                                    },
+                                    reservations: {
+                                        total: reservations.length,
+                                        active: activeRes,
+                                        active_reservations: activeRes
+                                    },
+                                    fines: {
+                                        total_records: fines.length,
+                                        total_amount: totalFines,
+                                        unpaid_amount: unpaidFines,
+                                        paid_amount: paidFines
+                                    }
+                                }
+                            });
+                        }
+
+                        if (sub === 'issues') {
+                            let list = issues.map(hydrateIssue);
+                            if (queryParams.status) {
+                                if (queryParams.status === 'overdue') {
+                                    list = list.filter(i => i.status === 'overdue' || (i.status === 'issued' && new Date(i.due_date) < new Date()));
+                                } else {
+                                    list = list.filter(i => i.status === queryParams.status);
+                                }
+                            }
+                            if (queryParams.search) {
+                                const s = queryParams.search.toLowerCase();
+                                list = list.filter(i => (i.user_name && i.user_name.toLowerCase().includes(s)) || (i.book_title && i.book_title.toLowerCase().includes(s)));
+                            }
+                            const page = parseInt(queryParams.page) || 1;
+                            const limit = parseInt(queryParams.limit) || 15;
+                            const total = list.length;
+                            const paged = list.slice((page - 1) * limit, page * limit);
+                            return resolve({
+                                success: true,
+                                data: { total, issues: paged },
+                                pagination: { page, limit, total, total_pages: Math.ceil(total / limit) || 1 }
+                            });
+                        }
+
+                        if (sub === 'reservations') {
+                            if (method === 'PUT') {
+                                const resId = parseInt(body.id || paramId || queryParams.id);
+                                const rIdx = reservations.findIndex(r => r.id === resId);
+                                if (rIdx !== -1) {
+                                    reservations[rIdx].status = body.status || 'fulfilled';
+                                    if (body.status === 'fulfilled') {
+                                        reservations[rIdx].fulfilled_at = new Date().toISOString().replace('T', ' ').substr(0, 19);
+                                    }
+                                    db.set('reservations', reservations);
+                                    return resolve({ success: true, message: 'Reservation updated', data: reservations[rIdx] });
+                                }
+                                return reject(new Error('Reservation record not found'));
+                            }
+
+                            let list = reservations.map(hydrateReservation);
+                            if (queryParams.status) list = list.filter(r => r.status === queryParams.status);
+                            if (queryParams.search) {
+                                const s = queryParams.search.toLowerCase();
+                                list = list.filter(r => (r.user_name && r.user_name.toLowerCase().includes(s)) || (r.book_title && r.book_title.toLowerCase().includes(s)));
+                            }
+                            const page = parseInt(queryParams.page) || 1;
+                            const limit = parseInt(queryParams.limit) || 15;
+                            const total = list.length;
+                            const paged = list.slice((page - 1) * limit, page * limit);
+                            return resolve({
+                                success: true,
+                                data: { total, reservations: paged },
+                                pagination: { page, limit, total, total_pages: Math.ceil(total / limit) || 1 }
+                            });
+                        }
+
+                        if (sub === 'fines') {
+                            if (method === 'PUT') {
+                                const fineId = parseInt(body.id || paramId || queryParams.id);
+                                const fIdx = fines.findIndex(f => f.id === fineId);
+                                if (fIdx !== -1) {
+                                    fines[fIdx].status = body.status || 'paid';
+                                    if (body.status === 'paid') {
+                                        fines[fIdx].paid_at = new Date().toISOString().replace('T', ' ').substr(0, 19);
+                                    }
+                                    db.set('fines', fines);
+                                    return resolve({ success: true, message: 'Fine updated', data: fines[fIdx] });
+                                }
+                                return reject(new Error('Fine record not found'));
+                            }
+
+                            let list = [...fines];
+                            if (queryParams.status) list = list.filter(f => f.status === queryParams.status);
+                            if (queryParams.search) {
+                                const s = queryParams.search.toLowerCase();
+                                list = list.filter(f => (f.user_name && f.user_name.toLowerCase().includes(s)) || (f.reason && f.reason.toLowerCase().includes(s)));
+                            }
+                            const page = parseInt(queryParams.page) || 1;
+                            const limit = parseInt(queryParams.limit) || 15;
+                            const total = list.length;
+                            const paged = list.slice((page - 1) * limit, page * limit);
+                            return resolve({
+                                success: true,
+                                data: { total, fines: paged },
+                                pagination: { page, limit, total, total_pages: Math.ceil(total / limit) || 1 }
+                            });
+                        }
+
+                        if (sub === 'users') {
+                            if (method === 'PUT') {
+                                const uid = parseInt(body.id || paramId || queryParams.id);
+                                const uIdx = users.findIndex(u => u.id === uid);
+                                if (uIdx !== -1) {
+                                    if (body.role) users[uIdx].role = body.role;
+                                    if (body.status) users[uIdx].status = body.status;
+                                    db.set('users', users);
+                                    return resolve({ success: true, message: 'User updated', data: users[uIdx] });
+                                }
+                                return reject(new Error('User not found'));
+                            }
+
+                            let list = [...users];
+                            if (queryParams.role) list = list.filter(u => u.role === queryParams.role);
+                            if (queryParams.status) list = list.filter(u => u.status === queryParams.status);
+                            if (queryParams.search) {
+                                const s = queryParams.search.toLowerCase();
+                                list = list.filter(u => (u.name && u.name.toLowerCase().includes(s)) || (u.email && u.email.toLowerCase().includes(s)));
+                            }
+                            const page = parseInt(queryParams.page) || 1;
+                            const limit = parseInt(queryParams.limit) || 15;
+                            const total = list.length;
+                            const paged = list.slice((page - 1) * limit, page * limit);
+                            return resolve({
+                                success: true,
+                                data: { total, users: paged },
+                                pagination: { page, limit, total, total_pages: Math.ceil(total / limit) || 1 }
+                            });
                         }
                     }
 

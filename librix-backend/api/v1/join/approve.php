@@ -7,6 +7,7 @@ require_once __DIR__ . "/../../../config/database.php";
 require_once __DIR__ . "/../../../helpers/response.php";
 require_once __DIR__ . "/../../../helpers/validation.php";
 require_once __DIR__ . "/../../../helpers/functions.php";
+require_once __DIR__ . "/../../../helpers/email.php";
 require_once __DIR__ . "/../../../middleware/auth.php";
 require_once __DIR__ . "/../../../middleware/admin.php";
 
@@ -91,6 +92,14 @@ try {
         
         logAudit($User["id"], "org_join_approved", "org_join_requests", $RequestId, "Approved join request ID: $RequestId");
         
+        // Send email notification
+        $OrgStmt = $pdo->prepare("SELECT name FROM organizations WHERE id = ? LIMIT 1");
+        $OrgStmt->execute([$Request["org_id"]]);
+        $Org = $OrgStmt->fetch();
+        $OrgName = $Org ? $Org["name"] : "Library";
+        
+        sendOrgJoinApprovalNotification($Request["user_id"], $OrgName, "approved");
+        
     } else {
         // Reject request
         $Stmt = $pdo->prepare(
@@ -99,6 +108,14 @@ try {
         $Stmt->execute([(int)$RequestId]);
         
         logAudit($User["id"], "org_join_rejected", "org_join_requests", $RequestId, "Rejected join request ID: $RequestId");
+        
+        // Send email notification
+        $OrgStmt = $pdo->prepare("SELECT name FROM organizations WHERE id = ? LIMIT 1");
+        $OrgStmt->execute([$Request["org_id"]]);
+        $Org = $OrgStmt->fetch();
+        $OrgName = $Org ? $Org["name"] : "Library";
+        
+        sendOrgJoinApprovalNotification($Request["user_id"], $OrgName, "rejected");
     }
     
     $pdo->commit();

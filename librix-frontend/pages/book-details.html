@@ -3,7 +3,8 @@
 
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, user-scalable=yes">
+    <meta name="theme-color" content="#4f46e5">
     <title>Book Details | Librix</title>
     <meta name="description" content="View comprehensive book details, inventory availability, community ratings, and smart readability grade analysis on LibriX.">
     <link rel="icon" type="image/png" href="../assets/images/favicon.png">
@@ -263,7 +264,7 @@
 
             // Meta table
             document.getElementById('meta-isbn').textContent = book.isbn || 'N/A';
-            document.getElementById('meta-publisher').textContent = book.publisher || (book.publisher_name || 'N/A');
+            document.getElementById('meta-publisher').textContent = book.publisher || 'N/A';
             document.getElementById('meta-language').textContent = book.language || 'English';
             document.getElementById('meta-copies').textContent = `${book.available_copies} available of ${book.total_copies} total`;
 
@@ -322,9 +323,9 @@
         async function loadReviews(id) {
             try {
                 const res = await api.get(`/reviews?book_id=${id}`);
-                const reviews = res.data && res.data.reviews ? res.data.reviews : [];
-                const avg = res.data && res.data.average_rating ? res.data.average_rating : 0;
-                const total = res.data && res.data.total_reviews ? res.data.total_reviews : reviews.length;
+                const reviews = res.data && res.data.reviews ? res.data.reviews : (Array.isArray(res.data) ? res.data : []);
+                const avg = res.data && res.data.average_rating ? res.data.average_rating : (res.average_rating || 0);
+                const total = res.data && res.data.total_reviews ? res.data.total_reviews : (res.total_reviews || reviews.length);
 
                 document.getElementById('book-stars').innerHTML = utils.renderStars(avg);
                 document.getElementById('reviews-count-header').textContent = `${total} patron reviews`;
@@ -350,6 +351,7 @@
 
             } catch (err) {
                 // Ignore reviews error
+                console.error('Failed to load reviews:', err);
             }
         }
 
@@ -361,22 +363,16 @@
                 return;
             }
 
-            const confirmed = await utils.confirm({
-                title: 'Borrow Book',
-                message: `Confirm borrowing "${currentBook.title}" for standard 14-day checkout?`,
-                confirmText: 'Borrow Book',
-                icon: 'book-open',
-                type: 'primary'
-            });
-
-            if (!confirmed) return;
+            if (!confirm(`Confirm borrowing "${currentBook.title}" for standard 14-day checkout?`)) {
+                return;
+            }
 
             try {
                 await api.post('/library/issue', { book_id: currentBook.id });
                 utils.toast("Book Borrowed Successfully", "You can now view this in your My Books dashboard.", "success");
                 setTimeout(() => window.location.href = 'user/my-books.html', 1200);
             } catch (err) {
-                utils.toast("Borrowing Error", err.message, "danger");
+                utils.toast("Borrowing Error", err.message, "error");
             }
         }
 
@@ -388,22 +384,16 @@
                 return;
             }
 
-            const confirmed = await utils.confirm({
-                title: 'Place Hold / Reservation',
-                message: `Place a reservation on "${currentBook.title}"? You will be alerted the moment a copy is available.`,
-                confirmText: 'Place Reservation',
-                icon: 'bookmark',
-                type: 'primary'
-            });
-
-            if (!confirmed) return;
+            if (!confirm(`Place a reservation on "${currentBook.title}"? You will be alerted the moment a copy is available.`)) {
+                return;
+            }
 
             try {
                 await api.post('/library/reserve', { book_id: currentBook.id });
                 utils.toast("Reservation Confirmed", "We will notify you immediately once a copy is returned.", "success");
                 setTimeout(() => window.location.href = 'user/reservations.html', 1200);
             } catch (err) {
-                utils.toast("Reservation Error", err.message, "danger");
+                utils.toast("Reservation Error", err.message, "error");
             }
         }
 

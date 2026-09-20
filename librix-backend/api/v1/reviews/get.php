@@ -18,7 +18,7 @@ if ($_SERVER["REQUEST_METHOD"] !== "GET") {
 
 // Query Parameters
 
-$BookId = $parts[3] ?? ($_GET["book_id"] ?? ($_GET["id"] ?? null));
+$BookId = $_GET["book_id"] ?? null;
 $Page = isset($_GET["page"]) ? max(1, (int)$_GET["page"]) : 1;
 $Limit = isset($_GET["limit"]) ? min(100, max(1, (int)$_GET["limit"])) : 10;
 $Offset = ($Page - 1) * $Limit;

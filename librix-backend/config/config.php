@@ -12,6 +12,7 @@ define("APP_ENV", getenv("APP_ENV") ?: "development");
 
 define("API_BASE_URL", "/api/" . API_VERSION);
 define("API_FULL_VERSION", API_VERSION);
+define("BASE_URL", "http://localhost:8000");
 
 
 // Server

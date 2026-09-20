@@ -38,6 +38,10 @@ CREATE TABLE IF NOT EXISTS users (
     role ENUM('user', 'librarian', 'admin') NOT NULL DEFAULT 'admin',
     status ENUM('active', 'inactive', 'suspended', 'pending') NOT NULL DEFAULT 'pending',
     email_verified_at TIMESTAMP NULL,
+    profile_picture_url VARCHAR(500) NULL,
+    phone VARCHAR(20) NULL,
+    address TEXT NULL,
+    bio TEXT NULL,
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
 
@@ -296,7 +300,7 @@ CREATE TABLE IF NOT EXISTS readability_analysis (
     flesch_kincaid_grade DECIMAL(4,2) NOT NULL DEFAULT 0.00,
     difficulty_level ENUM('very_easy', 'easy', 'fairly_easy', 'standard', 'fairly_difficult', 'difficult', 'very_difficult') NOT NULL DEFAULT 'standard',
     estimated_reading_minutes INT UNSIGNED NOT NULL DEFAULT 0,
-    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
 
     CONSTRAINT fk_readability_book
         FOREIGN KEY (book_id)
@@ -514,7 +518,123 @@ CREATE TABLE IF NOT EXISTS rate_limits (
 
 
 -- -------------------------------------------------------------
--- 22. Default Admin User
+-- 22. Email Notifications
+-- -------------------------------------------------------------
+
+CREATE TABLE IF NOT EXISTS email_notifications (
+    id BIGINT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
+    user_id INT UNSIGNED NOT NULL,
+    subject VARCHAR(255) NOT NULL,
+    body TEXT NOT NULL,
+    status ENUM('pending', 'sent', 'failed') NOT NULL DEFAULT 'pending',
+    sent_at TIMESTAMP NULL,
+    error_message TEXT NULL,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    
+    CONSTRAINT fk_email_notifications_user
+        FOREIGN KEY (user_id)
+        REFERENCES users(id)
+        ON DELETE CASCADE,
+        
+    INDEX idx_email_notifications_status (status),
+    INDEX idx_email_notifications_user (user_id)
+);
+
+
+-- -------------------------------------------------------------
+-- 23. Fine Payments
+-- -------------------------------------------------------------
+
+CREATE TABLE IF NOT EXISTS fine_payments (
+    id BIGINT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
+    user_id INT UNSIGNED NOT NULL,
+    issue_id INT UNSIGNED NULL,
+    amount DECIMAL(10,2) NOT NULL,
+    payment_method VARCHAR(50) NULL,
+    payment_reference VARCHAR(100) NULL,
+    status ENUM('pending', 'completed', 'failed', 'refunded') NOT NULL DEFAULT 'pending',
+    notes TEXT NULL,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+    
+    CONSTRAINT fk_fine_payments_user
+        FOREIGN KEY (user_id)
+        REFERENCES users(id)
+        ON DELETE CASCADE,
+        
+    CONSTRAINT fk_fine_payments_issue
+        FOREIGN KEY (issue_id)
+        REFERENCES library_transactions(id)
+        ON DELETE SET NULL,
+        
+    INDEX idx_fine_payments_user (user_id),
+    INDEX idx_fine_payments_status (status)
+);
+
+
+-- -------------------------------------------------------------
+-- 24. File Uploads (Profile Pictures, Logos)
+-- -------------------------------------------------------------
+
+CREATE TABLE IF NOT EXISTS file_uploads (
+    id BIGINT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
+    user_id INT UNSIGNED NULL,
+    org_id INT UNSIGNED NULL,
+    file_name VARCHAR(255) NOT NULL,
+    original_name VARCHAR(255) NOT NULL,
+    file_path VARCHAR(500) NOT NULL,
+    file_size BIGINT UNSIGNED NOT NULL,
+    mime_type VARCHAR(100) NOT NULL,
+    upload_type ENUM('profile_picture', 'org_logo', 'book_cover', 'other') NOT NULL,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    
+    CONSTRAINT fk_file_uploads_user
+        FOREIGN KEY (user_id)
+        REFERENCES users(id)
+        ON DELETE SET NULL,
+        
+    CONSTRAINT fk_file_uploads_org
+        FOREIGN KEY (org_id)
+        REFERENCES organizations(id)
+        ON DELETE SET NULL,
+        
+    INDEX idx_file_uploads_user (user_id),
+    INDEX idx_file_uploads_org (org_id),
+    INDEX idx_file_uploads_type (upload_type)
+);
+
+
+-- -------------------------------------------------------------
+-- 25. Book Recommendations
+-- -------------------------------------------------------------
+
+CREATE TABLE IF NOT EXISTS book_recommendations (
+    id BIGINT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
+    user_id INT UNSIGNED NOT NULL,
+    book_id INT UNSIGNED NOT NULL,
+    reason VARCHAR(255) NULL,
+    score DECIMAL(3,2) NOT NULL DEFAULT 0.00,
+    viewed_at TIMESTAMP NULL,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    
+    CONSTRAINT fk_recommendations_user
+        FOREIGN KEY (user_id)
+        REFERENCES users(id)
+        ON DELETE CASCADE,
+        
+    CONSTRAINT fk_recommendations_book
+        FOREIGN KEY (book_id)
+        REFERENCES books(id)
+        ON DELETE CASCADE,
+        
+    UNIQUE KEY unique_user_book (user_id, book_id),
+    INDEX idx_recommendations_user (user_id),
+    INDEX idx_recommendations_score (score)
+);
+
+
+-- -------------------------------------------------------------
+-- 26. Default Admin User
 -- -------------------------------------------------------------
 
 INSERT INTO users (name, email, password, role, status) VALUES
