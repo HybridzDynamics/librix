@@ -27,6 +27,7 @@
                 <li class="sidebar-item"><a href="reservations.html"><span class="sidebar-icon"><i data-lucide="bookmark" data-size="18"></i></span><span>Reservations</span></a></li>
                 <li class="sidebar-item"><a href="favorites.html"><span class="sidebar-icon"><i data-lucide="heart" data-size="18"></i></span><span>My Favorites</span></a></li>
                 <li class="sidebar-item"><a href="notifications.html"><span class="sidebar-icon"><i data-lucide="bell" data-size="18"></i></span><span>Notifications</span></a></li>
+                <li class="sidebar-item"><a href="fines.html"><span class="sidebar-icon"><i data-lucide="dollar-sign" data-size="18"></i></span><span>Fines & Payments</span></a></li>
                 <li class="sidebar-item"><a href="profile.html" class="active"><span class="sidebar-icon"><i data-lucide="settings" data-size="18"></i></span><span>Profile &amp; Settings</span></a></li>
                 <li class="sidebar-item" style="margin-top:12px;border-top:1px solid var(--border);padding-top:12px;"><a href="../catalogue.html"><span class="sidebar-icon"><i data-lucide="search" data-size="18"></i></span><span>Explore Catalogue</span></a></li>
             </ul>
@@ -60,7 +61,7 @@
                         </h3>
                         <div style="margin-bottom:20px;">
                             <div id="profile-picture-preview" style="width:120px;height:120px;border-radius:50%;background:#f1f5f9;margin:0 auto;overflow:hidden;display:flex;align-items:center;justify-content:center;border:3px solid var(--border);">
-                                <span id="profile-picture-placeholder" style="font-size:48px;color:#94a3b8;">👤</span>
+                                <span id="profile-picture-placeholder" style="font-size:48px;color:#94a3b8;">data-lucide="user"</span>
                                 <img id="profile-picture-img" src="" alt="Profile Picture" style="width:100%;height:100%;object-fit:cover;display:none;">
                             </div>
                         </div>
@@ -144,6 +145,11 @@
     <script src="../../assets/js/auth.js"></script>
     <script src="../../assets/js/upload.js"></script>
     <script>
+        // Update navigation based on auth state
+        document.addEventListener('DOMContentLoaded', function() {
+            auth.updateNav();
+        });
+        
         if (!auth.requireAuth()) {}
         const user = auth.getUser();
         if (user) {

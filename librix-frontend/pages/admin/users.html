@@ -30,7 +30,12 @@
                 <li class="admin-sidebar-item"><a href="publishers.html"><span class="admin-sidebar-icon"><i data-lucide="building" data-size="18"></i></span><span>Publishers</span></a></li>
                 <li class="admin-menu-header">Administration</li>
                 <li class="admin-sidebar-item"><a href="users.html" class="active"><span class="admin-sidebar-icon"><i data-lucide="users" data-size="18"></i></span><span>Users &amp; Patrons</span></a></li>
+                <li class="admin-sidebar-item"><a href="organizations.html"><span class="admin-sidebar-icon"><i data-lucide="building-2" data-size="18"></i></span><span>Organizations</span></a></li>
+                <li class="admin-menu-header">System &amp; Security</li>
+                <li class="admin-sidebar-item"><a href="audit-logs.html"><span class="admin-sidebar-icon"><i data-lucide="shield-check" data-size="18"></i></span><span>Audit Logs</span></a></li>
                 <li class="admin-sidebar-item"><a href="reports.html"><span class="admin-sidebar-icon"><i data-lucide="bar-chart-2" data-size="18"></i></span><span>Reports &amp; Analytics</span></a></li>
+                <li class="admin-menu-header">External Services</li>
+                <li class="admin-sidebar-item"><a href="bookmind.html"><span class="admin-sidebar-icon"><i data-lucide="sparkles" data-size="18"></i></span><span>BookMind Dashboard</span></a></li>
                 <li class="admin-sidebar-item"><a href="../catalogue.html" target="_blank"><span class="admin-sidebar-icon"><i data-lucide="external-link" data-size="18"></i></span><span>Live Public Site</span></a></li>
             </ul>
             <div class="admin-sidebar-footer">
@@ -119,6 +124,7 @@
                                 const nextStatusLabel = u.status === 'active' ? 'Suspend' : 'Activate';
                                 const nextRole = u.role === 'admin' ? 'user' : 'admin';
                                 const nextRoleLabel = u.role === 'admin' ? 'Make Patron' : 'Make Admin';
+                                const canDelete = u.id !== 1 && u.id !== user.id;
                                 return `<tr>
                                     <td>#${u.id}</td>
                                     <td><strong>${utils.escapeHtml(u.name)}</strong></td>
@@ -129,11 +135,18 @@
                                     <td><div class="table-actions-cell">
                                         <button class="btn btn-outline btn-sm" onclick="changeRole(${u.id}, '${nextRole}', '${utils.escapeHtml(u.name)}')">${nextRoleLabel}</button>
                                         <button class="btn btn-outline btn-sm" style="${u.status === 'active' ? 'color:var(--danger);border-color:var(--danger);' : ''}" onclick="changeStatus(${u.id}, '${nextStatus}', '${utils.escapeHtml(u.name)}')">${nextStatusLabel}</button>
+                                        ${canDelete ? `<button class="btn btn-danger btn-sm" onclick="deleteUser(${u.id}, '${utils.escapeHtml(u.name)}')"><i data-lucide="trash-2" data-size="14"></i></button>` : ''}
                                     </div></td>
                                 </tr>`;
                             }).join('')}</tbody>
                         </table>
                     </div>`;
+                
+                // Initialize Lucide icons for dynamic content
+                if (window.lucide) {
+                    lucide.createIcons();
+                }
+                
                 renderPagination(pagination.page || currentPage, pagination.total_pages || 1);
             } catch (err) {
                 container.innerHTML = `<div style="padding:40px;text-align:center;color:var(--danger);">Failed to retrieve users directory.</div>`;
@@ -156,7 +169,7 @@
                 message: `Change permission role of "${name}" to ${role.toUpperCase()}?`,
                 confirmText: 'Change Role',
                 type: 'primary',
-                icon: 'shield'
+                icon: 'shield-check'
             });
 
             if (!confirmed) return;
@@ -176,7 +189,7 @@
                 message: `Set account status of "${name}" to ${status.toUpperCase()}?`,
                 confirmText: 'Update Status',
                 type: status === 'suspended' ? 'danger' : 'primary',
-                icon: 'user-check'
+                icon: 'user'
             });
 
             if (!confirmed) return;
@@ -187,6 +200,26 @@
                 loadUsers(); 
             } catch (err) { 
                 utils.toast("Action Failed", err.message, "danger"); 
+            }
+        }
+
+        async function deleteUser(id, name) {
+            const confirmed = await utils.confirm({
+                title: 'Delete User Account',
+                message: `Are you sure you want to permanently delete "${name}"? This action cannot be undone and will remove all user data including history and fines.`,
+                confirmText: 'Delete Account',
+                type: 'danger',
+                icon: 'trash-2'
+            });
+
+            if (!confirmed) return;
+
+            try { 
+                await api.delete(`/admin/users/${id}/delete`); 
+                utils.toast("Account Deleted", `User "${name}" has been permanently deleted.`, "success"); 
+                loadUsers(); 
+            } catch (err) { 
+                utils.toast("Deletion Failed", err.message, "danger"); 
             }
         }
 

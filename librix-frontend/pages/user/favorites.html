@@ -66,6 +66,11 @@
     <script src="../../assets/js/utils.js"></script>
     <script src="../../assets/js/auth.js"></script>
     <script>
+        // Update navigation based on auth state
+        document.addEventListener('DOMContentLoaded', function() {
+            auth.updateNav();
+        });
+        
         if (!auth.requireAuth()) {}
         const user = auth.getUser();
         if (user) {
@@ -122,7 +127,7 @@
                                         <h3 class="book-title" title="${utils.escapeHtml(b.title)}">${utils.escapeHtml(b.title)}</h3>
                                         <div class="book-author">By ${utils.escapeHtml(b.author_name || 'Unknown Author')}</div>
                                         <div style="margin-top:auto;display:flex;gap:8px;">
-                                            <a href="../book-details.html?id=${b.book_id}" class="btn btn-outline btn-sm" style="flex:1;">Details &amp; Scores</a>
+                                            <a href="javascript:void(0)" onclick="utils.navigate('../book-details.html', {id: ${b.book_id}})" class="btn btn-outline btn-sm" style="flex:1;">Details &amp; Scores</a>
                                             <button class="btn btn-outline btn-sm" style="color:var(--danger);border-color:var(--danger);display:flex;align-items:center;gap:4px;"
                                                 onclick="removeFavorite(${b.book_id}, '${utils.escapeHtml(b.title)}')" title="Remove">
                                                 ${trashSvg}

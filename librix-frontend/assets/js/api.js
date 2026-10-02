@@ -1027,7 +1027,17 @@
     // -------------------------------------------------------------
     // 4. LibriX API Client Instance
     // -------------------------------------------------------------
-    const API_BASE_URL = 'http://localhost/librix-backend/api/v1';
+    const API_BASE_URL = (() => {
+        const configuredBase = (window.LIBRIX_API_BASE_URL || window.API_BASE_URL || '').replace(/\/+$/, '');
+        if (configuredBase) return configuredBase;
+
+        const origin = window.location && window.location.origin ? window.location.origin : '';
+        if (origin) {
+            return `${origin}/librix-backend/index.php/api/v1`;
+        }
+
+        return '/librix-backend/index.php/api/v1';
+    })();
 
     const api = {
         baseUrl: API_BASE_URL,
@@ -1041,7 +1051,7 @@
                 ...(options.headers || {})
             };
 
-            const url = `${API_BASE_URL}/${endpoint.replace(/^\/+/, '')}`;
+            const url = `${api.baseUrl.replace(/\/+$/, '')}/${endpoint.replace(/^\/+/, '')}`;
 
             try {
                 const response = await fetch(url, {
@@ -1050,21 +1060,23 @@
                 });
 
                 if (response.ok) {
-                    const json = await response.json();
-                    return json;
+                    const text = await response.text();
+                    return text ? JSON.parse(text) : { success: true, data: null };
                 }
 
-                // If backend returns explicit 401 or 403, throw
+                const errorText = await response.text().catch(() => '');
+                let errJson = {};
+                if (errorText) {
+                    try { errJson = JSON.parse(errorText); } catch (e) { errJson = {}; }
+                }
+
                 if (response.status === 401 || response.status === 403) {
-                    const errJson = await response.json().catch(() => ({}));
                     throw new Error(errJson.error || errJson.message || 'Authorization failed');
                 }
 
-                // Fall back gracefully for 404/500/offline
                 return await handleFallback(options.method || 'GET', endpoint, options.body ? JSON.parse(options.body) : {});
 
             } catch (networkError) {
-                // If offline or CORS or PHP down, invoke local engine
                 return await handleFallback(options.method || 'GET', endpoint, options.body ? JSON.parse(options.body) : {});
             }
         },

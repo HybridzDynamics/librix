@@ -26,7 +26,7 @@ $UserId = (int)$User["id"];
 
 try {
     $Stmt = $pdo->prepare(
-        "SELECT id, name, email, role, status, created_at, updated_at
+        "SELECT id, name, email, role, status, profile_picture_url, phone, address, bio, created_at, updated_at
          FROM users
          WHERE id = ?
          LIMIT 1"

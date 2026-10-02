@@ -304,7 +304,7 @@
                     <ul style="list-style: none; display: flex; flex-direction: column; gap: 10px; font-size: var(--font-sm);">
                         <li><a href="./pages/catalogue.html" style="color: #94a3b8;">Book Catalogue</a></li>
                         <li><a href="./pages/about.html" style="color: #94a3b8;">About the System</a></li>
-                        <li><a href="./pages/status.html" style="color: #94a3b8;">Service Status</a></li>
+                        <li><a href="./pages/status.html" style="color: #94a3b8;">System Status</a></li>
                         <li><a href="./pages/contact.html" style="color: #94a3b8;">Contact Librarian</a></li>
                     </ul>
                 </div>
@@ -345,6 +345,12 @@
     <script src="./assets/js/utils.js"></script>
     <script src="./assets/js/auth.js"></script>
     <script>
+        // Update navigation based on auth state
+        document.addEventListener('DOMContentLoaded', function() {
+            auth.updateNav();
+        });
+    </script>
+    <script>
         // Fetch featured books on load
         async function loadFeaturedBooks() {
             const container = document.getElementById("home-featured-books");
@@ -376,7 +382,7 @@
                                     ${utils.escapeHtml(book.author_name || 'Unknown Author')}
                                 </p>
                                 <div style="margin-top: auto;">
-                                    <a href="./pages/book-details.html?id=${book.id}" class="btn btn-outline btn-sm" style="width: 100%;">
+                                    <a href="javascript:void(0)" onclick="utils.navigate('./pages/book-details.html', {id: ${book.id}})" class="btn btn-outline btn-sm" style="width: 100%;">
                                         <span>View Details & Readability</span>
                                         <i data-lucide="arrow-right" data-size="14"></i>
                                     </a>
@@ -418,7 +424,7 @@
                         ${book.author}
                     </p>
                     <div style="margin-top: auto;">
-                        <a href="./pages/catalogue.html" class="btn btn-outline btn-sm" style="width: 100%;">
+                        <a href="javascript:void(0)" onclick="utils.navigate('./pages/catalogue.html')" class="btn btn-outline btn-sm" style="width: 100%;">
                             <span>Browse In Catalogue</span>
                             <i data-lucide="arrow-right" data-size="14"></i>
                         </a>

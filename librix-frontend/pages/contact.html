@@ -106,7 +106,7 @@
                         </div>
                     </div>
                     <div class="stat-card">
-                        <div class="stat-icon stat-icon-info">📧</div>
+                        <div class="stat-icon stat-icon-info">data-lucide="mail"</div>
                         <div>
                             <h4 style="font-size: var(--font-sm); font-weight: 700; margin-bottom: 2px;">Direct Email & Phone</h4>
                             <p style="font-size: var(--font-xs); color: var(--text-muted); margin: 0;">librarian@librix.local • (555) 019-2834</p>
@@ -157,6 +157,11 @@
     <script src="../assets/js/utils.js"></script>
     <script src="../assets/js/auth.js"></script>
     <script>
+        // Update navigation based on auth state
+        document.addEventListener('DOMContentLoaded', function() {
+            auth.updateNav();
+        });
+        
         // Autofill if logged in
         if (auth.isLoggedIn()) {
             const user = auth.getUser();

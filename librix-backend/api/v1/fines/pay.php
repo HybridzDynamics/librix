@@ -80,6 +80,11 @@ try {
 try {
     $pdo->beginTransaction();
     
+    // For demo payments, generate a reference if not provided
+    if ($PaymentMethod === 'demo' && empty($PaymentReference)) {
+        $PaymentReference = 'DEMO-' . strtoupper(uniqid());
+    }
+    
     // Create payment record
     $PaymentStmt = $pdo->prepare(
         "INSERT INTO fine_payments (user_id, issue_id, amount, payment_method, payment_reference, status, notes)
@@ -103,7 +108,7 @@ try {
     );
     $UpdateStmt->execute([(int)$FineId]);
     
-    logAudit($UserId, "fine_paid", "fines", $FineId, "Paid fine ID: $FineId with amount: {$Fine['amount']}");
+    logAudit($UserId, "fine_paid", "fines", $FineId, "Paid fine ID: $FineId with amount: {$Fine['amount']} via $PaymentMethod");
     
     $pdo->commit();
     

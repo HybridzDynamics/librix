@@ -119,10 +119,16 @@
     </footer>
 
     <!-- Scripts -->
+    <script src="../assets/js/icons.js"></script>
     <script src="../assets/js/api.js"></script>
     <script src="../assets/js/utils.js"></script>
     <script src="../assets/js/auth.js"></script>
     <script>
+        // Update navigation based on auth state
+        document.addEventListener('DOMContentLoaded', function() {
+            auth.updateNav();
+        });
+        
         // Password toggle
         const passwordInput = document.getElementById("password");
         const togglePassword = document.getElementById("togglePassword");
@@ -179,19 +185,20 @@
                 const data = await auth.login(email, password);
                 utils.toast("Signed in", `Welcome back, ${data.user.name}!`, "success");
 
-                // Check redirect URL
-                const urlParams = new URLSearchParams(window.location.search);
-                const redirectParam = urlParams.get('redirect');
+                // Check redirect URL from sessionStorage
+                const navParams = utils.getNavParams();
+                const redirectParam = navParams.redirect;
+                utils.clearNavParams();
 
                 setTimeout(() => {
                     if (redirectParam) {
-                        window.location.href = decodeURIComponent(redirectParam);
+                        utils.navigate(decodeURIComponent(redirectParam));
                     } else if (data.user.role === 'admin') {
-                        window.location.href = 'admin/dashboard.html';
+                        utils.navigate('admin/dashboard.html');
                     } else if (data.user.role === 'librarian') {
-                        window.location.href = 'librarian/dashboard.html';
+                        utils.navigate('librarian/dashboard.html');
                     } else {
-                        window.location.href = 'user/dashboard.html';
+                        utils.navigate('user/dashboard.html');
                     }
                 }, 800);
 

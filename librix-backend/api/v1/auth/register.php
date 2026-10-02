@@ -77,7 +77,7 @@ if ($PasswordError !== null) {
 }
 
 if (hasValidationErrors($Errors)) {
-    ValidationerrorResponse($Errors);
+    validationErrorResponse($Errors);
 }
 
 

@@ -112,7 +112,7 @@ const auth = {
         localStorage.removeItem('librix_token');
         localStorage.removeItem('librix_user');
         
-        // Redirect to login or home
+        // Redirect to login or home using dynamic navigation
         const isRoot = window.location.pathname.endsWith('index.html') || window.location.pathname.endsWith('/');
         if (isRoot) {
             window.location.reload();
@@ -120,7 +120,11 @@ const auth = {
             const isInPages = window.location.pathname.includes('/pages/');
             const isInSub = window.location.pathname.includes('/user/') || window.location.pathname.includes('/admin/') || window.location.pathname.includes('/librarian/');
             const target = isInSub ? '../login.html' : (isInPages ? 'login.html' : 'pages/login.html');
-            window.location.href = target;
+            if (typeof utils !== 'undefined' && utils.navigate) {
+                utils.navigate(target);
+            } else {
+                window.location.href = target;
+            }
         }
     },
 
@@ -129,11 +133,17 @@ const auth = {
      */
     requireAuth: function(redirectUrl = null) {
         if (!this.isLoggedIn()) {
-            const current = encodeURIComponent(window.location.href);
+            const currentPath = window.location.pathname;
             const isInPages = window.location.pathname.includes('/pages/');
             const isInSub = window.location.pathname.includes('/user/') || window.location.pathname.includes('/admin/') || window.location.pathname.includes('/librarian/');
-            const defaultRedirect = isInSub ? `../login.html?redirect=${current}` : (isInPages ? `login.html?redirect=${current}` : `pages/login.html?redirect=${current}`);
-            window.location.href = redirectUrl || defaultRedirect;
+            const target = isInSub ? '../login.html' : (isInPages ? 'login.html' : 'pages/login.html');
+            
+            // Store redirect in sessionStorage
+            if (typeof utils !== 'undefined' && utils.navigate) {
+                utils.navigate(target, {redirect: currentPath});
+            } else {
+                window.location.href = target;
+            }
             return false;
         }
         return true;
@@ -150,7 +160,12 @@ const auth = {
             }
             const isInPages = window.location.pathname.includes('/pages/');
             const isInSub = window.location.pathname.includes('/user/') || window.location.pathname.includes('/admin/') || window.location.pathname.includes('/librarian/');
-            window.location.href = isInSub ? '../user/dashboard.html' : (isInPages ? 'user/dashboard.html' : 'pages/user/dashboard.html');
+            const target = isInSub ? '../user/dashboard.html' : (isInPages ? 'user/dashboard.html' : 'pages/user/dashboard.html');
+            if (typeof utils !== 'undefined' && utils.navigate) {
+                utils.navigate(target);
+            } else {
+                window.location.href = target;
+            }
             return false;
         }
         return true;
@@ -167,7 +182,12 @@ const auth = {
             }
             const isInPages = window.location.pathname.includes('/pages/');
             const isInSub = window.location.pathname.includes('/user/') || window.location.pathname.includes('/admin/') || window.location.pathname.includes('/librarian/');
-            window.location.href = isInSub ? '../user/dashboard.html' : (isInPages ? 'user/dashboard.html' : 'pages/user/dashboard.html');
+            const target = isInSub ? '../user/dashboard.html' : (isInPages ? 'user/dashboard.html' : 'pages/user/dashboard.html');
+            if (typeof utils !== 'undefined' && utils.navigate) {
+                utils.navigate(target);
+            } else {
+                window.location.href = target;
+            }
             return false;
         }
         return true;
@@ -184,7 +204,6 @@ const auth = {
         const isInSub = window.location.pathname.includes('/user/') || window.location.pathname.includes('/admin/') || window.location.pathname.includes('/librarian/');
         
         const pathPrefix = isInSub ? '../' : (isInPages ? '' : 'pages/');
-        const userIcon = window.lucide ? lucide.render('user', { size: 14 }) : '';
 
         if (this.isLoggedIn()) {
             const user = this.getUser();
@@ -199,10 +218,18 @@ const auth = {
                 roleBadge = '<span class="badge badge-accent" style="font-size: 10px; padding: 1px 6px; background:#f3e8ff; color:#7e22ce;">LIBRARIAN</span>';
             }
 
+            // Profile picture or fallback icon
+            let profileImage = '';
+            if (user.profile_picture_url) {
+                profileImage = `<img src="${user.profile_picture_url}" alt="Profile" style="width: 28px; height: 28px; border-radius: 50%; object-fit: cover; border: 2px solid var(--primary);">`;
+            } else {
+                profileImage = window.lucide ? lucide.render('user', { size: 14 }) : '';
+            }
+
             navAuth.innerHTML = `
                 <div style="display: flex; align-items: center; gap: 12px;">
-                    <a href="${dashboardUrl}" class="btn btn-secondary btn-sm" style="display: inline-flex; align-items: center; gap: 6px;">
-                        ${userIcon}
+                    <a href="${dashboardUrl}" class="btn btn-secondary btn-sm" style="display: inline-flex; align-items: center; gap: 8px; padding: 6px 12px;">
+                        ${profileImage}
                         <span>${utils.escapeHtml(user.name.split(' ')[0])}</span>
                         ${roleBadge}
                     </a>

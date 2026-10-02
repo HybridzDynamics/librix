@@ -36,7 +36,7 @@
     <main class="container" style="padding: 60px 20px; max-width: 800px;">
         <div class="card" style="padding: 40px;">
             <div style="text-align: center; margin-bottom: 40px;">
-                <div style="font-size: 48px; margin-bottom: 16px;">📚</div>
+                <div style="font-size: 48px; margin-bottom: 16px;">data-lucide="book"</div>
                 <h1 style="margin-bottom: 12px;">Become a Librarian</h1>
                 <p style="color: var(--text-muted); max-width: 500px; margin: 0 auto;">
                     Request librarian privileges to manage your library's collection, users, and operations. 
@@ -137,6 +137,11 @@
     <script src="../assets/js/utils.js"></script>
     <script src="../assets/js/auth.js"></script>
     <script>
+        // Update navigation based on auth state
+        document.addEventListener('DOMContentLoaded', function() {
+            auth.updateNav();
+        });
+        
         // Check authentication
         if (!auth.isLoggedIn()) {
             utils.toast("Authentication Required", "Please log in to request librarian privileges.", "warning");

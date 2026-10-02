@@ -564,7 +564,7 @@ CREATE TABLE IF NOT EXISTS fine_payments (
         
     CONSTRAINT fk_fine_payments_issue
         FOREIGN KEY (issue_id)
-        REFERENCES library_transactions(id)
+        REFERENCES book_issues(id)
         ON DELETE SET NULL,
         
     INDEX idx_fine_payments_user (user_id),

@@ -202,6 +202,11 @@
     <script src="../assets/js/utils.js"></script>
     <script src="../assets/js/auth.js"></script>
     <script>
+        // Update navigation based on auth state
+        document.addEventListener('DOMContentLoaded', function() {
+            auth.updateNav();
+        });
+        
         // Render 90 bars for uptime visualization
         function renderUptimeBars() {
             const container = document.getElementById('uptime-bar');
@@ -216,6 +221,8 @@
             const dot = document.getElementById('status-dot');
             const text = document.getElementById('overall-status-text');
             const updated = document.getElementById('last-updated-text');
+            const banner = document.getElementById('status-banner');
+            const servicesList = document.getElementById('services-list');
 
             try {
                 const res = await api.get('/status');
@@ -225,17 +232,23 @@
                     dot.style.backgroundColor = 'var(--success)';
                     text.textContent = 'All Systems Fully Operational';
                     text.style.color = 'var(--text-main)';
+                    banner.style.borderLeftColor = 'var(--success)';
                 } else if (data && data.status === 'degraded') {
                     dot.style.backgroundColor = 'var(--warning)';
                     text.textContent = 'Partial Service Degradation';
                     text.style.color = 'var(--warning-text)';
+                    banner.style.borderLeftColor = 'var(--warning)';
                 } else {
                     dot.style.backgroundColor = 'var(--danger)';
                     text.textContent = 'Service Outage Detected';
                     text.style.color = 'var(--danger-text)';
+                    banner.style.borderLeftColor = 'var(--danger)';
                 }
 
                 updated.textContent = `Last checked: ${new Date().toLocaleTimeString()}`;
+                
+                // Update services list dynamically
+                updateServicesList(data);
 
             } catch (err) {
                 // If offline or local dev without backend running
@@ -243,6 +256,55 @@
                 text.textContent = 'All Systems Operational';
                 updated.textContent = `Last checked: ${new Date().toLocaleTimeString()} (Fallback)`;
             }
+        }
+
+        function updateServicesList(data) {
+            const servicesList = document.getElementById('services-list');
+            
+            // Dynamic services based on actual API response
+            const services = [
+                {
+                    name: 'Core Web & Catalogue APIs',
+                    description: 'Handles book discovery, search indexing, and pagination',
+                    status: data.api_status || 'operational'
+                },
+                {
+                    name: 'MySQL Database & Inventory Ledger',
+                    description: 'Manages transactional copy tracking, tokens, and users',
+                    status: data.database_status || 'operational'
+                },
+                {
+                    name: 'Smart Readability Analysis Engine',
+                    description: 'Computes Flesch-Kincaid ease scores and reading durations',
+                    status: data.readability_status || 'operational'
+                },
+                {
+                    name: 'Circulation, Due Dates & Fines Engine',
+                    description: 'Processes checkouts, returns, automated renewals, and fee accrual',
+                    status: data.circulation_status || 'operational'
+                },
+                {
+                    name: 'Notification & Email Service',
+                    description: 'Delivers reservation fulfillment and due date reminder notices',
+                    status: data.notification_status || 'operational'
+                }
+            ];
+
+            servicesList.innerHTML = services.map(service => {
+                const isOperational = service.status === 'operational';
+                const badgeClass = isOperational ? 'badge-success' : 'badge-danger';
+                const badgeText = isOperational ? '✓ Operational' : '✗ Down';
+                
+                return `
+                    <div class="service-row">
+                        <div>
+                            <strong style="font-size: var(--font-sm);">${service.name}</strong>
+                            <div style="font-size: var(--font-xs); color: var(--text-muted);">${service.description}</div>
+                        </div>
+                        <span class="badge ${badgeClass}">${badgeText}</span>
+                    </div>
+                `;
+            }).join('');
         }
 
         renderUptimeBars();

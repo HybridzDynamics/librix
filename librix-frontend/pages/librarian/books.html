@@ -295,7 +295,7 @@
                         </td>
                         <td style="text-align:right;">
                             <div style="display:inline-flex;gap:6px;">
-                                <a href="../book-details.html?id=${b.id}" class="btn btn-outline btn-sm" style="padding:4px 8px;" title="View Details"><i data-lucide="eye" data-size="14"></i></a>
+                                <a href="javascript:void(0)" onclick="utils.navigate('../book-details.html', {id: ${b.id}})" class="btn btn-outline btn-sm" style="padding:4px 8px;" title="View Details"><i data-lucide="eye" data-size="14"></i></a>
                                 <button class="btn btn-outline btn-sm" style="color:var(--danger);border-color:var(--danger-border);padding:4px 8px;" onclick="removeBook(${b.id}, '${utils.escapeHtml(b.title)}')" title="Remove Book from Org">
                                     <i data-lucide="trash-2" data-size="14"></i>
                                 </button>

@@ -164,6 +164,11 @@
     <script src="../assets/js/utils.js"></script>
     <script src="../assets/js/auth.js"></script>
     <script>
+        // Update navigation based on auth state
+        document.addEventListener('DOMContentLoaded', function() {
+            auth.updateNav();
+        });
+        
         // Toggle password
         const passwordInput = document.getElementById("password");
         const togglePassword = document.getElementById("togglePassword");

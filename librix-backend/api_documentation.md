@@ -1,443 +1,199 @@
-# LibriX Backend API Documentation (v1)
+# LibriX API Documentation
 
-- **API Base URL**: `/api/v1`
-- **Current Version**: `1.0.0`
-- **Authentication**: Bearer Token via `Authorization: Bearer <TOKEN>` header
+This document describes the currently implemented REST-style routes under /api/v1/ for the LibriX backend.
 
----
+## Base URL
 
-## 1. System & Public Endpoints
+Use the configured application URL plus the API route prefix:
 
-### 1.1 Root Info
-- **Endpoint**: `GET /` or `GET /api/v1`
-- **Authentication**: None
-- **Response (200)**:
+```text
+http://localhost:8000/index.php/api/v1
+```
+
+If your deployment uses a domain or proxy, replace the host while preserving the /api/v1 prefix.
+
+## Authentication
+
+Most protected routes require a bearer token issued after login. Authorization headers should be sent like this:
+
+```http
+Authorization: Bearer <token>
+```
+
+## Common response format
+
+Success responses:
+
+```json
+{
+  "success": true,
+  "message": "Request completed successfully",
+  "data": {}
+}
+```
+
+Error responses:
+
+```json
+{
+  "success": false,
+  "error": "Something went wrong",
+  "message": "Human-readable failure message"
+}
+```
+
+## Routes
+
+### Health
+
+- GET /health
+- Purpose: health check for backend and database availability
+- Auth: none
+- Response: success flag plus service state
+
+### Auth
+
+- POST /auth/register
+- POST /auth/login
+- POST /auth/logout
+- GET /auth/session
+- POST /auth/forgot-password
+- POST /auth/reset-password
+- POST /auth/verify-email
+- POST /auth/resend-verification
+
+Example login request:
+
+```json
+{
+  "email": "admin@example.com",
+  "password": "your-password"
+}
+```
+
+Example response:
+
 ```json
 {
   "success": true,
   "data": {
-    "name": "LibriX",
-    "version": "1.0.0",
-    "api": "v1",
-    "status": "online"
-  }
-}
-```
-
-### 1.2 Health Check
-- **Endpoint**: `GET /api/v1/health`
-- **Authentication**: None
-- **Response (200)**:
-```json
-{
-  "success": true,
-  "data": {
-    "api": "online",
-    "database": "connected"
-  },
-  "message": "Health check passed"
-}
-```
-
----
-
-## 2. Public Status Page API
-
-### 2.1 Overall System Status
-- **Endpoint**: `GET /api/v1/status`
-- **Authentication**: None
-- **Response (200)**:
-```json
-{
-  "success": true,
-  "data": {
-    "status": "operational",
-    "name": "LibriX",
-    "version": "1.0.0",
-    "updated_at": "2026-09-10 20:00:00"
-  }
-}
-```
-*Possible statuses: `operational`, `degraded`, `partial_outage`, `major_outage`, `maintenance`.*
-
-### 2.2 Component Services Status
-- **Endpoint**: `GET /api/v1/status/services`
-- **Authentication**: None
-- **Response (200)**:
-```json
-{
-  "success": true,
-  "data": [
-    { "name": "API", "status": "operational", "response_time_ms": 1 },
-    { "name": "Database", "status": "operational", "response_time_ms": 3 },
-    { "name": "Authentication", "status": "operational", "response_time_ms": 2 },
-    { "name": "Books", "status": "operational", "response_time_ms": 2 },
-    { "name": "Authors", "status": "operational", "response_time_ms": 2 },
-    { "name": "Library", "status": "operational", "response_time_ms": 2 },
-    { "name": "Admin", "status": "operational", "response_time_ms": 2 },
-    { "name": "Search", "status": "operational", "response_time_ms": 3 }
-  ]
-}
-```
-
-### 2.3 System Incidents
-- **Endpoint**: `GET /api/v1/status/incidents`
-- **Query Parameters**: `status` (`investigating`, `identified`, `monitoring`, `resolved`)
-- **Authentication**: None
-
-### 2.4 Service Uptime
-- **Endpoint**: `GET /api/v1/status/uptime`
-- **Authentication**: None
-- **Response (200)**:
-```json
-{
-  "success": true,
-  "data": {
-    "uptime_percentage": 100.0,
-    "total_checks": 120,
-    "avg_response_time_ms": 2.1,
-    "services": [
-      {
-        "service": "Database",
-        "uptime_percentage": 100.0,
-        "total_checks": 15,
-        "avg_response_time_ms": 2.5
-      }
-    ]
-  }
-}
-```
-
-### 2.5 Status History
-- **Endpoint**: `GET /api/v1/status/history`
-- **Query Parameters**: `page` (int), `limit` (int), `service` (string)
-
-### 2.6 Scheduled Maintenance
-- **Endpoint**: `GET /api/v1/status/maintenance`
-- **Authentication**: None
-
----
-
-## 3. Authentication (`/api/v1/auth`)
-
-### 3.1 Register
-- **Endpoint**: `POST /api/v1/auth/register`
-- **Body**:
-```json
-{
-  "name": "Jane Doe",
-  "email": "jane@example.com",
-  "password": "StrongPassword123"
-}
-```
-- **Response (201)**:
-```json
-{
-  "success": true,
-  "data": {
+    "token": "generated-token",
     "user": {
       "id": 1,
-      "name": "Jane Doe",
-      "email": "jane@example.com",
-      "role": "user",
-      "status": "active"
-    }
-  },
-  "message": "Registration successful"
-}
-```
-
-### 3.2 Login
-- **Endpoint**: `POST /api/v1/auth/login`
-- **Body**:
-```json
-{
-  "email": "jane@example.com",
-  "password": "StrongPassword123"
-}
-```
-- **Response (200)**:
-```json
-{
-  "success": true,
-  "data": {
-    "token": "a1b2c3d4e5...",
-    "expires_at": "2026-09-17 20:00:00",
-    "user": {
-      "id": 1,
-      "name": "Jane Doe",
-      "email": "jane@example.com",
-      "role": "user",
-      "status": "active"
+      "name": "System Admin",
+      "email": "admin@example.com",
+      "role": "admin"
     }
   },
   "message": "Login successful"
 }
 ```
 
-### 3.3 Session Check
-- **Endpoint**: `GET /api/v1/auth/session`
-- **Header**: `Authorization: Bearer <TOKEN>`
+### Books
 
-### 3.4 Logout
-- **Endpoint**: `POST /api/v1/auth/logout`
-- **Header**: `Authorization: Bearer <TOKEN>`
+- GET /books
+- GET /books/search
+- GET /books?id={id}
+- POST /books
+- PUT /books?id={id}
+- DELETE /books?id={id}
 
-### 3.5 Forgot Password
-- **Endpoint**: `POST /api/v1/auth/forgot-password`
-- **Body**: `{"email": "jane@example.com"}`
-- **Response (200)**:
-```json
-{
-  "success": true,
-  "message": "If an account exists for this email, a password reset request has been created."
-}
-```
+Query parameters may include search, category, author, page, and limit.
 
-### 3.6 Reset Password
-- **Endpoint**: `POST /api/v1/auth/reset-password`
-- **Body**: `{"token": "<RESET_TOKEN>", "password": "<NEW_PASSWORD>"}`
+### Authors
 
-### 3.7 Verify Email
-- **Endpoint**: `POST /api/v1/auth/verify-email`
-- **Body**: `{"token": "<VERIFY_TOKEN>"}`
+- GET /authors
+- POST /authors
+- PUT /authors?id={id}
+- DELETE /authors?id={id}
 
-### 3.8 Resend Email Verification
-- **Endpoint**: `POST /api/v1/auth/resend-verification`
-- **Body**: `{"email": "jane@example.com"}`
+### Categories
 
----
+- GET /categories
+- POST /categories
+- PUT /categories?id={id}
+- DELETE /categories?id={id}
 
-## 4. Books (`/api/v1/books`)
+### Publishers
 
-### 4.1 Get Books (with Search, Filtering, Sorting & Pagination)
-- **Endpoint**: `GET /api/v1/books`
-- **Query Parameters**:
-  - `search`: search term across title, isbn, and author name
-  - `category`: category name filter
-  - `author_id`: integer author ID filter
-  - `available`: `true` or `1` for available copies only
-  - `sort`: `title`, `created_at`, `publication_year`, `id`
-  - `order`: `asc` or `desc` (default `desc`)
-  - `page`: page number (default 1)
-  - `limit`: items per page (default 20, max 100)
-- **Response (200)**:
-```json
-{
-  "success": true,
-  "data": [
-    {
-      "id": 1,
-      "title": "Clean Architecture",
-      "author_id": 1,
-      "author_name": "Robert C. Martin",
-      "isbn": "9780134494166",
-      "category": "Software",
-      "total_copies": 5,
-      "available_copies": 4
-    }
-  ],
-  "pagination": {
-    "page": 1,
-    "limit": 20,
-    "total": 1,
-    "total_pages": 1
-  }
-}
-```
+- GET /publishers
+- POST /publishers
+- PUT /publishers?id={id}
+- DELETE /publishers?id={id}
 
-### 4.2 Get Single Book
-- **Endpoint**: `GET /api/v1/books/{id}`
+### Organizations
 
-### 4.3 Create Book
-- **Endpoint**: `POST /api/v1/books`
-- **Header**: `Authorization: Bearer <ADMIN_TOKEN>`
-- **Body**:
-```json
-{
-  "title": "Clean Architecture",
-  "author_id": 1,
-  "isbn": "9780134494166",
-  "category": "Software",
-  "publisher": "Prentice Hall",
-  "publication_year": 2017,
-  "total_copies": 5
-}
-```
+- GET /organizations
+- POST /organizations
+- PUT /organizations?id={id}
+- DELETE /organizations?id={id}
 
-### 4.4 Update Book
-- **Endpoint**: `PUT /api/v1/books/{id}`
-- **Header**: `Authorization: Bearer <ADMIN_TOKEN>`
+### Library Operations
 
-### 4.5 Delete Book
-- **Endpoint**: `DELETE /api/v1/books/{id}`
-- **Header**: `Authorization: Bearer <ADMIN_TOKEN>`
+- POST /library/issue
+- POST /library/return
+- POST /library/renew
+- POST /library/reserve
+- POST /library/cancel-reservation
+- GET /library/my-books
+- GET /library/history
 
----
+### Favorites
 
-## 5. Authors (`/api/v1/authors`)
+- GET /favorites
+- POST /favorites/toggle
 
-### 5.1 Get Authors
-- **Endpoint**: `GET /api/v1/authors`
+### Reviews
 
-### 5.2 Get Author
-- **Endpoint**: `GET /api/v1/authors/{id}`
+- GET /reviews
+- POST /reviews/create
+- DELETE /reviews?id={id}
 
-### 5.3 Create Author
-- **Endpoint**: `POST /api/v1/authors` (Admin)
-- **Body**: `{"name": "Robert C. Martin", "biography": "..."}`
+### Notifications
 
-### 5.4 Update Author
-- **Endpoint**: `PUT /api/v1/authors/{id}` (Admin)
+- GET /notifications
+- POST /notifications/read
 
-### 5.5 Delete Author
-- **Endpoint**: `DELETE /api/v1/authors/{id}` (Admin)
+### Fines
 
----
+- GET /fines
+- POST /fines/pay
 
-## 6. Library Operations (`/api/v1/library`)
+### Recommendations and Readability
 
-### 6.1 Issue Book
-- **Endpoint**: `POST /api/v1/library/issue`
-- **Header**: `Authorization: Bearer <TOKEN>`
-- **Body**: `{"book_id": 1, "due_date": "2026-09-24"}`
+- GET /recommendations
+- GET /readability
+- POST /readability/analyze
 
-### 6.2 Return Book
-- **Endpoint**: `POST /api/v1/library/return`
-- **Header**: `Authorization: Bearer <TOKEN>`
-- **Body**: `{"issue_id": 1}` or `{"book_id": 1}`
-- Automatically calculates and stores overdue fines if returned past `due_date`.
+### Admin
 
-### 6.3 Reserve Book
-- **Endpoint**: `POST /api/v1/library/reserve`
-- **Header**: `Authorization: Bearer <TOKEN>`
-- **Body**: `{"book_id": 1}`
+- GET /admin/statistics
+- GET /admin/users
+- GET /admin/books
+- GET /admin/issues
+- GET /admin/reservations
+- GET /admin/fines
+- GET /admin/audit-logs
 
-### 6.4 Cancel Reservation
-- **Endpoint**: `POST /api/v1/library/cancel-reservation`
-- **Header**: `Authorization: Bearer <TOKEN>`
-- **Body**: `{"reservation_id": 1}`
+## Error handling
 
-### 6.5 My Library Activity
-- **Endpoint**: `GET /api/v1/library/my-books`
-- **Header**: `Authorization: Bearer <TOKEN>`
-- Returns: `currently_issued`, `history`, `reservations`, and `fines`.
+The backend returns consistent status codes for common failures:
 
----
+- 200 OK
+- 201 Created
+- 400 Bad Request
+- 401 Unauthorized
+- 403 Forbidden
+- 404 Not Found
+- 405 Method Not Allowed
+- 422 Validation Failed
+- 429 Too Many Requests
+- 500 Internal Server Error
 
-## 7. User Profile (`/api/v1/users`)
+Do not rely on raw stack traces from production responses. Use the standardized error object returned by the API layer.
 
-### 7.1 Get Profile
-- **Endpoint**: `GET /api/v1/users/profile`
-- **Header**: `Authorization: Bearer <TOKEN>`
+## Notes
 
-### 7.2 Update Profile
-- **Endpoint**: `PUT /api/v1/users/update`
-- **Header**: `Authorization: Bearer <TOKEN>`
-- **Body**: `{"name": "...", "email": "...", "password": "..."}`
-
----
-
-## 8. Admin Management (`/api/v1/admin`)
-
-*All admin endpoints require `Authorization: Bearer <ADMIN_TOKEN>`.*
-
-### 8.1 Users Management
-- `GET /api/v1/admin/users`: paginated user list with `status`, `role`, `search` filters.
-- `PUT /api/v1/admin/users/{id}`: update user status (`active`, `inactive`, `suspended`) or `role`.
-
-### 8.2 Inventory & Statistics
-- `GET /api/v1/admin/books`: inventory report with active issue and reservation counts.
-- `GET /api/v1/admin/statistics`: real-time SQL aggregates across all system entities.
-
-### 8.3 Issues, Reservations & Fines
-- `GET /api/v1/admin/issues`: paginated issues with overdue flag.
-- `GET /api/v1/admin/reservations`: paginated reservations.
-- `GET /api/v1/admin/fines`: paginated fines.
-- `PUT /api/v1/admin/fines/{id}`: update fine status (`paid`, `waived`).
-
-### 8.4 Status & Incident Administration
-- `POST /api/v1/admin/status/incidents`: create incident.
-- `PUT /api/v1/admin/status/incidents/{id}`: update/resolve incident.
-- `DELETE /api/v1/admin/status/incidents/{id}`: remove incident.
-- `POST /api/v1/admin/status/maintenance`: schedule maintenance.
-- `PUT /api/v1/admin/status/maintenance/{id}`: update maintenance window.
-- `DELETE /api/v1/admin/status/maintenance/{id}`: cancel/remove maintenance.
-
----
-
-## 9. Reviews & Ratings API (`/api/v1/reviews`)
-
-### 9.1 Get Book Reviews
-- **Endpoint**: `GET /api/v1/reviews?book_id={id}`
-- **Authentication**: None
-- **Response**: List of patron reviews, average rating score (e.g. 4.8), and pagination.
-
-### 9.2 Create / Update Review
-- **Endpoint**: `POST /api/v1/reviews`
-- **Header**: `Authorization: Bearer <TOKEN>`
-- **Body**: `{"book_id": 1, "rating": 5, "review_text": "Remarkable read."}`
-
-### 9.3 Delete Review
-- **Endpoint**: `DELETE /api/v1/reviews/{id}`
-- **Header**: `Authorization: Bearer <TOKEN>`
-
----
-
-## 10. Favorites Wishlist API (`/api/v1/favorites`)
-
-### 10.1 Get Favorites
-- **Endpoint**: `GET /api/v1/favorites`
-- **Header**: `Authorization: Bearer <TOKEN>`
-- **Response**: Paginated list of user's saved book titles with current stock availability.
-
-### 10.2 Toggle Favorite
-- **Endpoint**: `POST /api/v1/favorites`
-- **Header**: `Authorization: Bearer <TOKEN>`
-- **Body**: `{"book_id": 1}`
-- **Response**: `{"favorited": true|false, "book_id": 1}`
-
----
-
-## 11. Notifications API (`/api/v1/notifications`)
-
-### 11.1 Get Notifications
-- **Endpoint**: `GET /api/v1/notifications`
-- **Header**: `Authorization: Bearer <TOKEN>`
-- **Response**: List of user notifications with `unread_count`.
-
-### 11.2 Mark Read
-- **Endpoint**: `PUT /api/v1/notifications`
-- **Header**: `Authorization: Bearer <TOKEN>`
-- **Body**: `{"id": 5}` or `{"all": true}`
-
----
-
-## 12. Readability Analysis API (`/api/v1/readability`)
-
-### 12.1 Get Book Readability
-- **Endpoint**: `GET /api/v1/readability?book_id={id}`
-- **Authentication**: None
-- **Response**: `flesch_reading_ease`, `flesch_kincaid_grade`, `difficulty_level`, `estimated_reading_minutes`, `word_count`.
-
-### 12.2 Analyze Text
-- **Endpoint**: `POST /api/v1/readability`
-- **Header**: `Authorization: Bearer <TOKEN>`
-- **Body**: `{"book_id": 1, "text": "Sample excerpt..."}`
-
----
-
-## 13. Categories & Publishers APIs
-
-- `GET /api/v1/categories`: Public list of categories with total book counts.
-- `POST / PUT / DELETE /api/v1/categories`: Admin taxonomy management.
-- `GET /api/v1/publishers`: Public list of publishing houses.
-- `POST / PUT / DELETE /api/v1/publishers`: Admin publisher CRUD.
-
----
-
-## 14. Library Renewals & History
-
-- `POST /api/v1/library/renew`: Extends book due date by 14 days (up to 2 renewals).
-- `GET /api/v1/library/history`: Dedicated borrowing history with fine status.
-
+- Some endpoints are role-protected and require authenticated admin or librarian access.
+- The frontend uses the same API contract and should be kept in sync with backend field names.
+- For production deployments, set the public API URL in environment variables rather than in static frontend code.

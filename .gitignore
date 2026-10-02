@@ -1,0 +1,28 @@
+# Environment and secrets
+.env
+.env.*
+!.env.example
+
+# Dependency folders
+vendor/
+node_modules/
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# Logs and runtime output
+*.log
+librix-backend/logs/
+cache/
+runtime/
+
+# Uploads and generated local data
+librix-backend/uploads/**
+!librix-backend/uploads/.gitkeep
+
+# Miscellaneous generated files
+*.tmp
+*.bak
+*.swp
+coverage/

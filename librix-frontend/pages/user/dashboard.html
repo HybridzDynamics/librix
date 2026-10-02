@@ -68,6 +68,12 @@
                     </a>
                 </li>
                 <li class="sidebar-item">
+                    <a href="fines.html">
+                        <span class="sidebar-icon"><i data-lucide="dollar-sign" data-size="18"></i></span>
+                        <span>Fines & Payments</span>
+                    </a>
+                </li>
+                <li class="sidebar-item">
                     <a href="profile.html">
                         <span class="sidebar-icon"><i data-lucide="settings" data-size="18"></i></span>
                         <span>Profile &amp; Settings</span>
@@ -220,6 +226,11 @@
     <script src="../../assets/js/utils.js"></script>
     <script src="../../assets/js/auth.js"></script>
     <script>
+        // Update navigation based on auth state
+        document.addEventListener('DOMContentLoaded', function() {
+            auth.updateNav();
+        });
+        
         // Protect Route
         if (!auth.requireAuth()) { /* redirect handled */ }
 
@@ -260,9 +271,10 @@
                 renderCurrentBooks(currentlyIssued);
 
             } catch (err) {
+                console.error('Dashboard data error:', err);
                 document.getElementById('current-books-container').innerHTML = `
                     <div style="padding: 24px; text-align: center; color: var(--danger); font-size: var(--font-sm);">
-                        Could not load borrowing data.
+                        Could not load borrowing data. Please try again later.
                     </div>
                 `;
             }
@@ -282,7 +294,9 @@
 
                 renderRecentNotifications(notifs);
 
-            } catch (e) { /* ignore */ }
+            } catch (e) { 
+                console.error('Notifications error:', e);
+            }
         }
 
         function renderCurrentBooks(books) {

@@ -13,9 +13,11 @@ require_once __DIR__ . "/middleware/admin.php";
 // Headers
 
 header("Content-Type: application/json; charset=UTF-8");
-header("Access-Control-Allow-Origin: " . CORS_ORIGIN);
+header("Access-Control-Allow-Origin: *");
 header("Access-Control-Allow-Methods: GET, POST, PUT, DELETE, OPTIONS");
-header("Access-Control-Allow-Headers: Content-Type, Authorization");
+header("Access-Control-Allow-Headers: Content-Type, Authorization, X-Requested-With");
+header("Access-Control-Allow-Credentials: true");
+header("Access-Control-Max-Age: 86400");
 
 
 // OPTIONS Request
@@ -538,6 +540,10 @@ if (
     $parts[2] === "users"
 ) {
     switch ($parts[3]) {
+        case "get":
+            require_once __DIR__ . "/api/v1/users/get.php";
+            break;
+            
         case "profile":
             require_once __DIR__ . "/api/v1/users/profile.php";
             break;
@@ -563,7 +569,7 @@ if (
     $statusSubRoute = $parts[3] ?? null;
 
     if ($statusSubRoute === null) {
-        require_once __DIR__ . "/api/v1/status/status.php";
+        require_once __DIR__ . "/api/v1/status.php";
     }
 
     switch ($statusSubRoute) {
@@ -601,9 +607,17 @@ if (
     $parts[1] === API_VERSION &&
     $parts[2] === "admin"
 ) {
-    switch ($parts[3]) {
+    $adminSubRoute = $parts[3] ?? null;
+    $adminResourceId = $parts[4] ?? null;
+    $adminAction = $parts[5] ?? null;
+
+    switch ($adminSubRoute) {
         case "users":
-            require_once __DIR__ . "/api/v1/admin/users.php";
+            if ($adminResourceId !== null && $adminAction === "delete") {
+                require_once __DIR__ . "/api/v1/admin/users/delete.php";
+            } else {
+                require_once __DIR__ . "/api/v1/admin/users.php";
+            }
             break;
 
         case "books":
@@ -624,6 +638,10 @@ if (
 
         case "fines":
             require_once __DIR__ . "/api/v1/admin/fines.php";
+            break;
+
+        case "audit-logs":
+            require_once __DIR__ . "/api/v1/admin/audit-logs.php";
             break;
 
         case "status":

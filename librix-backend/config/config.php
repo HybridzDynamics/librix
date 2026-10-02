@@ -1,5 +1,40 @@
 <?php
 
+function librix_load_env_file(string $path): void
+{
+    if (!is_file($path)) {
+        return;
+    }
+
+    $lines = file($path, FILE_IGNORE_NEW_LINES | FILE_SKIP_EMPTY_LINES);
+    if ($lines === false) {
+        return;
+    }
+
+    foreach ($lines as $line) {
+        $line = trim($line);
+        if ($line === "" || str_starts_with($line, "#")) {
+            continue;
+        }
+
+        [$key, $value] = array_pad(explode("=", $line, 2), 2, "");
+        $key = trim($key);
+        $value = trim($value);
+
+        if ($key === "") {
+            continue;
+        }
+
+        if (!array_key_exists($key, $_ENV)) {
+            $_ENV[$key] = $value;
+        }
+
+        putenv("{$key}={$value}");
+    }
+}
+
+librix_load_env_file(dirname(__DIR__, 2) . "/.env");
+
 // LibriX Application Configuration
 
 define("APP_NAME", "LibriX");
@@ -12,7 +47,9 @@ define("APP_ENV", getenv("APP_ENV") ?: "development");
 
 define("API_BASE_URL", "/api/" . API_VERSION);
 define("API_FULL_VERSION", API_VERSION);
-define("BASE_URL", "http://localhost:8000");
+$protocol = isset($_SERVER['HTTPS']) && $_SERVER['HTTPS'] === 'on' ? 'https' : 'http';
+$host = $_SERVER['HTTP_HOST'] ?? 'localhost';
+define("BASE_URL", "$protocol://$host");
 
 
 // Server
@@ -29,13 +66,13 @@ define("SESSION_NAME", "LIBRIX_SESSION");
 
 // CORS
 
-define("CORS_ORIGIN", getenv("CORS_ORIGIN") ?: (APP_ENV === "production" ? "http://127.0.0.1:5500/" : "*"));
+define("CORS_ORIGIN", getenv("CORS_ORIGIN") ?: "*");
 
 // Profile picture upload paths
 // Filesystem path for storing uploaded profile pictures (ensure this directory exists and is writable)
-define("PROFILE_PIC_UPLOAD_PATH", dirname(__DIR__) . "/uploads/profile_pics/");
+define("PROFILE_PIC_UPLOAD_PATH", dirname(__DIR__) . "/uploads/profile-pictures/");
 // URL path used by frontend to display profile pictures
-define("PROFILE_PIC_URL_PATH", "/uploads/profile_pics/");
+define("PROFILE_PIC_URL_PATH", "/uploads/profile-pictures/");
 
 
 // Response

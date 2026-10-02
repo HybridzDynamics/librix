@@ -2,11 +2,56 @@
 
 // LibriX Database Configuration
 
-$Host = getenv("DB_HOST") ?: "localhost";
-$Port = getenv("DB_PORT") ?: "3306";
-$DbName = getenv("DB_NAME") ?: "librix";
-$Username = getenv("DB_USERNAME") ?: "root";
-$Password = getenv("DB_PASSWORD") ?: "admin";
+function librix_load_dotenv(string $path): void
+{
+    if (!is_file($path)) {
+        return;
+    }
+
+    $lines = file($path, FILE_IGNORE_NEW_LINES | FILE_SKIP_EMPTY_LINES);
+    if ($lines === false) {
+        return;
+    }
+
+    foreach ($lines as $line) {
+        $line = trim($line);
+        if ($line === "" || str_starts_with($line, "#")) {
+            continue;
+        }
+
+        [$key, $value] = array_pad(explode("=", $line, 2), 2, "");
+        $key = trim($key);
+        $value = trim($value);
+
+        if ($key === "") {
+            continue;
+        }
+
+        if (!array_key_exists($key, $_ENV)) {
+            $_ENV[$key] = $value;
+        }
+
+        putenv("{$key}={$value}");
+    }
+}
+
+librix_load_dotenv(dirname(__DIR__, 2) . "/.env");
+
+function librix_env(string $key, string $default = ""): string
+{
+    $value = getenv($key);
+    if ($value === false || $value === null || $value === "") {
+        $value = $_ENV[$key] ?? $_SERVER[$key] ?? $default;
+    }
+
+    return is_string($value) ? $value : $default;
+}
+
+$Host = librix_env("DB_HOST", "127.0.0.1");
+$Port = librix_env("DB_PORT", "3306");
+$DbName = librix_env("DB_NAME", "librix");
+$Username = librix_env("DB_USERNAME", "librix_user");
+$Password = librix_env("DB_PASSWORD", "");
 
 
 // Database Connection

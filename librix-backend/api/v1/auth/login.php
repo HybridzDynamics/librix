@@ -7,6 +7,7 @@ require_once __DIR__ . "/../../../config/database.php";
 require_once __DIR__ . "/../../../helpers/response.php";
 require_once __DIR__ . "/../../../helpers/validation.php";
 require_once __DIR__ . "/../../../helpers/functions.php";
+require_once __DIR__ . "/../../../helpers/audit.php";
 
 
 // Request Method
@@ -133,6 +134,20 @@ try {
 } catch (PDOException $e) {
     errorResponse("Unable to create authentication session", 500);
 }
+
+
+// Log Audit Action
+
+logAuditAction(
+    $pdo,
+    $User["id"],
+    null,
+    "login",
+    "user",
+    $User["id"],
+    "User logged in successfully",
+    getClientIp()
+);
 
 
 // Remove Password

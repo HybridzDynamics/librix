@@ -54,7 +54,7 @@
             <!-- Left Poster Column -->
             <div class="book-poster-card">
                 <div class="book-poster-img-wrap" id="poster-wrap">
-                    <div id="poster-fallback" style="font-size: 80px; color: #ffffff;">📖</div>
+                    <div id="poster-fallback" style="font-size: 80px; color: #ffffff;">data-lucide="book-open"</div>
                 </div>
                 <div class="book-poster-actions">
                     <div id="stock-badge-container"></div>
@@ -144,6 +144,24 @@
                     </div>
                 </div>
 
+                <!-- Recommended Books Section -->
+                <section id="recommendations-section" style="margin-bottom: 40px;">
+                    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
+                        <div>
+                            <h3 style="font-size: var(--font-lg); font-weight: 700; display: flex; align-items: center; gap: 8px;">
+                                <i data-lucide="sparkles" data-size="20"></i> Recommended For You
+                            </h3>
+                            <p style="font-size: var(--font-sm); color: var(--text-muted); margin: 0;">Similar books you might enjoy</p>
+                        </div>
+                    </div>
+                    <div id="recommendations-container" class="grid grid-4" style="gap: 16px;">
+                        <div style="text-align: center; padding: 20px; color: var(--text-muted);">
+                            <div class="spinner spinner-sm"></div>
+                            <p style="font-size: var(--font-xs); margin-top: 8px;">Loading recommendations...</p>
+                        </div>
+                    </div>
+                </section>
+
                 <!-- Reviews & Ratings Section -->
                 <section id="reviews-section" style="border-top: 1px solid var(--border); padding-top: 36px;">
                     <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 24px; flex-wrap: wrap; gap: 12px;">
@@ -213,8 +231,13 @@
     <script src="../assets/js/utils.js"></script>
     <script src="../assets/js/auth.js"></script>
     <script>
-        const urlParams = new URLSearchParams(window.location.search);
-        const bookId = urlParams.get('id');
+        // Update navigation based on auth state
+        document.addEventListener('DOMContentLoaded', function() {
+            auth.updateNav();
+        });
+        
+        const navParams = utils.getNavParams();
+        const bookId = navParams.id;
         let currentBook = null;
         let isFavorited = false;
 
@@ -222,6 +245,9 @@
             alert('Book ID missing.');
             window.location.href = 'catalogue.html';
         }
+        
+        // Clean up navigation params after use
+        utils.clearNavParams();
 
         async function initPage() {
             try {
@@ -236,6 +262,9 @@
 
                 // Fetch reviews
                 loadReviews(bookId);
+
+                // Fetch recommendations
+                loadRecommendations(bookId);
 
                 document.getElementById('loading-spinner').style.display = 'none';
                 document.getElementById('book-content').style.display = 'grid';
@@ -355,11 +384,66 @@
             }
         }
 
+        // Load recommendations
+        async function loadRecommendations(bookId) {
+            const container = document.getElementById('recommendations-container');
+            try {
+                const response = await api.get('/recommendations', { 
+                    type: 'content', 
+                    book_id: bookId, 
+                    limit: 4 
+                });
+                
+                const recommendations = response.data && response.data.recommendations ? response.data.recommendations : [];
+                
+                if (recommendations.length > 0) {
+                    container.innerHTML = recommendations.map(rec => {
+                        const cover = rec.cover_image 
+                            ? `<img src="${rec.cover_image}" alt="${utils.escapeHtml(rec.title)}" style="height: 120px; width: 100%; object-fit: cover; border-radius: var(--radius-md); margin-bottom: 8px;">`
+                            : `<div style="height: 120px; width: 100%; background: linear-gradient(135deg, #4f46e5, #0ea5e9); border-radius: var(--radius-md); margin-bottom: 8px; display: flex; align-items: center; justify-content: center; color: #fff;">${lucide.render('book', { size: 24 })}</div>`;
+
+                        return `
+                            <div class="card card-hover" style="padding: 12px;">
+                                ${cover}
+                                <h4 style="font-size: var(--font-sm); font-weight: 700; margin-bottom: 4px; line-height: 1.3;">
+                                    ${utils.escapeHtml(rec.title)}
+                                </h4>
+                                <p style="font-size: var(--font-xs); color: var(--text-muted); margin-bottom: 8px;">
+                                    ${utils.escapeHtml(rec.author || 'Unknown Author')}
+                                </p>
+                                <a href="javascript:void(0)" onclick="utils.navigate('book-details.html', {id: ${rec.id}})" class="btn btn-outline btn-sm" style="width: 100%; font-size: var(--font-xs);">
+                                    View Details
+                                </a>
+                            </div>
+                        `;
+                    }).join('');
+                    lucide.createIcons(container);
+                } else {
+                    container.innerHTML = `
+                        <div style="grid-column: 1 / -1; text-align: center; padding: 20px; color: var(--text-muted);">
+                            <i data-lucide="book-open" data-size="32" style="opacity: 0.5; margin-bottom: 8px;"></i>
+                            <p style="font-size: var(--font-sm);">No recommendations available at this time.</p>
+                        </div>
+                    `;
+                    lucide.createIcons(container);
+                }
+            } catch (err) {
+                console.error('Failed to load recommendations:', err);
+                container.innerHTML = `
+                    <div style="grid-column: 1 / -1; text-align: center; padding: 20px; color: var(--text-muted);">
+                        <i data-lucide="alert-circle" data-size="32" style="opacity: 0.5; margin-bottom: 8px;"></i>
+                        <p style="font-size: var(--font-sm);">Unable to load recommendations.</p>
+                    </div>
+                `;
+                lucide.createIcons(container);
+            }
+        }
+
         // Borrow handler
         async function handleBorrow() {
             if (!auth.isLoggedIn()) {
                 utils.toast("Authentication Required", "Please log in to borrow library books.", "warning");
-                setTimeout(() => window.location.href = `login.html?redirect=${encodeURIComponent(window.location.href)}`, 1200);
+                setTimeout(() => utils.navigate('login.html', {redirect: window.location.pathname}), 1200);
                 return;
             }
 
@@ -380,7 +464,7 @@
         async function handleReserve() {
             if (!auth.isLoggedIn()) {
                 utils.toast("Authentication Required", "Please log in to reserve books.", "warning");
-                setTimeout(() => window.location.href = `login.html?redirect=${encodeURIComponent(window.location.href)}`, 1200);
+                setTimeout(() => utils.navigate('login.html', {redirect: window.location.pathname}), 1200);
                 return;
             }
 
@@ -429,7 +513,7 @@
         document.getElementById('write-review-btn').addEventListener('click', () => {
             if (!auth.isLoggedIn()) {
                 utils.toast("Login Required", "Please sign in to post a book review.", "warning");
-                setTimeout(() => window.location.href = `login.html?redirect=${encodeURIComponent(window.location.href)}`, 1200);
+                setTimeout(() => utils.navigate('login.html', {redirect: window.location.pathname}), 1200);
                 return;
             }
             toggleReviewForm();

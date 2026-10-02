@@ -252,6 +252,50 @@ const utils = {
     },
 
     /**
+     * Navigate to page without showing query parameters in URL
+     * Uses history.replaceState to keep parameters hidden
+     */
+    navigate: function(url, params = {}) {
+        // Store parameters in sessionStorage
+        if (Object.keys(params).length > 0) {
+            const timestamp = Date.now();
+            sessionStorage.setItem('nav_params_' + timestamp, JSON.stringify(params));
+            sessionStorage.setItem('nav_params_current', timestamp);
+        }
+        
+        // Navigate without query string
+        window.location.href = url;
+    },
+
+    /**
+     * Get navigation parameters from sessionStorage
+     */
+    getNavParams: function() {
+        const timestamp = sessionStorage.getItem('nav_params_current');
+        if (!timestamp) return {};
+        
+        const paramsStr = sessionStorage.getItem('nav_params_' + timestamp);
+        if (!paramsStr) return {};
+        
+        try {
+            return JSON.parse(paramsStr);
+        } catch (e) {
+            return {};
+        }
+    },
+
+    /**
+     * Clear navigation parameters
+     */
+    clearNavParams: function() {
+        const timestamp = sessionStorage.getItem('nav_params_current');
+        if (timestamp) {
+            sessionStorage.removeItem('nav_params_' + timestamp);
+            sessionStorage.removeItem('nav_params_current');
+        }
+    },
+
+    /**
      * Format standard date
      */
     formatDate: function(dateStr) {
@@ -336,16 +380,6 @@ const utils = {
             clearTimeout(timeout);
             timeout = setTimeout(() => func.apply(this, args), delay);
         };
-    },
-
-    /**
-     * Escape HTML
-     */
-    escapeHtml: function(str) {
-        if (!str) return '';
-        const div = document.createElement('div');
-        div.textContent = str;
-        return div.innerHTML;
     }
 };
 
