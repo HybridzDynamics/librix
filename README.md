@@ -222,7 +222,4 @@ Contributions are welcome. Please keep changes focused, preserve the existing ar
 
 This project is distributed under the MIT License. See LICENSE for details.
 
----
-
-This repository is intended as a clean, maintainable starting point for a library management application and should be reviewed and tuned to the target deployment environment before production use.
 
