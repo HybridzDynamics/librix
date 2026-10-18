@@ -18,8 +18,38 @@ cache/
 runtime/
 
 # Uploads and generated local data
-librix-backend/uploads/**
+librix-backend/uploads/*/
+librix-backend/uploads/*
 !librix-backend/uploads/.gitkeep
+!librix-backend/uploads/*/.gitkeep
+
+# Data files (book datasets)
+book_tags.csv
+books.csv
+books_clean.csv
+tags.csv
+
+# Archive files
+librix-frontend.zip
+
+# Database and import scripts
+migrate_database.php
+reset_database.php
+update_schema.php
+import_books_comprehensive.php
+import_books_simple.php
+import_librix_books.py
+import_schema.php
+import_tags.php
+export_datasets.ps1
+
+# Development documentation
+ADMIN_ENHANCEMENTS.md
+FINAL_VERIFICATION.md
+FIXES_SUMMARY.md
+SETUP_GUIDE.md
+SYSTEM_STATUS.md
+TEST_RESULTS.md
 
 # Miscellaneous generated files
 *.tmp
