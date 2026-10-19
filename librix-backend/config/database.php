@@ -47,11 +47,11 @@ function librix_env(string $key, string $default = ""): string
     return is_string($value) ? $value : $default;
 }
 
-$Host = librix_env("DB_HOST", "127.0.0.1");
+$Host = librix_env("DB_HOST", "localhost");
 $Port = librix_env("DB_PORT", "3306");
 $DbName = librix_env("DB_NAME", "librix");
-$Username = librix_env("DB_USERNAME", "librix_user");
-$Password = librix_env("DB_PASSWORD", "");
+$Username = librix_env("DB_USERNAME", "root");
+$Password = librix_env("DB_PASSWORD", "admin");
 
 
 // Database Connection
