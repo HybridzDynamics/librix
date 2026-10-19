@@ -127,7 +127,7 @@
             const tbody = document.getElementById('circulation-tbody');
 
             try {
-                const res = await api.get('/admin/borrowings');
+                const res = await api.get('/admin/issues');
                 const list = res.data && res.data.issues ? res.data.issues : [];
 
                 if (list.length === 0) {

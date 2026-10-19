@@ -188,7 +188,7 @@ if (
     $parts[1] === API_VERSION &&
     $parts[2] === "books"
 ) {
-    $bookId = $parts[3] ?? null;
+    $bookId = $parts[3] ?? $_GET["id"] ?? null;
     $bookSubRoute = $parts[3] ?? null;
 
     if ($method === "GET" && $bookSubRoute === "search") {
@@ -222,7 +222,7 @@ if (
     $parts[1] === API_VERSION &&
     $parts[2] === "authors"
 ) {
-    $authorId = $parts[3] ?? null;
+    $authorId = $parts[3] ?? $_GET["id"] ?? null;
 
     if ($method === "GET") {
         require_once __DIR__ . "/api/v1/authors/get.php";
@@ -257,7 +257,7 @@ if (
     $parts[1] === API_VERSION &&
     $parts[2] === "categories"
 ) {
-    $categoryId = $parts[3] ?? null;
+    $categoryId = $parts[3] ?? $_GET["id"] ?? null;
 
     if ($method === "GET") {
         require_once __DIR__ . "/api/v1/categories/get.php";
@@ -292,7 +292,7 @@ if (
     $parts[1] === API_VERSION &&
     $parts[2] === "publishers"
 ) {
-    $publisherId = $parts[3] ?? null;
+    $publisherId = $parts[3] ?? $_GET["id"] ?? null;
 
     if ($method === "GET") {
         require_once __DIR__ . "/api/v1/publishers/get.php";
@@ -628,7 +628,9 @@ if (
 
     switch ($adminSubRoute) {
         case "users":
-            if ($adminResourceId !== null && $adminAction === "delete") {
+            if ($method === "PUT" || $method === "PATCH") {
+                require_once __DIR__ . "/api/v1/admin/users.php";
+            } else if ($adminResourceId !== null && $adminAction === "delete") {
                 require_once __DIR__ . "/api/v1/admin/users/delete.php";
             } else {
                 require_once __DIR__ . "/api/v1/admin/users.php";

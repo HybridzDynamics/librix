@@ -28,6 +28,7 @@ book_tags.csv
 books.csv
 books_clean.csv
 tags.csv
+librix-frontend/assets/data/*.json
 
 # Archive files
 librix-frontend.zip

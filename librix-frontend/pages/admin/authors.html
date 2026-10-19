@@ -150,7 +150,7 @@
             if (!confirmed) return;
 
             try {
-                await api.delete(`/authors/${id}`);
+                await api.delete(`/authors?id=${id}`);
                 utils.toast("Author Deleted", `Removed "${name}".`, "success");
                 loadAuthors();
             } catch (err) { utils.toast("Delete Failed", err.message, "danger"); }
@@ -165,7 +165,7 @@
             btn.disabled = true;
             try {
                 if (id) {
-                    await api.put(`/authors/${id}`, { name, biography: bio });
+                    await api.put(`/authors?id=${id}`, { name, biography: bio });
                     utils.toast("Author Updated", `Updated "${name}".`, "success");
                 } else {
                     await api.post('/authors', { name, biography: bio });

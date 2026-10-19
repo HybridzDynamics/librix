@@ -150,7 +150,7 @@
             if (!confirmed) return;
 
             try {
-                await api.delete(`/categories/${id}`);
+                await api.delete(`/categories?id=${id}`);
                 utils.toast("Category Deleted", `Removed "${name}".`, "success");
                 loadCategories();
             } catch (err) { utils.toast("Delete Failed", err.message, "danger"); }
@@ -165,7 +165,7 @@
             btn.disabled = true;
             try {
                 if (id) {
-                    await api.put(`/categories/${id}`, { name, description: desc });
+                    await api.put(`/categories?id=${id}`, { name, description: desc });
                     utils.toast("Category Updated", `Updated "${name}".`, "success");
                 } else {
                     await api.post('/categories', { name, description: desc });

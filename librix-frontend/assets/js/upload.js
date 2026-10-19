@@ -13,7 +13,7 @@ const upload = {
         formData.append('upload_type', uploadType);
 
         try {
-            const response = await fetch(`${api.getBaseUrl()}/upload`, {
+            const response = await fetch(`${api.baseUrl}/upload`, {
                 method: 'POST',
                 headers: {
                     'Authorization': `Bearer ${auth.getToken()}`
@@ -22,7 +22,7 @@ const upload = {
             });
 
             const result = await response.json();
-            
+
             if (result.success) {
                 return result.data;
             } else {

@@ -135,12 +135,12 @@
 
             if (!confirmed) return;
 
-            try { 
-                await api.delete(`/publishers/${id}`); 
-                utils.toast("Publisher Deleted", `Removed "${name}".`, "success"); 
-                loadPublishers(); 
-            } catch (err) { 
-                utils.toast("Delete Failed", err.message, "danger"); 
+            try {
+                await api.delete(`/publishers?id=${id}`);
+                utils.toast("Publisher Deleted", `Removed "${name}".`, "success");
+                loadPublishers();
+            } catch (err) {
+                utils.toast("Delete Failed", err.message, "danger");
             }
         }
 
@@ -153,7 +153,7 @@
             const btn = document.getElementById('save-publisher-btn');
             btn.disabled = true;
             try {
-                if (id) { await api.put(`/publishers/${id}`, { name, address, website }); utils.toast("Publisher Updated", `Updated "${name}".`, "success"); }
+                if (id) { await api.put(`/publishers?id=${id}`, { name, address, website }); utils.toast("Publisher Updated", `Updated "${name}".`, "success"); }
                 else { await api.post('/publishers', { name, address, website }); utils.toast("Publisher Added", `Added "${name}".`, "success"); }
                 utils.modal('publisher-modal').close(); loadPublishers();
             } catch (err) { utils.toast("Save Failed", err.message, "error"); }

@@ -13,8 +13,10 @@ require_once __DIR__ . "/../../../middleware/admin.php";
 
 // Request Method
 
-if ($_SERVER["REQUEST_METHOD"] !== "GET") {
-    methodNotAllowedResponse(["GET"]);
+$Method = $_SERVER["REQUEST_METHOD"];
+
+if ($Method !== "GET" && $Method !== "PUT") {
+    methodNotAllowedResponse(["GET", "PUT"]);
 }
 
 
@@ -106,7 +108,46 @@ paginatedResponse(
     $Reservations,
     $Page,
     $Limit,
-    $Total
-);
+    $Total);
+}
+
+
+// Update Reservation Status (PUT)
+
+if ($Method === "PUT") {
+    $RequestData = getJsonInput();
+
+    $ReservationId = $RequestData["id"] ?? null;
+    $NewStatus = $RequestData["status"] ?? null;
+
+    if (!$ReservationId) {
+        badRequestResponse("Reservation ID is required");
+    }
+
+    if (!$NewStatus) {
+        badRequestResponse("Status is required");
+    }
+
+    $ValidStatuses = ["active", "fulfilled", "cancelled"];
+    if (!in_array($NewStatus, $ValidStatuses, true)) {
+        badRequestResponse("Invalid status. Allowed: " . implode(", ", $ValidStatuses));
+    }
+
+    try {
+        $CheckStmt = $pdo->prepare("SELECT id FROM reservations WHERE id = ? LIMIT 1");
+        $CheckStmt->execute([(int)$ReservationId]);
+        if (!$CheckStmt->fetch()) {
+            notFoundResponse("Reservation not found");
+        }
+
+        $UpdateStmt = $pdo->prepare("UPDATE reservations SET status = ? WHERE id = ?");
+        $UpdateStmt->execute([$NewStatus, (int)$ReservationId]);
+
+        successResponse(["id" => (int)$ReservationId, "status" => $NewStatus], "Reservation status updated");
+
+    } catch (PDOException $e) {
+        errorResponse("Database error", 500);
+    }
+}
 
 ?>

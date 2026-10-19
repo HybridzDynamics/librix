@@ -137,12 +137,12 @@
         }
 
         async function markAsRead(id) {
-            try { await api.put('/notifications', { id }); loadNotifications(); } catch (e) {}
+            try { await api.post('/notifications/read', { id }); loadNotifications(); } catch (e) {}
         }
 
         async function markAllAsRead() {
             try {
-                await api.put('/notifications', { all: true });
+                await api.post('/notifications/read', { all: true });
                 utils.toast("Notifications Cleared", "All notifications marked as read.", "success");
                 loadNotifications();
             } catch (err) { utils.toast("Error", err.message, "error"); }

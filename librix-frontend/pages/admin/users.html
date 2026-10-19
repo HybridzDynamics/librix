@@ -214,12 +214,12 @@
 
             if (!confirmed) return;
 
-            try { 
-                await api.delete(`/admin/users/${id}/delete`); 
-                utils.toast("Account Deleted", `User "${name}" has been permanently deleted.`, "success"); 
-                loadUsers(); 
-            } catch (err) { 
-                utils.toast("Deletion Failed", err.message, "danger"); 
+            try {
+                await api.delete(`/admin/users/delete?id=${id}`);
+                utils.toast("Account Deleted", `User "${name}" has been permanently deleted.`, "success");
+                loadUsers();
+            } catch (err) {
+                utils.toast("Deletion Failed", err.message, "danger");
             }
         }
 

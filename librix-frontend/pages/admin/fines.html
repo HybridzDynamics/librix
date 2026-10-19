@@ -254,7 +254,7 @@
             if (!confirmed) return;
 
             try {
-                await api.put('/admin/fines', { id: id, status: 'paid' });
+                await api.fines.updateStatus(id, 'paid');
                 utils.toast("Payment Recorded", `Fine #${id} was marked as paid.`, "success");
                 loadFines();
             } catch (err) {
@@ -274,7 +274,7 @@
             if (!confirmed) return;
 
             try {
-                await api.put('/admin/fines', { id: id, status: 'waived' });
+                await api.fines.updateStatus(id, 'waived');
                 utils.toast("Fine Waived", `Fine #${id} has been dismissed.`, "info");
                 loadFines();
             } catch (err) {

@@ -252,7 +252,7 @@
             if (!confirmed) return;
 
             try {
-                await api.put('/admin/reservations', { id: id, status: 'fulfilled' });
+                await api.reservations.updateStatus(id, 'fulfilled');
                 utils.toast("Hold Fulfilled", `Patron notified that "${title}" is ready.`, "success");
                 loadReservations();
             } catch (err) {
@@ -272,7 +272,7 @@
             if (!confirmed) return;
 
             try {
-                await api.put('/admin/reservations', { id: id, status: 'cancelled' });
+                await api.reservations.updateStatus(id, 'cancelled');
                 utils.toast("Reservation Cancelled", `Hold #${id} was marked cancelled.`, "info");
                 loadReservations();
             } catch (err) {
