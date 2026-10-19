@@ -61,6 +61,7 @@ Error responses:
 - POST /auth/reset-password
 - POST /auth/verify-email
 - POST /auth/resend-verification
+- POST /auth/upload_profile_picture
 
 Example login request:
 
@@ -146,7 +147,7 @@ Query parameters may include search, category, author, page, and limit.
 ### Reviews
 
 - GET /reviews
-- POST /reviews/create
+- POST /reviews
 - DELETE /reviews?id={id}
 
 ### Notifications
@@ -162,6 +163,7 @@ Query parameters may include search, category, author, page, and limit.
 ### Recommendations and Readability
 
 - GET /recommendations
+- GET /recommendations/index
 - GET /readability
 - POST /readability/analyze
 
@@ -169,11 +171,43 @@ Query parameters may include search, category, author, page, and limit.
 
 - GET /admin/statistics
 - GET /admin/users
+- DELETE /admin/users/delete
 - GET /admin/books
 - GET /admin/issues
 - GET /admin/reservations
 - GET /admin/fines
 - GET /admin/audit-logs
+- GET /admin/status/incidents
+- GET /admin/status/maintenance
+
+### Librarian
+
+- POST /librarian/request
+- GET /librarian/requests
+- POST /librarian/approve
+- GET /librarian/books
+- POST /librarian/books
+- DELETE /librarian/books
+- POST /librarian/link_book
+- GET /librarian/search_books
+- GET /librarian/stats
+- POST /librarian/set_org
+
+### Organization Join
+
+- POST /join/request
+- GET /join/requests
+- POST /join/approve
+
+### Status (Public)
+
+- GET /status
+- GET /status/services
+- GET /status/incidents
+- GET /status/uptime
+- GET /status/history
+- GET /status/maintenance
+- GET /status/status
 
 ## Error handling
 

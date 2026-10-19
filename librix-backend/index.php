@@ -8,6 +8,7 @@ require_once __DIR__ . "/helpers/validation.php";
 require_once __DIR__ . "/helpers/functions.php";
 require_once __DIR__ . "/middleware/auth.php";
 require_once __DIR__ . "/middleware/admin.php";
+require_once __DIR__ . "/middleware/librarian.php";
 
 
 // Headers
@@ -164,6 +165,10 @@ if (
 
             case "resend-verification":
                 require_once __DIR__ . "/api/v1/auth/resend-verification.php";
+                break;
+
+            case "upload_profile_picture":
+                require_once __DIR__ . "/api/v1/auth/upload_profile_picture.php";
                 break;
 
             default:
@@ -329,7 +334,7 @@ if (
     }
 
     if ($method === "POST") {
-        require_once __DIR__ . "/api/v1/reviews/post.php";
+        require_once __DIR__ . "/api/v1/reviews/create.php";
     }
 
     if ($method === "DELETE") {
@@ -465,8 +470,14 @@ if (
     $parts[1] === API_VERSION &&
     $parts[2] === "recommendations"
 ) {
-    if ($method === "GET") {
+    $recSubRoute = $parts[3] ?? null;
+
+    if ($method === "GET" && $recSubRoute === null) {
         require_once __DIR__ . "/api/v1/recommendations/get.php";
+    }
+
+    if ($method === "GET" && $recSubRoute === "index") {
+        require_once __DIR__ . "/api/v1/recommendations/index.php";
     }
 
     methodNotAllowedResponse(["GET"]);
@@ -593,6 +604,10 @@ if (
             require_once __DIR__ . "/api/v1/status/maintenance.php";
             break;
 
+        case "status":
+            require_once __DIR__ . "/api/v1/status/status.php";
+            break;
+
         default:
             notFoundResponse("Status route not found");
     }
@@ -717,37 +732,31 @@ if (
             require_once __DIR__ . "/api/v1/librarian/approve.php";
             break;
 
+        case "books":
+            require_once __DIR__ . "/api/v1/librarian/books.php";
+            break;
+
+        case "link_book":
+            require_once __DIR__ . "/api/v1/librarian/link_book.php";
+            break;
+
+        case "search_books":
+            require_once __DIR__ . "/api/v1/librarian/search_books.php";
+            break;
+
+        case "stats":
+            require_once __DIR__ . "/api/v1/librarian/stats.php";
+            break;
+
+        case "set_org":
+            require_once __DIR__ . "/api/v1/librarian/set_org.php";
+            break;
+
         default:
             notFoundResponse("Librarian route not found");
     }
 }
 
-
-// Organization Join Routes
-
-if (
-    isset($parts[0], $parts[1], $parts[2], $parts[3]) &&
-    $parts[0] === "api" &&
-    $parts[1] === API_VERSION &&
-    $parts[2] === "join"
-) {
-    switch ($parts[3]) {
-        case "request":
-            require_once __DIR__ . "/api/v1/join/request.php";
-            break;
-
-        case "requests":
-            require_once __DIR__ . "/api/v1/join/requests.php";
-            break;
-
-        case "approve":
-            require_once __DIR__ . "/api/v1/join/approve.php";
-            break;
-
-        default:
-            notFoundResponse("Join route not found");
-    }
-}
 
 // Organizations Routes
 
@@ -781,33 +790,6 @@ if (
         "PUT",
         "DELETE"
     ]);
-}
-
-
-// Librarian Routes
-
-if (
-    isset($parts[0], $parts[1], $parts[2], $parts[3]) &&
-    $parts[0] === "api" &&
-    $parts[1] === API_VERSION &&
-    $parts[2] === "librarian"
-) {
-    switch ($parts[3]) {
-        case "request":
-            require_once __DIR__ . "/api/v1/librarian/request.php";
-            break;
-
-        case "requests":
-            require_once __DIR__ . "/api/v1/librarian/requests.php";
-            break;
-
-        case "approve":
-            require_once __DIR__ . "/api/v1/librarian/approve.php";
-            break;
-
-        default:
-            notFoundResponse("Librarian route not found");
-    }
 }
 
 
