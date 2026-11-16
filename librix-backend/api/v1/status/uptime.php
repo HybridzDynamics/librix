@@ -1,21 +1,13 @@
 <?php
 
-// Configuration
-
 require_once __DIR__ . "/../../../config/config.php";
 require_once __DIR__ . "/../../../config/database.php";
 require_once __DIR__ . "/../../../helpers/response.php";
 require_once __DIR__ . "/../../../helpers/functions.php";
 
-
-// Request Method
-
 if ($_SERVER["REQUEST_METHOD"] !== "GET") {
     methodNotAllowedResponse(["GET"]);
 }
-
-
-// Database Query - Overall Uptime
 
 $OverallUptime = 100.00;
 $TotalChecks = 0;
@@ -45,9 +37,6 @@ try {
 } catch (PDOException $e) {
     errorResponse("Unable to calculate uptime", 500);
 }
-
-
-// Database Query - By Service
 
 $ServiceUptimes = [];
 
@@ -83,9 +72,6 @@ try {
 } catch (PDOException $e) {
     errorResponse("Unable to calculate uptime", 500);
 }
-
-
-// Response
 
 successResponse([
     "uptime_percentage" => $OverallUptime,

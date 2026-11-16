@@ -1,7 +1,5 @@
 <?php
 
-// Configuration
-
 require_once __DIR__ . "/../../../config/config.php";
 require_once __DIR__ . "/../../../config/database.php";
 require_once __DIR__ . "/../../../helpers/response.php";
@@ -10,21 +8,12 @@ require_once __DIR__ . "/../../../helpers/functions.php";
 require_once __DIR__ . "/../../../middleware/auth.php";
 require_once __DIR__ . "/../../../middleware/admin.php";
 
-
-// Request Method
-
 if ($_SERVER["REQUEST_METHOD"] !== "PUT") {
     methodNotAllowedResponse(["PUT"]);
 }
 
-
-// Authentication
-
 $User = requireAuth();
 requireAdmin($User);
-
-
-// Request Data
 
 $AuthorId = $_GET["id"] ?? null;
 
@@ -35,9 +24,6 @@ if ($IdError !== null) {
 }
 
 $AuthorId = (int)$AuthorId;
-
-
-// Find Existing Author
 
 try {
     $Stmt = $pdo->prepare("SELECT * FROM authors WHERE id = ? LIMIT 1");
@@ -56,9 +42,6 @@ $RequestData = getJsonInput();
 
 $Name = array_key_exists("name", $RequestData) ? trim($RequestData["name"]) : $ExistingAuthor["name"];
 $Biography = array_key_exists("biography", $RequestData) ? (trim((string)$RequestData["biography"]) ?: null) : $ExistingAuthor["biography"];
-
-
-// Validation
 
 $Errors = [];
 
@@ -84,9 +67,6 @@ if (hasValidationErrors($Errors)) {
     ValidationerrorResponse($Errors);
 }
 
-
-// Database Query
-
 try {
     $Stmt = $pdo->prepare(
         "UPDATE authors
@@ -105,9 +85,6 @@ try {
     errorResponse("Unable to update author", 500);
 }
 
-
-// Fetch Updated Author
-
 try {
     $Stmt = $pdo->prepare(
         "SELECT id, name, biography, created_at, updated_at
@@ -124,13 +101,7 @@ try {
     errorResponse("Unable to retrieve updated author", 500);
 }
 
-
-// Audit Log
-
 logAudit((int)$User["id"], "author_updated", "authors", $AuthorId, "Updated author '$Name'");
-
-
-// Response
 
 successResponse(
     $UpdatedAuthor,

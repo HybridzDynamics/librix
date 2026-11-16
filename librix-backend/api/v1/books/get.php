@@ -1,27 +1,16 @@
 <?php
 
-// Configuration
-
 require_once __DIR__ . "/../../../config/config.php";
 require_once __DIR__ . "/../../../config/database.php";
 require_once __DIR__ . "/../../../helpers/response.php";
 require_once __DIR__ . "/../../../helpers/validation.php";
 require_once __DIR__ . "/../../../helpers/functions.php";
 
-
-// Request Method
-
 if ($_SERVER["REQUEST_METHOD"] !== "GET") {
     methodNotAllowedResponse(["GET"]);
 }
 
-
-// Request Data
-
 $BookId = $bookId ?? ($parts[3] ?? ($_GET["id"] ?? null));
-
-
-// Single Book
 
 if ($BookId !== null) {
 
@@ -70,9 +59,6 @@ if ($BookId !== null) {
     successResponse($Book);
 }
 
-
-// Search, Filter & Pagination Parameters
-
 $Page = validatePageNumber($_GET["page"] ?? 1);
 $Limit = validatePageLimit($_GET["limit"] ?? DEFAULT_PAGE_SIZE, DEFAULT_PAGE_SIZE, MAX_PAGE_SIZE);
 $Offset = ($Page - 1) * $Limit;
@@ -82,7 +68,6 @@ $Category = isset($_GET["category"]) ? trim($_GET["category"]) : null;
 $AuthorId = isset($_GET["author_id"]) ? $_GET["author_id"] : null;
 $AvailableOnly = isset($_GET["available"]) && in_array(strtolower((string)$_GET["available"]), ["true", "1", "yes"], true);
 
-// Sorting Whitelist
 $AllowedSortColumns = [
     "title" => "books.title",
     "created_at" => "books.created_at",
@@ -95,9 +80,6 @@ $SortColumn = $AllowedSortColumns[$SortParam] ?? "books.id";
 
 $OrderParam = strtolower(trim($_GET["order"] ?? "desc"));
 $SortOrder = ($OrderParam === "asc") ? "ASC" : "DESC";
-
-
-// Build Query
 
 $WhereClauses = [];
 $Bindings = [];
@@ -129,9 +111,6 @@ if (!empty($WhereClauses)) {
     $WhereSql = "WHERE " . implode(" AND ", $WhereClauses);
 }
 
-
-// Count Total
-
 try {
     $CountSql = "SELECT COUNT(*) AS total
                  FROM books
@@ -146,9 +125,6 @@ try {
 } catch (PDOException $e) {
     errorResponse("Database error", 500);
 }
-
-
-// Fetch Paginated Books
 
 try {
     $DataSql = "SELECT
@@ -188,9 +164,6 @@ try {
 } catch (PDOException $e) {
     errorResponse("Database error", 500);
 }
-
-
-// Response
 
 paginatedResponse(
     $Books,

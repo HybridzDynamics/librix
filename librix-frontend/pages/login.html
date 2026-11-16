@@ -15,26 +15,23 @@
 <body>
     <main class="login-page">
         <div class="login-container">
-            <!-- Brand -->
+
             <div class="login-brand">
                 <img src="../assets/images/logo.png" alt="Librix Logo">
                 <h1>Librix</h1>
             </div>
 
-            <!-- Login Card -->
             <div class="login-card">
-                <!-- Header -->
+
                 <div class="login-header">
                     <h2>Welcome back</h2>
                     <p>Sign in to your Librix account.</p>
                 </div>
 
-                <!-- Alert Box -->
                 <div id="alert-box" style="display: none; padding: 10px 14px; margin-bottom: 16px; border-radius: var(--radius-md); font-size: var(--font-sm);"></div>
 
-                <!-- Login Form -->
                 <form id="login-form" class="login-form" novalidate>
-                    <!-- Email -->
+
                     <div class="form-group">
                         <label for="email" class="form-label">Email Address <span class="required">*</span></label>
                         <input
@@ -49,7 +46,6 @@
                         <div class="form-error" id="email-error"></div>
                     </div>
 
-                    <!-- Password -->
                     <div class="form-group">
                         <div class="password-header">
                             <label for="password" class="form-label">Password <span class="required">*</span></label>
@@ -80,7 +76,6 @@
                         <div class="form-error" id="password-error"></div>
                     </div>
 
-                    <!-- Remember Me -->
                     <div class="remember-row">
                         <label class="form-checkbox-label">
                             <input type="checkbox" name="remember" class="form-checkbox" id="remember">
@@ -88,48 +83,39 @@
                         </label>
                     </div>
 
-                    <!-- Login Button -->
                     <button type="submit" id="submit-btn" class="login-submit btn-primary">
                         <span>Sign In</span>
                     </button>
                 </form>
 
-
-
-                <!-- Divider -->
                 <div class="divider">
                     <span>OR</span>
                 </div>
 
-                <!-- Register -->
                 <div class="register-section">
                     <p>Don't have an account?</p>
                     <a href="register.html">Create an account</a>
                 </div>
             </div>
 
-            <!-- Back Home -->
             <a href="../index.html" class="back-home">← Back to Home</a>
         </div>
     </main>
 
-    <!-- Footer -->
     <footer class="login-footer">
         <p>&copy; 2026 Librix. All rights reserved.</p>
     </footer>
 
-    <!-- Scripts -->
     <script src="../assets/js/icons.js"></script>
     <script src="../assets/js/api.js"></script>
     <script src="../assets/js/utils.js"></script>
     <script src="../assets/js/auth.js"></script>
     <script>
-        // Update navigation based on auth state
+
         document.addEventListener('DOMContentLoaded', function() {
             auth.updateNav();
         });
-        
-        // Password toggle
+
         const passwordInput = document.getElementById("password");
         const togglePassword = document.getElementById("togglePassword");
         const eyeIcon = document.getElementById("eyeIcon");
@@ -144,7 +130,6 @@
             }
         });
 
-        // Form Submit
         const form = document.getElementById("login-form");
         const submitBtn = document.getElementById("submit-btn");
         const alertBox = document.getElementById("alert-box");
@@ -155,7 +140,7 @@
             alertBox.style.display = "none";
         }
 
-        form.addEventListener("submit", async function (e) {
+        form.addEventListener("submit", function (e) {
             e.preventDefault();
             clearErrors();
 
@@ -181,11 +166,9 @@
             submitBtn.disabled = true;
             submitBtn.innerHTML = '<span class="spinner spinner-sm spinner-white"></span> Signing in...';
 
-            try {
-                const data = await auth.login(email, password);
+            auth.login(email, password).then(function(data) {
                 utils.toast("Signed in", `Welcome back, ${data.user.name}!`, "success");
 
-                // Check redirect URL from sessionStorage
                 const navParams = utils.getNavParams();
                 const redirectParam = navParams.redirect;
                 utils.clearNavParams();
@@ -202,7 +185,7 @@
                     }
                 }, 800);
 
-            } catch (err) {
+            }).catch(function(err) {
                 submitBtn.disabled = false;
                 submitBtn.innerHTML = '<span>Sign In</span>';
 
@@ -211,15 +194,13 @@
                 alertBox.style.color = "var(--danger-text)";
                 alertBox.style.border = "1px solid var(--danger-border)";
                 alertBox.textContent = err.message || "Invalid email or password.";
-            }
+            });
         });
 
-        // Forgot password notice
         document.getElementById("forgot-password-link").addEventListener("click", (e) => {
             e.preventDefault();
             utils.toast("Password Recovery", "Please contact your library administrator or use the password reset endpoint.", "info", 5000);
         });
-
 
     </script>
 </body>

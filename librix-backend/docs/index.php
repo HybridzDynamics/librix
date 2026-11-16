@@ -1,7 +1,5 @@
 <?php
 
-// API Documentation Page
-
 require_once __DIR__ . "/../config/config.php";
 
 ?>
@@ -17,37 +15,37 @@ require_once __DIR__ . "/../config/config.php";
             padding: 0;
             box-sizing: border-box;
         }
-        
+
         body {
             font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
-            background: #f8fafc;
-            color: #1e293b;
+            background:
+            color:
             line-height: 1.6;
         }
-        
+
         .container {
             max-width: 1200px;
             margin: 0 auto;
             padding: 2rem;
         }
-        
+
         .header {
-            background: linear-gradient(135deg, #4f46e5 0%, #3730a3 100%);
+            background: linear-gradient(135deg,
             color: white;
             padding: 3rem 2rem;
             text-align: center;
         }
-        
+
         .header h1 {
             font-size: 2.5rem;
             margin-bottom: 0.5rem;
         }
-        
+
         .header p {
             opacity: 0.9;
             font-size: 1.1rem;
         }
-        
+
         .api-version {
             background: rgba(255,255,255,0.2);
             padding: 0.25rem 0.75rem;
@@ -56,37 +54,37 @@ require_once __DIR__ . "/../config/config.php";
             margin-top: 1rem;
             display: inline-block;
         }
-        
+
         .nav {
             background: white;
             padding: 1rem 2rem;
-            border-bottom: 1px solid #e2e8f0;
+            border-bottom: 1px solid
             position: sticky;
             top: 0;
             z-index: 100;
         }
-        
+
         .nav ul {
             list-style: none;
             display: flex;
             gap: 2rem;
             overflow-x: auto;
         }
-        
+
         .nav a {
-            color: #64748b;
+            color:
             text-decoration: none;
             white-space: nowrap;
             padding: 0.5rem 0;
             border-bottom: 2px solid transparent;
             transition: all 0.2s;
         }
-        
+
         .nav a:hover, .nav a.active {
-            color: #4f46e5;
-            border-bottom-color: #4f46e5;
+            color:
+            border-bottom-color:
         }
-        
+
         .section {
             background: white;
             margin: 2rem 0;
@@ -94,22 +92,22 @@ require_once __DIR__ . "/../config/config.php";
             border-radius: 0.5rem;
             box-shadow: 0 1px 3px rgba(0,0,0,0.1);
         }
-        
+
         .section h2 {
-            color: #1e293b;
+            color:
             margin-bottom: 1.5rem;
             padding-bottom: 0.5rem;
-            border-bottom: 2px solid #e2e8f0;
+            border-bottom: 2px solid
         }
-        
+
         .endpoint {
-            background: #f8fafc;
-            border: 1px solid #e2e8f0;
+            background:
+            border: 1px solid
             border-radius: 0.375rem;
             padding: 1.5rem;
             margin-bottom: 1rem;
         }
-        
+
         .endpoint-header {
             display: flex;
             justify-content: space-between;
@@ -118,7 +116,7 @@ require_once __DIR__ . "/../config/config.php";
             flex-wrap: wrap;
             gap: 1rem;
         }
-        
+
         .method {
             padding: 0.25rem 0.75rem;
             border-radius: 0.25rem;
@@ -126,83 +124,83 @@ require_once __DIR__ . "/../config/config.php";
             font-size: 0.875rem;
             text-transform: uppercase;
         }
-        
-        .method.get { background: #10b981; color: white; }
-        .method.post { background: #3b82f6; color: white; }
-        .method.put { background: #f59e0b; color: white; }
-        .method.delete { background: #ef4444; color: white; }
-        
+
+        .method.get { background:
+        .method.post { background:
+        .method.put { background:
+        .method.delete { background:
+
         .endpoint-url {
             font-family: monospace;
-            background: #1e293b;
-            color: #22d3ee;
+            background:
+            color:
             padding: 0.5rem 1rem;
             border-radius: 0.25rem;
             font-size: 0.875rem;
         }
-        
+
         .endpoint-title {
             font-weight: 600;
-            color: #1e293b;
+            color:
         }
-        
+
         .endpoint-description {
-            color: #64748b;
+            color:
             margin-bottom: 1rem;
         }
-        
+
         .endpoint-auth {
-            background: #fef3c7;
-            border: 1px solid #fbbf24;
-            color: #92400e;
+            background:
+            border: 1px solid
+            color:
             padding: 0.5rem 1rem;
             border-radius: 0.25rem;
             font-size: 0.875rem;
             margin-bottom: 1rem;
         }
-        
+
         .endpoint-auth.admin {
-            background: #fee2e2;
-            border-color: #fca5a5;
-            color: #991b1b;
+            background:
+            border-color:
+            color:
         }
-        
+
         .endpoint-params {
             margin-bottom: 1rem;
         }
-        
+
         .endpoint-params h4 {
             font-size: 0.875rem;
-            color: #64748b;
+            color:
             margin-bottom: 0.5rem;
             text-transform: uppercase;
         }
-        
+
         .param-table {
             width: 100%;
             border-collapse: collapse;
             font-size: 0.875rem;
         }
-        
+
         .param-table th, .param-table td {
             padding: 0.5rem;
             text-align: left;
-            border-bottom: 1px solid #e2e8f0;
+            border-bottom: 1px solid
         }
-        
+
         .param-table th {
-            background: #f8fafc;
+            background:
             font-weight: 600;
-            color: #475569;
+            color:
         }
-        
+
         .param-table tr:last-child td {
             border-bottom: none;
         }
-        
+
         .response-example {
-            background: #1e293b;
-            color: #22d3ee;
+            background:
+            color:
             padding: 1rem;
             border-radius: 0.375rem;
             font-family: monospace;
@@ -210,7 +208,7 @@ require_once __DIR__ . "/../config/config.php";
             overflow-x: auto;
             margin-bottom: 1rem;
         }
-        
+
         .badge {
             display: inline-block;
             padding: 0.25rem 0.5rem;
@@ -218,11 +216,11 @@ require_once __DIR__ . "/../config/config.php";
             font-size: 0.75rem;
             font-weight: 600;
         }
-        
-        .badge-public { background: #d1fae5; color: #065f46; }
-        .badge-auth { background: #e0e7ff; color: #5b21b6; }
-        .badge-admin { background: #fee2e2; color: #991b1b; }
-        
+
+        .badge-public { background:
+        .badge-auth { background:
+        .badge-admin { background:
+
         .toc {
             background: white;
             padding: 1.5rem;
@@ -230,35 +228,35 @@ require_once __DIR__ . "/../config/config.php";
             margin: 2rem 0;
             box-shadow: 0 1px 3px rgba(0,0,0,0.1);
         }
-        
+
         .toc h3 {
             margin-bottom: 1rem;
-            color: #1e293b;
+            color:
         }
-        
+
         .toc ul {
             list-style: none;
         }
-        
+
         .toc li {
             margin-bottom: 0.5rem;
         }
-        
+
         .toc a {
-            color: #4f46e5;
+            color:
             text-decoration: none;
         }
-        
+
         .toc a:hover {
             text-decoration: underline;
         }
-        
+
         @media (max-width: 768px) {
             .nav ul {
                 flex-direction: column;
                 gap: 0.5rem;
             }
-            
+
             .endpoint-header {
                 flex-direction: column;
                 align-items: flex-start;
@@ -272,7 +270,7 @@ require_once __DIR__ . "/../config/config.php";
         <p>Complete REST API reference for the LibriX Library Management System</p>
         <div class="api-version">Version 1.0.0 | Base URL: /api/v1</div>
     </div>
-    
+
     <div class="nav">
         <ul>
             <li><a href="#authentication" class="active">Authentication</a></li>
@@ -287,7 +285,7 @@ require_once __DIR__ . "/../config/config.php";
             <li><a href="#readability">Readability</a></li>
         </ul>
     </div>
-    
+
     <div class="container">
         <div class="toc">
             <h3>Quick Navigation</h3>
@@ -304,10 +302,10 @@ li>
                 <li><a href="#readability">Readability Analysis</a></li>
             </ul>
         </div>
-        
+
         <div class="section" id="authentication">
             <h2>Authentication</h2>
-            
+
             <div class="endpoint">
                 <div class="endpoint-header">
                     <div>
@@ -327,7 +325,7 @@ li>
                     </table>
                 </div>
             </div>
-            
+
             <div class="endpoint">
                 <div class="endpoint-header">
                     <div>
@@ -363,7 +361,7 @@ li>
 }
                 </div>
             </div>
-            
+
             <div class="endpoint">
                 <div class="endpoint-header">
                     <div>
@@ -375,10 +373,10 @@ li>
                 <div class="endpoint-description">Logout and invalidate token</div>
             </div>
         </div>
-        
+
         <div class="section" id="organizations">
             <h2>Organizations Management</h2>
-            
+
             <div class="endpoint">
                 <div class="endpoint-header">
                     <div>
@@ -389,7 +387,7 @@ li>
                 </div>
                 <div class="endpoint-description">Get all organizations (Admin sees all, regular users see public info)</div>
             </div>
-            
+
             <div class="endpoint">
                 <div class="endpoint-header">
                     <div>
@@ -400,7 +398,7 @@ li>
                 </div>
                 <div class="endpoint-description">Get organization details by ID</div>
             </div>
-            
+
             <div class="endpoint">
                 <div class="endpoint-header">
                     <div>
@@ -422,7 +420,7 @@ li>
                     </table>
                 </div>
             </div>
-            
+
             <div class="endpoint">
                 <div class="endpoint-header">
                     <div>
@@ -433,7 +431,7 @@ li>
                 </div>
                 <div class="endpoint-description">Update organization details</div>
             </div>
-            
+
             <div class="endpoint">
                 <div class="endpoint-header">
                     <div>
@@ -445,10 +443,10 @@ li>
                 <div class="endpoint-description">Delete organization (only if no books or users)</div>
             </div>
         </div>
-        
+
         <div class="section" id="librarians">
             <h2>Librarian Approval Workflow</h2>
-            
+
             <div class="endpoint">
                 <div class="endpoint-header">
                     <div>
@@ -469,7 +467,7 @@ li>
                     </table>
                 </div>
             </div>
-            
+
             <div class="endpoint">
                 <div class="endpoint-header">
                     <div>
@@ -489,7 +487,7 @@ li>
                     </table>
                 </div>
             </div>
-            
+
             <div class="endpoint">
                 <div class="endpoint-header">
                     <div>
@@ -511,10 +509,10 @@ li>
                 </div>
             </div>
         </div>
-        
+
         <div class="section" id="join-requests">
             <h2>Organization Join Requests</h2>
-            
+
             <div class="endpoint">
                 <div class="endpoint-header">
                     <div>
@@ -534,7 +532,7 @@ div>
                     </table>
                 </div>
             </div>
-            
+
             <div class="endpoint">
                 <div class="endpoint-header">
                     <div>
@@ -555,7 +553,7 @@ div>
                     </table>
                 </div>
             </div>
-            
+
             <div class="endpoint">
                 <div class="endpoint-header">
                     <div>
@@ -575,10 +573,10 @@ div>
                 </div>
             </div>
         </div>
-        
+
         <div class="section" id="books">
             <h2>Books Catalog</h2>
-            
+
             <div class="endpoint">
                 <div class="endpoint-header">
                     <div>
@@ -603,7 +601,7 @@ div>
                     </table>
                 </div>
             </div>
-            
+
             <div class="endpoint">
                 <div class="endpoint-header">
                     <div>
@@ -614,7 +612,7 @@ div>
                 </div>
                 <div class="endpoint-description">Get single book details</div>
             </div>
-            
+
             <div class="endpoint">
                 <div class="endpoint-header">
                     <div>
@@ -625,7 +623,7 @@ div>
                 </div>
                 <div class="endpoint-description">Create new book</div>
             </div>
-            
+
             <div class="endpoint">
                 <div class="endpoint-header">
                     <div>
@@ -636,7 +634,7 @@ div>
                 </div>
                 <div class="endpoint-description">Update book details</div>
             </div>
-            
+
             <div class="endpoint">
                 <div class="endpoint-header">
                     <div>
@@ -648,10 +646,10 @@ div>
                 <div class="endpoint-description">Delete book</div>
             </div>
         </div>
-        
+
         <div class="section" id="library">
             <h2>Library Operations</h2>
-            
+
             <div class="endpoint">
                 <div class="endpoint-header">
                     <div>
@@ -670,7 +668,7 @@ div>
                     </table>
                 </div>
             </div>
-            
+
             <div class="endpoint">
                 <div class="endpoint-header">
                     <div>
@@ -689,7 +687,7 @@ div>
                     </table>
                 </div>
             </div>
-            
+
             <div class="endpoint">
                 <div class="endpoint-header">
                     <div>
@@ -707,7 +705,7 @@ div>
                     </table>
                 </div>
             </div>
-            
+
             <div class="endpoint">
                 <div class="endpoint-header">
                     <div>
@@ -718,7 +716,7 @@ div>
                 </div>
                 <div class="endpoint-description">Renew a borrowed book</div>
             </div>
-            
+
             <div class="endpoint">
                 <div class="endpoint-header">
                     <div>
@@ -730,10 +728,10 @@ div>
                 <div class="endpoint-description">Get user's library activity</div>
             </div>
         </div>
-        
+
         <div class="section" id="users">
             <h2>User Management</h2>
-            
+
             <div class="endpoint">
                 <div class="endpoint-header">
                     <div>
@@ -744,7 +742,7 @@ div>
                 </div>
                 <div class="endpoint-description">Get user profile</div>
             </div>
-            
+
             <div class="endpoint">
                 <div class="endpoint-header">
                     <div>
@@ -756,10 +754,10 @@ div>
                 <div class="endpoint-description">Update user profile</div>
             </div>
         </div>
-        
+
         <div class="section" id="admin">
             <h2>Admin Panel</h2>
-            
+
             <div class="endpoint">
                 <div class="endpoint-header">
                     <div>
@@ -770,7 +768,7 @@ div>
                 </div>
                 <div class="endpoint-description">Get all users with filtering</div>
             </div>
-            
+
             <div class="endpoint">
                 <div class="endpoint-header">
                     <div>
@@ -781,7 +779,7 @@ div>
                 </div>
                 <div class="endpoint-description">Get system statistics</div>
             </div>
-            
+
             <div class="endpoint">
                 <div class="endpoint-header">
                     <div>
@@ -792,7 +790,7 @@ span class="badge badge-admin">Admin Only</span>
                 </div>
                 <div class="endpoint-description">Get books inventory report</div>
             </div>
-            
+
             <div class="endpoint">
                 <div class="endpoint-header">
                     <div>
@@ -803,7 +801,7 @@ span class="badge badge-admin">Admin Only</span>
                 </div>
                 <div class="endpoint-description">Get all book issues</div>
             </div>
-            
+
             <div class="endpoint">
                 <div class="endpoint-header">
                     <div>
@@ -815,10 +813,10 @@ span class="badge badge-admin">Admin Only</span>
                 <div class="endpoint-description">Get all fines</div>
             </div>
         </div>
-        
+
         <div class="section" id="readability">
             <h2>Readability Analysis</h2>
-            
+
             <div class="endpoint">
                 <div class="endpoint-header">
                     <div>
@@ -836,7 +834,7 @@ span class="badge badge-admin">Admin Only</span>
                     </table>
                 </div>
             </div>
-            
+
             <div class="endpoint">
                 <div class="endpoint-header">
                     <div>
@@ -857,7 +855,7 @@ div>
                 </div>
             </div>
         </div>
-        
+
         <div class="section">
             <h2>Response Format</h2>
             <p>All API responses follow this standard format:</p>
@@ -883,7 +881,7 @@ div>
 }
             </div>
         </div>
-        
+
         <div class="section">
             <h2>Authentication</h2>
             <p>Most endpoints require authentication via Bearer token in the Authorization header:</p>
@@ -892,7 +890,7 @@ Authorization: Bearer <token>
             </div>
             <p>Tokens are obtained via the login endpoint and are valid for 7 days by default.</p>
         </div>
-        
+
         <div class="section">
             <h2>Rate Limiting</h2>
             <p>API endpoints are rate limited to prevent abuse:</p>
@@ -901,7 +899,7 @@ Authorization: Bearer <token>
                 <li>Other auth endpoints: 10 requests per 15 minutes</li>
             </ul>
         </div>
-        
+
         <div class="section">
             <h2>Multi-Tenant Architecture</h2>
             <p>The system supports multiple organizations with the following features:</p>
@@ -913,9 +911,8 @@ Authorization: Bearer <token>
             </ul>
         </div>
     </div>
-    
+
     <script>
-        // Smooth scrolling for navigation
         document.querySelectorAll('.nav a').forEach(anchor => {
             anchor.addEventListener('click', function (e) {
                 e.preventDefault();
@@ -926,12 +923,11 @@ Authorization: Bearer <token>
                 }
             });
         });
-        
-        // Update active nav item on scroll
+
         window.addEventListener('scroll', () => {
             const sections = document.querySelectorAll('.section');
             const navLinks = document.querySelectorAll('.nav a');
-            
+
             let current = '';
             sections.forEach(section => {
                 const sectionTop = section.offsetTop;
@@ -939,7 +935,7 @@ Authorization: Bearer <token>
                     current = section.getAttribute('id');
                 }
             });
-            
+
             navLinks.forEach(link => {
                 link.classList.remove('active');
                 if (link.getAttribute('href').substring(1) === current) {

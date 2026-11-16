@@ -1,7 +1,5 @@
 <?php
 
-// Configuration
-
 require_once __DIR__ . "/../../../config/config.php";
 require_once __DIR__ . "/../../../config/database.php";
 require_once __DIR__ . "/../../../helpers/response.php";
@@ -10,30 +8,18 @@ require_once __DIR__ . "/../../../helpers/functions.php";
 require_once __DIR__ . "/../../../middleware/auth.php";
 require_once __DIR__ . "/../../../middleware/admin.php";
 
-
-// Request Method
-
 if ($_SERVER["REQUEST_METHOD"] !== "GET") {
     methodNotAllowedResponse(["GET"]);
 }
 
-
-// Authentication
-
 $User = requireAuth();
 requireAdmin($User);
-
-
-// Query Parameters
 
 $Status = $_GET["status"] ?? "";
 $OrgId = $_GET["org_id"] ?? "";
 $Page = validatePageNumber($_GET["page"] ?? 1);
 $Limit = validatePageLimit($_GET["limit"] ?? 20, 20, 100);
 $Offset = ($Page - 1) * $Limit;
-
-
-// Build Query
 
 $WhereClauses = [];
 $Bindings = [];
@@ -53,22 +39,16 @@ if (!empty($WhereClauses)) {
     $WhereSql = "WHERE " . implode(" AND ", $WhereClauses);
 }
 
-
-// Count Total
-
 try {
     $CountSql = "SELECT COUNT(*) as total FROM org_join_requests jr $WhereSql";
     $Stmt = $pdo->prepare($CountSql);
     $Stmt->execute($Bindings);
     $TotalRow = $Stmt->fetch();
     $Total = (int)($TotalRow["total"] ?? 0);
-    
+
 } catch (PDOException $e) {
     errorResponse("Database error", 500);
 }
-
-
-// Fetch Requests
 
 try {
     $DataSql = "SELECT
@@ -83,20 +63,20 @@ try {
                  $WhereSql
                  ORDER BY jr.created_at DESC
                  LIMIT ? OFFSET ?";
-    
+
     $Stmt = $pdo->prepare($DataSql);
-    
+
     $ParamIndex = 1;
     foreach ($Bindings as $Binding) {
         $Stmt->bindValue($ParamIndex++, $Binding);
     }
     $Stmt->bindValue($ParamIndex++, (int)$Limit, PDO::PARAM_INT);
     $Stmt->bindValue($ParamIndex++, (int)$Offset, PDO::PARAM_INT);
-    
+
     $Stmt->execute();
-    
+
     $Requests = $Stmt->fetchAll();
-    
+
 } catch (PDOException $e) {
     errorResponse("Database error", 500);
 }

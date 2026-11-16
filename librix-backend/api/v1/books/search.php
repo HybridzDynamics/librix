@@ -1,45 +1,31 @@
 <?php
 
-// Configuration
-
 require_once __DIR__ . "/../../../config/config.php";
 require_once __DIR__ . "/../../../config/database.php";
 require_once __DIR__ . "/../../../helpers/response.php";
 require_once __DIR__ . "/../../../helpers/validation.php";
 require_once __DIR__ . "/../../../helpers/functions.php";
 
-
-// Request Method
-
 if ($_SERVER["REQUEST_METHOD"] !== "GET") {
     methodNotAllowedResponse(["GET"]);
 }
 
-
-// Query Parameters
-
 $Search = trim($_GET["q"] ?? "");
-$Tags = $_GET["tags"] ?? ""; // Comma-separated tag IDs
+$Tags = $_GET["tags"] ?? "";
 $Category = trim($_GET["category"] ?? "");
 $Author = trim($_GET["author"] ?? "");
 $MinRating = isset($_GET["min_rating"]) ? (float)$_GET["min_rating"] : null;
 $MaxRating = isset($_GET["max_rating"]) ? (float)$_GET["max_rating"] : null;
-$Difficulty = $_GET["difficulty"] ?? ""; // readability difficulty
+$Difficulty = $_GET["difficulty"] ?? "";
 $Page = isset($_GET["page"]) ? max(1, (int)$_GET["page"]) : 1;
 $Limit = isset($_GET["limit"]) ? min(100, max(1, (int)$_GET["limit"])) : 20;
 $Offset = ($Page - 1) * $Limit;
-$SortBy = $_GET["sort"] ?? "relevance"; // relevance, title, rating, date
-$SortOrder = $_GET["order"] ?? "desc"; // asc, desc
-
-
-// Build Query
+$SortBy = $_GET["sort"] ?? "relevance";
+$SortOrder = $_GET["order"] ?? "desc";
 
 $WhereConditions = ["1=1"];
 $Params = [];
 $OrderBy = "b.created_at DESC";
-
-
-// Search query (title, author, description)
 
 if (!empty($Search)) {
     $WhereConditions[] = "(b.title LIKE ? OR a.name LIKE ? OR b.description LIKE ?)";
@@ -49,13 +35,10 @@ if (!empty($Search)) {
     $Params[] = $SearchParam;
 }
 
-
-// Tags filter
-
 if (!empty($Tags)) {
     $TagIds = array_map('trim', explode(',', $Tags));
     $TagIds = array_filter($TagIds, 'is_numeric');
-    
+
     if (!empty($TagIds)) {
         $TagPlaceholders = implode(',', array_fill(0, count($TagIds), '?'));
         $WhereConditions[] = "b.id IN (SELECT book_id FROM book_tags WHERE tag_id IN ({$TagPlaceholders}))";
@@ -63,24 +46,15 @@ if (!empty($Tags)) {
     }
 }
 
-
-// Category filter
-
 if (!empty($Category)) {
     $WhereConditions[] = "b.category LIKE ?";
     $Params[] = "%{$Category}%";
 }
 
-
-// Author filter
-
 if (!empty($Author)) {
     $WhereConditions[] = "a.name LIKE ?";
     $Params[] = "%{$Author}%";
 }
-
-
-// Rating filters
 
 if ($MinRating !== null) {
     $WhereConditions[] = "b.average_rating >= ?";
@@ -92,16 +66,10 @@ if ($MaxRating !== null) {
     $Params[] = $MaxRating;
 }
 
-
-// Difficulty filter (readability)
-
 if (!empty($Difficulty) && in_array($Difficulty, ['very_easy', 'easy', 'fairly_easy', 'standard', 'fairly_difficult', 'difficult', 'very_difficult'])) {
     $WhereConditions[] = "r.difficulty_level = ?";
     $Params[] = $Difficulty;
 }
-
-
-// Sorting
 
 switch ($SortBy) {
     case "title":
@@ -119,23 +87,21 @@ switch ($SortBy) {
         break;
 }
 
-
 try {
-    // Get total count
+
     $CountQuery = "
         SELECT COUNT(DISTINCT b.id)
         FROM books b
         LEFT JOIN authors a ON b.author_id = a.id
         LEFT JOIN readability_analysis r ON b.id = r.book_id
         WHERE " . implode(" AND ", $WhereConditions);
-    
+
     $CountStmt = $pdo->prepare($CountQuery);
     $CountStmt->execute($Params);
     $Total = (int)$CountStmt->fetchColumn();
 
-    // Get books with pagination
     $Query = "
-        SELECT 
+        SELECT
             b.id,
             b.title,
             b.author_id,
@@ -161,10 +127,10 @@ try {
         ORDER BY {$OrderBy}
         LIMIT ? OFFSET ?
     ";
-    
+
     $Params[] = $Limit;
     $Params[] = $Offset;
-    
+
     $Stmt = $pdo->prepare($Query);
     $Stmt->execute($Params);
     $Books = $Stmt->fetchAll();

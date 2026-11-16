@@ -1,20 +1,12 @@
 <?php
 
-// Configuration
-
 require_once __DIR__ . "/../../config/config.php";
 require_once __DIR__ . "/../../config/database.php";
 require_once __DIR__ . "/../../helpers/response.php";
 
-
-// Request Method
-
 if ($_SERVER["REQUEST_METHOD"] !== "GET") {
     methodNotAllowedResponse(["GET"]);
 }
-
-
-// Check Database Status
 
 $DatabaseStatus = "disconnected";
 try {
@@ -28,25 +20,16 @@ try {
     $DatabaseStatus = "disconnected";
 }
 
-
-// Check Other Services Status
-
 $ApiStatus = "operational";
 $ReadabilityStatus = "operational";
 $CirculationStatus = "operational";
 $NotificationStatus = "operational";
-
-
-// Overall System Status
 
 $OverallStatus = "operational";
 if ($DatabaseStatus !== "connected") {
     $OverallStatus = "degraded";
     $ApiStatus = "degraded";
 }
-
-
-// Get System Statistics
 
 $TotalBooks = 0;
 $TotalUsers = 0;
@@ -55,18 +38,15 @@ $ActiveIssues = 0;
 try {
     $Stmt = $pdo->query("SELECT COUNT(*) FROM books");
     $TotalBooks = (int)$Stmt->fetchColumn();
-    
+
     $Stmt = $pdo->query("SELECT COUNT(*) FROM users");
     $TotalUsers = (int)$Stmt->fetchColumn();
-    
+
     $Stmt = $pdo->query("SELECT COUNT(*) FROM book_issues WHERE status = 'issued'");
     $ActiveIssues = (int)$Stmt->fetchColumn();
 } catch (Exception $e) {
-    // Stats collection failed, but continue
+
 }
-
-
-// Response
 
 successResponse([
     "status" => $OverallStatus,

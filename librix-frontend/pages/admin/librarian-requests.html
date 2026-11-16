@@ -12,7 +12,7 @@
 </head>
 
 <body>
-    <!-- Navigation Bar -->
+
     <nav id="nav-bar">
         <div class="nav-brand">
             <a href="../../index.html" style="display: flex; align-items: center; gap: 10px; text-decoration: none;">
@@ -30,7 +30,6 @@
         </div>
     </nav>
 
-    <!-- Main Content -->
     <main class="container" style="padding: 40px 20px;">
         <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 32px;">
             <div>
@@ -50,7 +49,6 @@
             </div>
         </div>
 
-        <!-- Stats -->
         <div class="grid grid-3" style="margin-bottom: 32px;">
             <div class="card" style="padding: 20px; text-align: center;">
                 <div style="font-size: 32px; font-weight: 700; color: var(--warning);" id="pending-count">0</div>
@@ -66,7 +64,6 @@
             </div>
         </div>
 
-        <!-- Requests List -->
         <div id="requests-container">
             <div style="text-align: center; padding: 60px 20px;">
                 <div class="skeleton" style="height: 20px; width: 200px; margin: 0 auto 16px;"></div>
@@ -74,11 +71,9 @@
             </div>
         </div>
 
-        <!-- Pagination -->
         <div id="pagination-container" class="pagination-wrapper" style="display: none;"></div>
     </main>
 
-    <!-- Approval Modal -->
     <div id="approval-modal" class="modal" style="display: none;">
         <div class="modal-content" style="max-width: 500px;">
             <div class="modal-header">
@@ -87,7 +82,7 @@
             </div>
             <div class="modal-body">
                 <div id="modal-request-details" style="margin-bottom: 20px;"></div>
-                
+
                 <div class="form-group">
                     <label for="action-select">Action</label>
                     <select id="action-select" class="form-select">
@@ -116,7 +111,6 @@
         </div>
     </div>
 
-    <!-- Footer -->
     <footer style="background: #0f172a; color: #94a3b8; padding: 40px 0 20px; border-top: 1px solid #1e293b;">
         <div class="container" style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 16px; font-size: var(--font-sm);">
             <div style="display: flex; align-items: center; gap: 8px;">
@@ -132,7 +126,6 @@
         </div>
     </footer>
 
-    <!-- Scripts -->
     <script src="../../assets/js/api.js"></script>
     <script src="../../assets/js/utils.js"></script>
     <script src="../../assets/js/auth.js"></script>
@@ -143,7 +136,6 @@
         let currentRequestId = null;
         let organizations = [];
 
-        // Check authentication and admin role
         if (!auth.isLoggedIn()) {
             window.location.href = "../login.html?redirect=" + encodeURIComponent(window.location.href);
         }
@@ -156,31 +148,28 @@
             }, 1500);
         }
 
-        // Load organizations for approval
-        async function loadOrganizations() {
-            try {
-                const res = await api.get('/organizations');
+        function loadOrganizations() {
+            api.get('/organizations').then(function(res) {
                 organizations = Array.isArray(res.data) ? res.data : [];
-                
+
                 const orgSelect = document.getElementById('org-select');
                 orgSelect.innerHTML = '<option value="">Create New Organization</option>';
-                
+
                 organizations.forEach(org => {
                     const opt = document.createElement('option');
                     opt.value = org.id;
                     opt.textContent = org.name;
                     orgSelect.appendChild(opt);
                 });
-            } catch (err) {
+            }).catch(function(err) {
                 console.error('Failed to load organizations:', err);
-            }
+            });
         }
 
-        // Load requests
-        async function loadRequests() {
+        function loadRequests() {
             const statusFilter = document.getElementById('status-filter').value;
             const container = document.getElementById('requests-container');
-            
+
             container.innerHTML = `
                 <div style="text-align: center; padding: 60px 20px;">
                     <div class="skeleton" style="height: 20px; width: 200px; margin: 0 auto 16px;"></div>
@@ -188,17 +177,16 @@
                 </div>
             `;
 
-            try {
-                const query = {
-                    page: currentPage,
-                    limit: pageSize
-                };
-                
-                if (statusFilter) {
-                    query.status = statusFilter;
-                }
+            const query = {
+                page: currentPage,
+                limit: pageSize
+            };
 
-                const res = await api.get('/librarian/requests', query);
+            if (statusFilter) {
+                query.status = statusFilter;
+            }
+
+            api.get('/librarian/requests', query).then(function(res) {
                 const requests = res.data || [];
                 const pagination = res.pagination || { total: 0, total_pages: 1 };
 
@@ -213,14 +201,14 @@
                 renderRequests(requests);
                 renderPagination(pagination.page || currentPage, totalPages);
 
-            } catch (err) {
+            }).catch(function(err) {
                 container.innerHTML = `
                     <div style="text-align: center; padding: 60px 20px;">
                         <p style="color: var(--danger); font-weight: 600; margin-bottom: 12px;">Failed to load requests.</p>
                         <button class="btn btn-outline btn-sm" onclick="loadRequests()">Try Again</button>
                     </div>
                 `;
-            }
+            });
         }
 
         function updateStats(requests) {
@@ -235,11 +223,11 @@
 
         function renderRequests(requests) {
             const container = document.getElementById('requests-container');
-            
+
             container.innerHTML = requests.map(request => {
                 const statusBadge = getStatusBadge(request.status);
                 const createdDate = new Date(request.created_at).toLocaleDateString();
-                
+
                 return `
                     <div class="card" style="padding: 24px; margin-bottom: 16px;">
                         <div style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 16px;">
@@ -254,31 +242,31 @@
                                 <span style="color: var(--text-muted); font-size: var(--font-sm);">${createdDate}</span>
                             </div>
                         </div>
-                        
+
                         ${request.library_address ? `
                             <div style="margin-bottom: 12px;">
                                 <strong>Address:</strong> ${utils.escapeHtml(request.library_address)}
                             </div>
                         ` : ''}
-                        
+
                         ${request.library_phone ? `
                             <div style="margin-bottom: 12px;">
                                 <strong>Phone:</strong> ${utils.escapeHtml(request.library_phone)}
                             </div>
                         ` : ''}
-                        
+
                         ${request.message ? `
                             <div style="margin-bottom: 16px; padding: 12px; background: var(--bg-light); border-radius: 8px;">
                                 <strong>Message:</strong> ${utils.escapeHtml(request.message)}
                             </div>
                         ` : ''}
-                        
+
                         ${request.admin_notes ? `
                             <div style="margin-bottom: 16px; padding: 12px; background: var(--info-bg); border-radius: 8px;">
                                 <strong>Admin Notes:</strong> ${utils.escapeHtml(request.admin_notes)}
                             </div>
                         ` : ''}
-                        
+
                         ${request.status === 'pending' ? `
                             <div style="display: flex; gap: 8px;">
                                 <button class="btn btn-success btn-sm" onclick="openApprovalModal(${request.id}, 'approve')">
@@ -358,10 +346,10 @@
             currentRequestId = requestId;
             const actionSelect = document.getElementById('action-select');
             const orgGroup = document.getElementById('org-group');
-            
+
             actionSelect.value = action;
             orgGroup.style.display = action === 'approve' ? 'block' : 'none';
-            
+
             document.getElementById('approval-modal').style.display = 'flex';
         }
 
@@ -371,37 +359,33 @@
             document.getElementById('admin-notes').value = '';
         }
 
-        async function processRequest() {
+        function processRequest() {
             if (!currentRequestId) return;
 
             const action = document.getElementById('action-select').value;
             const orgId = document.getElementById('org-select').value || null;
             const adminNotes = document.getElementById('admin-notes').value.trim();
 
-            try {
-                await api.post('/librarian/approve', {
-                    request_id: currentRequestId,
-                    action: action,
-                    org_id: orgId,
-                    admin_notes: adminNotes
-                });
-
+            api.post('/librarian/approve', {
+                request_id: currentRequestId,
+                action: action,
+                org_id: orgId,
+                admin_notes: adminNotes
+            }).then(function() {
                 utils.toast("Success", `Request ${action}ed successfully`, "success");
                 closeModal();
                 loadRequests();
 
-            } catch (err) {
+            }).catch(function(err) {
                 utils.toast("Error", err.message || "Failed to process request", "error");
-            }
+            });
         }
 
-        // Event listeners
         document.getElementById('status-filter').addEventListener('change', () => {
             currentPage = 1;
             loadRequests();
         });
 
-        // Initialize
         loadOrganizations();
         loadRequests();
     </script>

@@ -1,22 +1,14 @@
 <?php
 
-// Configuration
-
 require_once __DIR__ . "/../../../config/config.php";
 require_once __DIR__ . "/../../../config/database.php";
 require_once __DIR__ . "/../../../helpers/response.php";
 require_once __DIR__ . "/../../../helpers/validation.php";
 require_once __DIR__ . "/../../../helpers/functions.php";
 
-
-// Request Method
-
 if ($_SERVER["REQUEST_METHOD"] !== "POST") {
     methodNotAllowedResponse(["POST"]);
 }
-
-
-// Rate Limiting
 
 $ClientIp = getClientIp();
 $RateLimitKey = "forgot_password_" . $ClientIp;
@@ -26,15 +18,9 @@ if ($RetryAfter > 0) {
     tooManyRequestsResponse("Too many password reset requests. Please try again later.", $RetryAfter);
 }
 
-
-// Request Data
-
 $RequestData = getJsonInput();
 
 $UserEmail = trim($RequestData["email"] ?? "");
-
-
-// Validation
 
 $Errors = [];
 
@@ -54,13 +40,7 @@ if (hasValidationErrors($Errors)) {
     ValidationerrorResponse($Errors);
 }
 
-
-// Generic Message
-
 $GenericMessage = "If an account exists for this email, a password reset request has been created.";
-
-
-// Find User
 
 try {
     $Stmt = $pdo->prepare(
@@ -78,9 +58,6 @@ try {
     errorResponse("Unable to process request", 500);
 }
 
-
-// Process Reset Token If User Exists and Active
-
 if ($User && $User["status"] === "active") {
 
     $ResetToken = generateToken(32);
@@ -93,7 +70,7 @@ if ($User && $User["status"] === "active") {
     $UserId = (int)$User["id"];
 
     try {
-        // Invalidate previous unused reset tokens
+
         $Stmt = $pdo->prepare(
             "DELETE FROM password_reset_tokens
              WHERE user_id = ? AND used_at IS NULL"
@@ -101,7 +78,6 @@ if ($User && $User["status"] === "active") {
 
         $Stmt->execute([$UserId]);
 
-        // Insert new reset token
         $Stmt = $pdo->prepare(
             "INSERT INTO password_reset_tokens
             (user_id, token, expires_at)
@@ -118,9 +94,6 @@ if ($User && $User["status"] === "active") {
         errorResponse("Unable to process request", 500);
     }
 }
-
-
-// Generic Success Response
 
 successResponse(
     [],

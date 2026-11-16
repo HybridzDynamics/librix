@@ -1,11 +1,6 @@
 <?php
 
-// Admin Middleware
-
 require_once __DIR__ . "/../helpers/response.php";
-
-
-// Require Admin
 
 function requireAdmin($User)
 {

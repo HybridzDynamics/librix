@@ -1,7 +1,5 @@
 <?php
 
-// Librarian Books Management (Org-Scoped CRUD)
-
 require_once __DIR__ . "/../../../config/config.php";
 require_once __DIR__ . "/../../../config/database.php";
 require_once __DIR__ . "/../../../helpers/response.php";
@@ -14,7 +12,6 @@ requireLibrarian($User);
 
 $Method = $_SERVER["REQUEST_METHOD"];
 
-// GET: List books scoped to librarian's org
 if ($Method === "GET") {
     $OrgId = getOrgScope($User);
     $Search = $_GET["search"] ?? "";
@@ -22,7 +19,7 @@ if ($Method === "GET") {
 
     try {
         $Query = "
-            SELECT 
+            SELECT
                 books.*,
                 authors.name AS author_name,
                 categories.name AS category_name,
@@ -74,7 +71,6 @@ if ($Method === "GET") {
     }
 }
 
-// POST: Add a new book linked to this Org ID
 if ($Method === "POST") {
     $Body = getRequestBody();
     $OrgId = isset($Body["org_id"]) ? (int)$Body["org_id"] : getOrgScope($User);
@@ -116,7 +112,6 @@ if ($Method === "POST") {
 
         $BookId = (int)$pdo->lastInsertId();
 
-        // Add default readability metrics
         $StmtRead = $pdo->prepare("
             INSERT INTO readability_analysis (book_id, sample_text, word_count, sentence_count, syllable_count, flesch_reading_ease, flesch_kincaid_grade, difficulty_level, estimated_reading_minutes)
             VALUES (?, ?, 50, 4, 75, 70.0, 7.0, 'standard', 300)
@@ -135,7 +130,6 @@ if ($Method === "POST") {
     }
 }
 
-// DELETE: Remove book belonging to this Org ID
 if ($Method === "DELETE") {
     $BookId = (int)($_GET["id"] ?? 0);
     if (!$BookId) {
@@ -145,7 +139,7 @@ if ($Method === "DELETE") {
     $OrgId = getOrgScope($User);
 
     try {
-        // Verify book belongs to this librarian's org (or user is superadmin)
+
         if ($User["role"] !== "admin" && $OrgId) {
             $CheckStmt = $pdo->prepare("SELECT org_id FROM books WHERE id = ?");
             $CheckStmt->execute([$BookId]);

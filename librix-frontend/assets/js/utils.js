@@ -1,12 +1,6 @@
-/**
- * LibriX Utility & Modern UI Modal System
- * Complete replacement for browser confirm() / alert() with animated glassmorphic dialogs
- */
 
 const utils = {
-    /**
-     * Display a floating toast notification
-     */
+
     toast: function(title, message = '', type = 'info', duration = 4000) {
         let container = document.getElementById('toast-container');
         if (!container) {
@@ -19,14 +13,18 @@ const utils = {
         const toast = document.createElement('div');
         toast.className = `toast toast-${type}`;
 
-        let iconSvg = '';
+        const toastIcons = {
+            success: ['check-circle', 'var(--success)'],
+            error: ['x-circle', 'var(--danger)'],
+            danger: ['x-circle', 'var(--danger)'],
+            warning: ['alert-triangle', 'var(--warning)'],
+            info: ['info', 'var(--info)']
+        };
+
+        let iconSvg = '•';
         if (window.lucide) {
-            if (type === 'success') iconSvg = lucide.render('check-circle', { size: 20, color: 'var(--success)' });
-            else if (type === 'error' || type === 'danger') iconSvg = lucide.render('x-circle', { size: 20, color: 'var(--danger)' });
-            else if (type === 'warning') iconSvg = lucide.render('alert-triangle', { size: 20, color: 'var(--warning)' });
-            else iconSvg = lucide.render('info', { size: 20, color: 'var(--info)' });
-        } else {
-            iconSvg = '•';
+            const icon = toastIcons[type] || toastIcons.info;
+            iconSvg = lucide.render(icon[0], { size: 20, color: icon[1] });
         }
 
         const closeIcon = window.lucide ? lucide.render('x', { size: 16 }) : '&times;';
@@ -55,9 +53,6 @@ const utils = {
         }
     },
 
-    /**
-     * Modern UI Confirmation Modal (Replaces browser confirm() dialogs)
-     */
     confirm: function(options) {
         return new Promise((resolve) => {
             const {
@@ -65,11 +60,10 @@ const utils = {
                 message = 'Are you sure you want to proceed?',
                 confirmText = 'Confirm',
                 cancelText = 'Cancel',
-                type = 'primary', // 'primary', 'danger', 'success', 'warning'
+                type = 'primary',
                 icon = 'help-circle'
             } = typeof options === 'string' ? { message: options } : options;
 
-            // Remove existing confirm modal if any
             const existing = document.getElementById('librix-confirm-modal');
             if (existing) existing.remove();
 
@@ -139,9 +133,6 @@ const utils = {
         });
     },
 
-    /**
-     * Modern Prompt Modal (Replaces browser prompt() dialogs)
-     */
     prompt: function(options) {
         return new Promise((resolve) => {
             const {
@@ -209,12 +200,14 @@ const utils = {
         });
     },
 
-    /**
-     * Modal Controller
-     */
     modal: function(modalId) {
         const modal = document.getElementById(modalId);
-        if (!modal) return { open: () => {}, close: () => {} };
+        if (!modal) return { open: function() {}, close: function() {} };
+
+        function closeModal() {
+            modal.classList.remove('is-active');
+            document.body.style.overflow = '';
+        }
 
         return {
             open: function() {
@@ -226,57 +219,46 @@ const utils = {
                 }
 
                 const closeElements = modal.querySelectorAll('[data-modal-close], .modal-close');
-                closeElements.forEach(el => {
-                    el.onclick = () => utils.modal(modalId).close();
+                closeElements.forEach(function(el) {
+                    el.onclick = closeModal;
                 });
 
-                modal.onclick = (e) => {
+                modal.onclick = function(e) {
                     if (e.target === modal) {
-                        utils.modal(modalId).close();
+                        closeModal();
                     }
                 };
 
-                const escHandler = (e) => {
+                const escHandler = function(e) {
                     if (e.key === 'Escape') {
-                        utils.modal(modalId).close();
+                        closeModal();
                         window.removeEventListener('keydown', escHandler);
                     }
                 };
                 window.addEventListener('keydown', escHandler);
             },
-            close: function() {
-                modal.classList.remove('is-active');
-                document.body.style.overflow = '';
-            }
+            close: closeModal
         };
     },
 
-    /**
-     * Navigate to page without showing query parameters in URL
-     * Uses history.replaceState to keep parameters hidden
-     */
     navigate: function(url, params = {}) {
-        // Store parameters in sessionStorage
+
         if (Object.keys(params).length > 0) {
             const timestamp = Date.now();
             sessionStorage.setItem('nav_params_' + timestamp, JSON.stringify(params));
             sessionStorage.setItem('nav_params_current', timestamp);
         }
-        
-        // Navigate without query string
+
         window.location.href = url;
     },
 
-    /**
-     * Get navigation parameters from sessionStorage
-     */
     getNavParams: function() {
         const timestamp = sessionStorage.getItem('nav_params_current');
         if (!timestamp) return {};
-        
+
         const paramsStr = sessionStorage.getItem('nav_params_' + timestamp);
         if (!paramsStr) return {};
-        
+
         try {
             return JSON.parse(paramsStr);
         } catch (e) {
@@ -284,9 +266,6 @@ const utils = {
         }
     },
 
-    /**
-     * Clear navigation parameters
-     */
     clearNavParams: function() {
         const timestamp = sessionStorage.getItem('nav_params_current');
         if (timestamp) {
@@ -295,9 +274,6 @@ const utils = {
         }
     },
 
-    /**
-     * Format standard date
-     */
     formatDate: function(dateStr) {
         if (!dateStr) return 'N/A';
         const date = new Date(dateStr);
@@ -309,9 +285,6 @@ const utils = {
         });
     },
 
-    /**
-     * Relative time string
-     */
     timeAgo: function(dateStr) {
         if (!dateStr) return '';
         const date = new Date(dateStr);
@@ -328,9 +301,6 @@ const utils = {
         return utils.formatDate(dateStr);
     },
 
-    /**
-     * Star rating with Lucide Star icons
-     */
     renderStars: function(rating = 0) {
         const fullStars = Math.floor(rating);
         let html = '<span class="stars" style="display: inline-flex; align-items: center; gap: 2px;">';
@@ -349,9 +319,6 @@ const utils = {
         return html;
     },
 
-    /**
-     * Readability Difficulty Badge with Lucide Book-Open Icon
-     */
     getReadabilityBadge: function(difficulty, easeScore) {
         const labels = {
             very_easy: 'Very Easy (5th Grade)',
@@ -371,9 +338,6 @@ const utils = {
         return `<span class="badge ${cssClass}">${iconSvg} <span>${label}${scoreText}</span></span>`;
     },
 
-    /**
-     * Debounce utility
-     */
     debounce: function(func, delay = 300) {
         let timeout;
         return function(...args) {

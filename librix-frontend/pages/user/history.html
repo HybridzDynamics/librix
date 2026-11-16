@@ -76,11 +76,11 @@
     <script src="../../assets/js/utils.js"></script>
     <script src="../../assets/js/auth.js"></script>
     <script>
-        // Update navigation based on auth state
+
         document.addEventListener('DOMContentLoaded', function() {
             auth.updateNav();
         });
-        
+
         if (!auth.requireAuth()) {}
         const user = auth.getUser();
         if (user) {
@@ -92,12 +92,11 @@
         let currentPage = 1;
         const limit = 15;
 
-        async function loadHistory() {
+        function loadHistory() {
             const container = document.getElementById('history-container');
             const status = document.getElementById('filter-history-status').value;
             container.innerHTML = `<div style="padding:60px;text-align:center;"><div class="spinner"></div></div>`;
-            try {
-                const res = await api.get('/library/history', { page: currentPage, limit, status });
+            api.get('/library/history', { page: currentPage, limit, status }).then(function(res) {
                 const items = Array.isArray(res.data) ? res.data : (res.data && res.data.data ? res.data.data : []);
                 const pagination = res.pagination || { total: items.length, total_pages: 1 };
 
@@ -142,9 +141,9 @@
                         </table>
                     </div>`;
                 renderPagination(pagination.page || currentPage, pagination.total_pages || 1);
-            } catch (err) {
+            }).catch(function(err) {
                 container.innerHTML = `<div style="padding:40px;text-align:center;color:var(--danger);">Failed to retrieve borrowing history.</div>`;
-            }
+            });
         }
 
         function renderPagination(current, total) {

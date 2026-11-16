@@ -93,23 +93,22 @@
         let currentPage = 1;
         const limit = 20;
 
-        async function loadAuditLogs() {
+        function loadAuditLogs() {
             const container = document.getElementById('audit-logs-table-wrap');
             const action = document.getElementById('action-search').value.trim();
             const entityType = document.getElementById('entity-type-filter').value;
             const startDate = document.getElementById('start-date').value;
             const endDate = document.getElementById('end-date').value;
-            
+
             container.innerHTML = `<div style="padding:60px;text-align:center;"><div class="spinner"></div></div>`;
-            
-            try {
-                const params = { page: currentPage, limit };
-                if (action) params.action = action;
-                if (entityType) params.entity_type = entityType;
-                if (startDate) params.start_date = startDate;
-                if (endDate) params.end_date = endDate;
-                
-                const res = await api.get('/admin/audit-logs', params);
+
+            const params = { page: currentPage, limit };
+            if (action) params.action = action;
+            if (entityType) params.entity_type = entityType;
+            if (startDate) params.start_date = startDate;
+            if (endDate) params.end_date = endDate;
+
+            api.get('/admin/audit-logs', params).then(function(res) {
                 const logs = res.data || [];
                 const pagination = res.pagination || { total: logs.length, total_pages: 1 };
 
@@ -138,11 +137,11 @@
                             }).join('')}</tbody>
                         </table>
                     </div>`;
-                
+
                 renderPagination(pagination.page || currentPage, pagination.total_pages || 1);
-            } catch (err) {
+            }).catch(function(err) {
                 container.innerHTML = `<div style="padding:40px;text-align:center;color:var(--danger);">Failed to retrieve audit logs.</div>`;
-            }
+            });
         }
 
         function getActionBadge(action) {

@@ -1,9 +1,5 @@
 <?php
 
-// Librarian: Search global book catalogue (any org or unassigned)
-// GET /api/v1/librarian/search_books?q=...&limit=20&page=1
-// Allows librarians to search ALL books in the DB and add them to their org
-
 require_once __DIR__ . "/../../../config/config.php";
 require_once __DIR__ . "/../../../config/database.php";
 require_once __DIR__ . "/../../../helpers/response.php";
@@ -30,7 +26,6 @@ if (strlen($Search) < 1) {
 try {
     $SearchTerm = "%" . $Search . "%";
 
-    // Count total
     $CountStmt = $pdo->prepare("
         SELECT COUNT(*) FROM books
         LEFT JOIN authors ON books.author_id = authors.id
@@ -43,7 +38,6 @@ try {
     $CountStmt->execute([$SearchTerm, $SearchTerm, $SearchTerm, $SearchTerm]);
     $Total = (int)$CountStmt->fetchColumn();
 
-    // Fetch paginated results
     $Stmt = $pdo->prepare("
         SELECT
             books.id,
@@ -79,7 +73,6 @@ try {
     $Stmt->execute([$SearchTerm, $SearchTerm, $SearchTerm, $SearchTerm, $Limit, $Offset]);
     $Books = $Stmt->fetchAll();
 
-    // Cast types
     foreach ($Books as &$B) {
         $B["id"]               = (int)$B["id"];
         $B["org_id"]           = $B["org_id"] ? (int)$B["org_id"] : null;

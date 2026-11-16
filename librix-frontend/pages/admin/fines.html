@@ -13,7 +13,7 @@
 
 <body>
     <div class="admin-wrapper">
-        <!-- Sidebar -->
+
         <aside class="admin-sidebar" id="sidebar">
             <div class="admin-sidebar-brand">
                 <img src="../../assets/images/logo.png" alt="Librix Logo">
@@ -54,9 +54,8 @@
             </div>
         </aside>
 
-        <!-- Main Workspace -->
         <main class="admin-main">
-            <!-- Topbar -->
+
             <header class="admin-topbar">
                 <div style="display: flex; align-items: center; gap: 14px;">
                     <button class="mobile-menu-toggle" onclick="toggleSidebar()" style="display: flex; align-items: center; justify-content: center;"><i data-lucide="menu" data-size="22"></i></button>
@@ -64,14 +63,12 @@
                 </div>
             </header>
 
-            <!-- Admin Body -->
             <div class="admin-body">
                 <div class="page-header">
                     <h1 class="page-title">Overdue Penalties &amp; Fines Ledger</h1>
                     <p class="page-subtitle">Track late return assessments, reconcile incoming payments, and process discretionary fee waivers.</p>
                 </div>
 
-                <!-- Table Toolbar -->
                 <div class="table-toolbar">
                     <div class="toolbar-search">
                         <span class="toolbar-search-icon">data-lucide="search"</span>
@@ -87,20 +84,17 @@
                     </div>
                 </div>
 
-                <!-- Table Card -->
                 <div class="table-container-card">
                     <div id="fines-table-wrap">
                         <div style="padding: 60px; text-align: center;"><div class="spinner"></div></div>
                     </div>
                 </div>
 
-                <!-- Pagination -->
                 <div id="admin-fines-pagination" style="display: flex; justify-content: center; gap: 8px; margin-top: 24px;"></div>
             </div>
         </main>
     </div>
 
-    <!-- Scripts -->
     <script src="../../assets/js/api.js"></script>
     <script src="../../assets/js/utils.js"></script>
     <script src="../../assets/js/auth.js"></script>
@@ -120,23 +114,22 @@
         let currentPage = 1;
         const limit = 15;
 
-        async function loadFines() {
+        function loadFines() {
             const container = document.getElementById('fines-table-wrap');
             const search = document.getElementById('fines-search').value.trim();
             const status = document.getElementById('fines-status-filter').value;
 
             container.innerHTML = `<div style="padding: 60px; text-align: center;"><div class="spinner"></div></div>`;
 
-            try {
-                const res = await api.get('/admin/fines', {
-                    page: currentPage,
-                    limit: limit,
-                    search: search,
-                    status: status
-                });
+            api.get('/admin/fines', {
+                page: currentPage,
+                limit: limit,
+                search: search,
+                status: status
+            }).then(function(res) {
 
                 let fines = res.data && res.data.fines ? res.data.fines : (Array.isArray(res.data) ? res.data : []);
-                
+
                 if (status) {
                     fines = fines.filter(f => f.status === status);
                 }
@@ -210,13 +203,13 @@
 
                 renderPagination(pagination.page || currentPage, pagination.total_pages || 1);
 
-            } catch (err) {
+            }).catch(function(err) {
                 container.innerHTML = `
                     <div style="padding: 40px; text-align: center; color: var(--danger);">
                         Failed to retrieve fines ledger.
                     </div>
                 `;
-            }
+            });
         }
 
         function renderPagination(current, total) {
@@ -242,44 +235,42 @@
             loadFines();
         }
 
-        async function markPaid(id) {
-            const confirmed = await utils.confirm({
+        function markPaid(id) {
+            utils.confirm({
                 title: 'Record Fine Payment',
                 message: `Confirm receipt of payment for fine #${id}?`,
                 confirmText: 'Mark as Paid',
                 type: 'success',
                 icon: 'dollar-sign'
+            }).then(function(confirmed) {
+                if (!confirmed) return;
+
+                api.fines.updateStatus(id, 'paid').then(function() {
+                    utils.toast("Payment Recorded", `Fine #${id} was marked as paid.`, "success");
+                    loadFines();
+                }).catch(function(err) {
+                    utils.toast("Action Failed", err.message, "danger");
+                });
             });
-
-            if (!confirmed) return;
-
-            try {
-                await api.fines.updateStatus(id, 'paid');
-                utils.toast("Payment Recorded", `Fine #${id} was marked as paid.`, "success");
-                loadFines();
-            } catch (err) {
-                utils.toast("Action Failed", err.message, "danger");
-            }
         }
 
-        async function waiveFine(id) {
-            const confirmed = await utils.confirm({
+        function waiveFine(id) {
+            utils.confirm({
                 title: 'Waive Fine Penalty',
                 message: `Waive and dismiss fine #${id}? This penalty will be permanently excused.`,
                 confirmText: 'Waive Fine',
                 type: 'warning',
                 icon: 'check'
+            }).then(function(confirmed) {
+                if (!confirmed) return;
+
+                api.fines.updateStatus(id, 'waived').then(function() {
+                    utils.toast("Fine Waived", `Fine #${id} has been dismissed.`, "info");
+                    loadFines();
+                }).catch(function(err) {
+                    utils.toast("Action Failed", err.message, "danger");
+                });
             });
-
-            if (!confirmed) return;
-
-            try {
-                await api.fines.updateStatus(id, 'waived');
-                utils.toast("Fine Waived", `Fine #${id} has been dismissed.`, "info");
-                loadFines();
-            } catch (err) {
-                utils.toast("Action Failed", err.message, "danger");
-            }
         }
 
         document.getElementById('fines-search').addEventListener('input', utils.debounce(() => {

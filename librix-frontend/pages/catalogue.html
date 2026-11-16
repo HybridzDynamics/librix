@@ -15,7 +15,7 @@
 </head>
 
 <body>
-    <!-- Navigation Bar -->
+
     <nav id="nav-bar">
         <div class="nav-brand">
             <a href="../index.html" style="display: flex; align-items: center; gap: 10px; text-decoration: none;">
@@ -36,7 +36,6 @@
         </div>
     </nav>
 
-    <!-- Catalogue Header -->
     <header class="catalogue-header">
         <div class="container">
             <h1>Digital Book Catalogue</h1>
@@ -44,11 +43,10 @@
         </div>
     </header>
 
-    <!-- Main Content -->
     <main class="container" style="padding-bottom: 80px;">
-        <!-- Search and Filter Bar -->
+
         <div class="search-filter-bar">
-            <!-- Search -->
+
             <div class="search-input-wrapper">
                 <span class="search-icon" data-lucide="search"></span>
                 <input
@@ -59,15 +57,13 @@
                 >
             </div>
 
-            <!-- Category Filter -->
             <div class="filter-group">
                 <select id="filter-category" class="form-select">
                     <option value="">All Categories</option>
-                    <!-- Populated dynamically -->
+
                 </select>
             </div>
 
-            <!-- Availability Filter -->
             <div class="filter-group">
                 <select id="filter-availability" class="form-select">
                     <option value="">All Statuses</option>
@@ -76,7 +72,6 @@
                 </select>
             </div>
 
-            <!-- Sort By -->
             <div class="filter-group">
                 <select id="filter-sort" class="form-select">
                     <option value="title_asc">Title (A-Z)</option>
@@ -87,15 +82,13 @@
             </div>
         </div>
 
-        <!-- Status & Results Count Bar -->
         <div style="display: flex; justify-content: space-between; align-items: center; margin: 36px 0 24px; font-size: var(--font-sm); color: var(--text-muted);">
             <div id="results-count">Loading catalogue...</div>
             <div id="active-filters-badges" style="display: flex; gap: 8px; flex-wrap: wrap;"></div>
         </div>
 
-        <!-- Book Grid -->
         <div id="books-grid" class="grid grid-4">
-            <!-- Skeletons -->
+
             <div class="card" style="height: 380px;">
                 <div class="skeleton" style="height: 200px;"></div>
                 <div style="padding: 16px;">
@@ -130,11 +123,9 @@
             </div>
         </div>
 
-        <!-- Pagination -->
         <div id="pagination-container" class="pagination-wrapper" style="display: none;"></div>
     </main>
 
-    <!-- Footer -->
     <footer style="background: #0f172a; color: #94a3b8; padding: 40px 0 20px; border-top: 1px solid #1e293b;">
         <div class="container" style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 16px; font-size: var(--font-sm);">
             <div style="display: flex; align-items: center; gap: 8px;">
@@ -150,21 +141,19 @@
         </div>
     </footer>
 
-    <!-- Scripts -->
     <script src="../assets/js/api.js"></script>
     <script src="../assets/js/utils.js"></script>
     <script src="../assets/js/auth.js"></script>
     <script>
-        // Update navigation based on auth state
+
         document.addEventListener('DOMContentLoaded', function() {
             auth.updateNav();
         });
-        
+
         let currentPage = 1;
         const pageSize = 12;
         let totalPages = 1;
 
-        // Elements
         const searchInput = document.getElementById("catalogue-search");
         const categorySelect = document.getElementById("filter-category");
         const availabilitySelect = document.getElementById("filter-availability");
@@ -173,10 +162,8 @@
         const booksGrid = document.getElementById("books-grid");
         const paginationContainer = document.getElementById("pagination-container");
 
-        // Load Categories into filter
-        async function loadCategories() {
-            try {
-                const res = await api.get('/categories');
+        function loadCategories() {
+            api.get('/categories').then(function(res) {
                 const categories = Array.isArray(res.data) ? res.data : [];
                 categories.forEach(cat => {
                     const opt = document.createElement("option");
@@ -184,13 +171,10 @@
                     opt.textContent = `${cat.name} (${cat.total_books})`;
                     categorySelect.appendChild(opt);
                 });
-            } catch (err) {
-                // Ignore if category fetch fails
-            }
+            }).catch(function(err) {});
         }
 
-        // Fetch & Render Books
-        async function loadBooks() {
+        function loadBooks() {
             booksGrid.innerHTML = `
                 <div class="card" style="height: 380px;"><div class="skeleton" style="height: 100%;"></div></div>
                 <div class="card" style="height: 380px;"><div class="skeleton" style="height: 100%;"></div></div>
@@ -207,8 +191,7 @@
                 sort: sortSelect.value
             };
 
-            try {
-                const res = await api.get('/books', query);
+            api.get('/books', query).then(function(res) {
                 const books = res.data && res.data.books ? res.data.books : (Array.isArray(res.data) ? res.data : []);
                 const pagination = res.pagination || (res.data && res.data.pagination) || { page: 1, limit: pageSize, total: books.length, total_pages: 1 };
 
@@ -224,7 +207,7 @@
                 renderBooks(books);
                 renderPagination(pagination.page || currentPage, totalPages);
 
-            } catch (err) {
+            }).catch(function(err) {
                 booksGrid.innerHTML = `
                     <div style="grid-column: 1/-1; text-align: center; padding: 60px 20px;">
                         <p style="color: var(--danger); font-weight: 600; margin-bottom: 12px;">Failed to load catalogue books.</p>
@@ -233,7 +216,7 @@
                 `;
                 resultsCountEl.textContent = "Error loading books";
                 paginationContainer.style.display = "none";
-            }
+            });
         }
 
         function renderBooks(books) {
@@ -251,9 +234,9 @@
                     <div class="book-card-item">
                         <div class="book-cover-wrap">
                             ${cover}
-                            <button 
-                                class="book-fav-btn" 
-                                title="Add to Favorites" 
+                            <button
+                                class="book-fav-btn"
+                                title="Add to Favorites"
                                 onclick="toggleFavorite(event, ${book.id})"
                                 id="fav-btn-${book.id}"
                             >
@@ -271,7 +254,7 @@
                             <div class="book-author">
                                 By ${utils.escapeHtml(book.author_name || 'Unknown Author')} ${book.publication_year ? `(${book.publication_year})` : ''}
                             </div>
-                            
+
                             <div class="book-readability-snippet">
                                 <span style="color: var(--text-muted);">Difficulty:</span>
                                 <span style="font-weight: 600; color: var(--primary);">Standard (Grade 8)</span>
@@ -358,15 +341,13 @@
             loadBooks();
         }
 
-        // Quick Actions
-        async function toggleFavorite(e, bookId) {
+        function toggleFavorite(e, bookId) {
             e.stopPropagation();
             if (!auth.isLoggedIn()) {
                 utils.toast("Authentication Required", "Please log in to save favorite books.", "warning");
                 return;
             }
-            try {
-                const res = await api.post('/favorites', { book_id: bookId });
+            api.post('/favorites', { book_id: bookId }).then(function(res) {
                 const btn = document.getElementById(`fav-btn-${bookId}`);
                 if (res.data && res.data.favorited) {
                     btn.classList.add('is-active');
@@ -377,64 +358,61 @@
                     btn.textContent = '♡';
                     utils.toast("Removed", res.message, "info");
                 }
-            } catch (err) {
+            }).catch(function(err) {
                 utils.toast("Error", err.message, "error");
-            }
+            });
         }
 
-        async function quickBorrow(bookId, title) {
+        function quickBorrow(bookId, title) {
             if (!auth.isLoggedIn()) {
                 utils.toast("Login Required", "Please log in to borrow books.", "warning");
-                setTimeout(() => window.location.href = "login.html", 1200);
+                setTimeout(function() { window.location.href = "login.html"; }, 1200);
                 return;
             }
 
-            const confirmed = await utils.confirm({
+            utils.confirm({
                 title: 'Borrow Book',
                 message: `Confirm borrowing "${title}" for a standard 14-day checkout?`,
                 confirmText: 'Borrow Book',
                 icon: 'book-open',
                 type: 'primary'
+            }).then(function(confirmed) {
+                if (!confirmed) return;
+
+                api.post('/library/issue', { book_id: bookId }).then(function() {
+                    utils.toast("Book Borrowed", `You have successfully borrowed "${title}".`, "success");
+                    loadBooks();
+                }).catch(function(err) {
+                    utils.toast("Borrow Failed", err.message, "danger");
+                });
             });
-
-            if (!confirmed) return;
-
-            try {
-                await api.post('/library/issue', { book_id: bookId });
-                utils.toast("Book Borrowed", `You have successfully borrowed "${title}".`, "success");
-                loadBooks();
-            } catch (err) {
-                utils.toast("Borrow Failed", err.message, "danger");
-            }
         }
 
-        async function quickReserve(bookId, title) {
+        function quickReserve(bookId, title) {
             if (!auth.isLoggedIn()) {
                 utils.toast("Login Required", "Please log in to place reservations.", "warning");
-                setTimeout(() => window.location.href = "login.html", 1200);
+                setTimeout(function() { window.location.href = "login.html"; }, 1200);
                 return;
             }
 
-            const confirmed = await utils.confirm({
+            utils.confirm({
                 title: 'Place Book Hold / Reservation',
                 message: `Reserve "${title}"? You will be notified the instant a copy is checked back in.`,
                 confirmText: 'Place Reservation',
                 icon: 'bookmark',
                 type: 'primary'
+            }).then(function(confirmed) {
+                if (!confirmed) return;
+
+                api.post('/library/reserve', { book_id: bookId }).then(function() {
+                    utils.toast("Reservation Placed", `Reserved "${title}".`, "success");
+                    loadBooks();
+                }).catch(function(err) {
+                    utils.toast("Reservation Failed", err.message, "danger");
+                });
             });
-
-            if (!confirmed) return;
-
-            try {
-                await api.post('/library/reserve', { book_id: bookId });
-                utils.toast("Reservation Placed", `Reserved "${title}".`, "success");
-                loadBooks();
-            } catch (err) {
-                utils.toast("Reservation Failed", err.message, "danger");
-            }
         }
 
-        // Event listeners
         searchInput.addEventListener("input", utils.debounce(() => {
             currentPage = 1;
             loadBooks();
@@ -455,7 +433,6 @@
             loadBooks();
         });
 
-        // Init
         loadCategories();
         loadBooks();
     </script>

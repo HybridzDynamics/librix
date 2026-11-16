@@ -1,52 +1,36 @@
 <?php
 
-// Configuration
-
 require_once __DIR__ . "/../../../config/config.php";
 require_once __DIR__ . "/../../../config/database.php";
 require_once __DIR__ . "/../../../helpers/response.php";
 require_once __DIR__ . "/../../../helpers/functions.php";
 require_once __DIR__ . "/../../../middleware/auth.php";
 
-
-// Request Method
-
 if ($_SERVER["REQUEST_METHOD"] !== "GET") {
     methodNotAllowedResponse(["GET"]);
 }
 
-
-// Authentication
-
 $User = requireAuth();
 $UserId = (int)$User["id"];
-
-
-// Pagination
 
 $Page = isset($_GET["page"]) ? max(1, (int)$_GET["page"]) : 1;
 $Limit = isset($_GET["limit"]) ? min(100, max(1, (int)$_GET["limit"])) : 20;
 $Offset = ($Page - 1) * $Limit;
 $UnreadOnly = isset($_GET["unread"]) && ($_GET["unread"] === "1" || $_GET["unread"] === "true");
 
-
-// Query Notifications
-
 try {
-    // Unread count
+
     $UnreadStmt = $pdo->prepare("SELECT COUNT(id) FROM notifications WHERE user_id = ? AND is_read = 0");
     $UnreadStmt->execute([$UserId]);
     $UnreadCount = (int)$UnreadStmt->fetchColumn();
 
-    // Total count
     $Where = "WHERE user_id = ?" . ($UnreadOnly ? " AND is_read = 0" : "");
     $CountStmt = $pdo->prepare("SELECT COUNT(id) FROM notifications {$Where}");
     $CountStmt->execute([$UserId]);
     $Total = (int)$CountStmt->fetchColumn();
 
-    // Items
     $Stmt = $pdo->prepare(
-        "SELECT 
+        "SELECT
             id,
             user_id,
             title,

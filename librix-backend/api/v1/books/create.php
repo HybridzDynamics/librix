@@ -1,7 +1,5 @@
 <?php
 
-// Configuration
-
 require_once __DIR__ . "/../../../config/config.php";
 require_once __DIR__ . "/../../../config/database.php";
 require_once __DIR__ . "/../../../helpers/response.php";
@@ -10,21 +8,12 @@ require_once __DIR__ . "/../../../helpers/functions.php";
 require_once __DIR__ . "/../../../middleware/auth.php";
 require_once __DIR__ . "/../../../middleware/admin.php";
 
-
-// Request Method
-
 if ($_SERVER["REQUEST_METHOD"] !== "POST") {
     methodNotAllowedResponse(["POST"]);
 }
 
-
-// Authentication
-
 $User = requireAuth();
 requireAdmin($User);
-
-
-// Request Data
 
 $RequestData = getJsonInput();
 
@@ -37,9 +26,6 @@ $Publisher = isset($RequestData["publisher"]) ? trim($RequestData["publisher"]) 
 $PublicationYear = $RequestData["publication_year"] ?? null;
 $TotalCopies = $RequestData["total_copies"] ?? 1;
 $CoverImage = isset($RequestData["cover_image"]) ? trim($RequestData["cover_image"]) : null;
-
-
-// Validation
 
 $Errors = [];
 
@@ -61,7 +47,7 @@ if ($AuthorId !== null && $AuthorId !== "") {
     if ($AuthorIdError !== null) {
         $Errors["author_id"] = $AuthorIdError;
     } else {
-        // Verify Author Exists
+
         try {
             $Stmt = $pdo->prepare("SELECT id FROM authors WHERE id = ? LIMIT 1");
             $Stmt->execute([(int)$AuthorId]);
@@ -83,7 +69,7 @@ if ($Isbn !== null && $Isbn !== "") {
     if ($IsbnLengthError !== null) {
         $Errors["isbn"] = $IsbnLengthError;
     } else {
-        // Verify ISBN Unique
+
         try {
             $Stmt = $pdo->prepare("SELECT id FROM books WHERE isbn = ? LIMIT 1");
             $Stmt->execute([$Isbn]);
@@ -119,9 +105,6 @@ if (hasValidationErrors($Errors)) {
     ValidationerrorResponse($Errors);
 }
 
-
-// Database Query
-
 $AvailableCopies = $TotalCopies;
 
 try {
@@ -149,9 +132,6 @@ try {
 } catch (PDOException $e) {
     errorResponse("Unable to create book", 500);
 }
-
-
-// Fetch Created Book
 
 try {
     $Stmt = $pdo->prepare(
@@ -185,13 +165,7 @@ try {
     errorResponse("Unable to retrieve created book", 500);
 }
 
-
-// Audit Log
-
 logAudit((int)$User["id"], "book_created", "books", $NewBookId, "Created book '$Title'");
-
-
-// Response
 
 successResponse(
     $CreatedBook,

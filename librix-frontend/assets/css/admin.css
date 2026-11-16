@@ -1,6 +1,3 @@
-/* ==========================================================================
-   LibriX Admin Portal Shared Layout Styles
-   ========================================================================== */
 
 .admin-wrapper {
     display: flex;
@@ -8,7 +5,6 @@
     background-color: #f1f5f9;
 }
 
-/* Admin Dark Sidebar */
 .admin-sidebar {
     width: 270px;
     background-color: #0f172a;
@@ -153,7 +149,6 @@
     border-top: 1px solid #1e293b;
 }
 
-/* Admin Main Area */
 .admin-main {
     flex: 1;
     display: flex;
@@ -179,7 +174,6 @@
     flex: 1;
 }
 
-/* Data Table Toolbar */
 .table-toolbar {
     background: #ffffff;
     border: 1px solid var(--border);
@@ -230,7 +224,6 @@
     overflow: hidden;
 }
 
-/* Action button row inside table cells */
 .table-actions-cell {
     display: flex;
     align-items: center;
@@ -238,7 +231,6 @@
     justify-content: flex-end;
 }
 
-/* Charts Card Container */
 .chart-container {
     background: #ffffff;
     border: 1px solid var(--border);

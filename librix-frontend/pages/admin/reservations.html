@@ -13,7 +13,7 @@
 
 <body>
     <div class="admin-wrapper">
-        <!-- Sidebar -->
+
         <aside class="admin-sidebar" id="sidebar">
             <div class="admin-sidebar-brand">
                 <img src="../../assets/images/logo.png" alt="Librix Logo">
@@ -54,9 +54,8 @@
             </div>
         </aside>
 
-        <!-- Main Workspace -->
         <main class="admin-main">
-            <!-- Topbar -->
+
             <header class="admin-topbar">
                 <div style="display: flex; align-items: center; gap: 14px;">
                     <button class="mobile-menu-toggle" onclick="toggleSidebar()" style="display: flex; align-items: center; justify-content: center;"><i data-lucide="menu" data-size="22"></i></button>
@@ -64,14 +63,12 @@
                 </div>
             </header>
 
-            <!-- Admin Body -->
             <div class="admin-body">
                 <div class="page-header">
                     <h1 class="page-title">Patron Hold Requests</h1>
                     <p class="page-subtitle">Manage customer reservations, track queue positions, and fulfill pending holds when inventory returns.</p>
                 </div>
 
-                <!-- Table Toolbar -->
                 <div class="table-toolbar">
                     <div class="toolbar-search">
                         <span class="toolbar-search-icon">data-lucide="search"</span>
@@ -87,20 +84,17 @@
                     </div>
                 </div>
 
-                <!-- Table Card -->
                 <div class="table-container-card">
                     <div id="reservations-table-wrap">
                         <div style="padding: 60px; text-align: center;"><div class="spinner"></div></div>
                     </div>
                 </div>
 
-                <!-- Pagination -->
                 <div id="admin-res-pagination" style="display: flex; justify-content: center; gap: 8px; margin-top: 24px;"></div>
             </div>
         </main>
     </div>
 
-    <!-- Scripts -->
     <script src="../../assets/js/api.js"></script>
     <script src="../../assets/js/utils.js"></script>
     <script src="../../assets/js/auth.js"></script>
@@ -120,23 +114,22 @@
         let currentPage = 1;
         const limit = 15;
 
-        async function loadReservations() {
+        function loadReservations() {
             const container = document.getElementById('reservations-table-wrap');
             const search = document.getElementById('res-search').value.trim();
             const status = document.getElementById('res-status-filter').value;
 
             container.innerHTML = `<div style="padding: 60px; text-align: center;"><div class="spinner"></div></div>`;
 
-            try {
-                const res = await api.get('/admin/reservations', {
-                    page: currentPage,
-                    limit: limit,
-                    search: search,
-                    status: status
-                });
+            api.get('/admin/reservations', {
+                page: currentPage,
+                limit: limit,
+                search: search,
+                status: status
+            }).then(function(res) {
 
                 let reservations = res.data && res.data.reservations ? res.data.reservations : (Array.isArray(res.data) ? res.data : []);
-                
+
                 if (status) {
                     reservations = reservations.filter(r => r.status === status);
                 }
@@ -208,13 +201,13 @@
 
                 renderPagination(pagination.page || currentPage, pagination.total_pages || 1);
 
-            } catch (err) {
+            }).catch(function(err) {
                 container.innerHTML = `
                     <div style="padding: 40px; text-align: center; color: var(--danger);">
                         Failed to retrieve reservations queue.
                     </div>
                 `;
-            }
+            });
         }
 
         function renderPagination(current, total) {
@@ -240,44 +233,42 @@
             loadReservations();
         }
 
-        async function fulfillReservation(id, title) {
-            const confirmed = await utils.confirm({
+        function fulfillReservation(id, title) {
+            utils.confirm({
                 title: 'Fulfill Hold Reservation',
                 message: `Fulfill reservation #${id} for "${title}" and notify patron that book is ready for pickup?`,
                 confirmText: 'Fulfill & Notify',
                 type: 'success',
                 icon: 'check-circle'
+            }).then(function(confirmed) {
+                if (!confirmed) return;
+
+                api.reservations.updateStatus(id, 'fulfilled').then(function() {
+                    utils.toast("Hold Fulfilled", `Patron notified that "${title}" is ready.`, "success");
+                    loadReservations();
+                }).catch(function(err) {
+                    utils.toast("Action Failed", err.message, "danger");
+                });
             });
-
-            if (!confirmed) return;
-
-            try {
-                await api.reservations.updateStatus(id, 'fulfilled');
-                utils.toast("Hold Fulfilled", `Patron notified that "${title}" is ready.`, "success");
-                loadReservations();
-            } catch (err) {
-                utils.toast("Action Failed", err.message, "danger");
-            }
         }
 
-        async function cancelReservation(id, title) {
-            const confirmed = await utils.confirm({
+        function cancelReservation(id, title) {
+            utils.confirm({
                 title: 'Cancel Reservation Hold',
                 message: `Cancel reservation hold #${id}?`,
                 confirmText: 'Cancel Hold',
                 type: 'warning',
                 icon: 'x-circle'
+            }).then(function(confirmed) {
+                if (!confirmed) return;
+
+                api.reservations.updateStatus(id, 'cancelled').then(function() {
+                    utils.toast("Reservation Cancelled", `Hold #${id} was marked cancelled.`, "info");
+                    loadReservations();
+                }).catch(function(err) {
+                    utils.toast("Action Failed", err.message, "danger");
+                });
             });
-
-            if (!confirmed) return;
-
-            try {
-                await api.reservations.updateStatus(id, 'cancelled');
-                utils.toast("Reservation Cancelled", `Hold #${id} was marked cancelled.`, "info");
-                loadReservations();
-            } catch (err) {
-                utils.toast("Action Failed", err.message, "danger");
-            }
         }
 
         document.getElementById('res-search').addEventListener('input', utils.debounce(() => {

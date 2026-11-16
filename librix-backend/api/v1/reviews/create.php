@@ -1,7 +1,5 @@
 <?php
 
-// Configuration
-
 require_once __DIR__ . "/../../../config/config.php";
 require_once __DIR__ . "/../../../config/database.php";
 require_once __DIR__ . "/../../../helpers/response.php";
@@ -9,30 +7,18 @@ require_once __DIR__ . "/../../../helpers/validation.php";
 require_once __DIR__ . "/../../../helpers/functions.php";
 require_once __DIR__ . "/../../../middleware/auth.php";
 
-
-// Request Method
-
 if ($_SERVER["REQUEST_METHOD"] !== "POST") {
     methodNotAllowedResponse(["POST"]);
 }
 
-
-// Authentication
-
 $User = requireAuth();
 $UserId = (int)$User["id"];
-
-
-// Request Data
 
 $Input = getJsonInput();
 
 $BookId = $Input["book_id"] ?? null;
 $Rating = $Input["rating"] ?? null;
 $ReviewText = isset($Input["review_text"]) ? sanitizeString($Input["review_text"]) : null;
-
-
-// Validation
 
 $Errors = [];
 
@@ -52,9 +38,6 @@ if (!empty($Errors)) {
 $BookId = (int)$BookId;
 $Rating = (int)$Rating;
 
-
-// Check Book Exists
-
 try {
     $BookCheck = $pdo->prepare("SELECT id FROM books WHERE id = ? LIMIT 1");
     $BookCheck->execute([$BookId]);
@@ -64,9 +47,6 @@ try {
 } catch (PDOException $e) {
     errorResponse("Database error", 500);
 }
-
-
-// Insert or Update Review
 
 try {
     $Stmt = $pdo->prepare(
@@ -80,9 +60,8 @@ try {
 
     $Stmt->execute([$BookId, $UserId, $Rating, $ReviewText]);
 
-    // Fetch saved review
     $FetchStmt = $pdo->prepare(
-        "SELECT 
+        "SELECT
             reviews.id,
             reviews.book_id,
             reviews.user_id,

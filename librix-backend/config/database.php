@@ -1,7 +1,5 @@
 <?php
 
-// LibriX Database Configuration
-
 function librix_load_dotenv(string $path): void
 {
     if (!is_file($path)) {
@@ -53,9 +51,6 @@ $DbName = librix_env("DB_NAME", "librix");
 $Username = librix_env("DB_USERNAME", "root");
 $Password = librix_env("DB_PASSWORD", "admin");
 
-
-// Database Connection
-
 $pdo = null;
 $pdo_error = null;
 
@@ -86,10 +81,9 @@ try {
     $pdo = null;
     $pdo_error = $e->getMessage();
 
-    // If this is a direct script execution or non-status/health check, return standardized JSON error
     $currentScript = $_SERVER["SCRIPT_NAME"] ?? "";
     $requestUri = $_SERVER["REQUEST_URI"] ?? "";
-    $isHealthOrStatus = str_contains($currentScript, "health.php") || 
+    $isHealthOrStatus = str_contains($currentScript, "health.php") ||
                         str_contains($currentScript, "status.php") ||
                         str_contains($requestUri, "/health") ||
                         str_contains($requestUri, "/status");

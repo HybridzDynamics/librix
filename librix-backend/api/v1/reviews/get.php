@@ -1,30 +1,19 @@
 <?php
 
-// Configuration
-
 require_once __DIR__ . "/../../../config/config.php";
 require_once __DIR__ . "/../../../config/database.php";
 require_once __DIR__ . "/../../../helpers/response.php";
 require_once __DIR__ . "/../../../helpers/validation.php";
 require_once __DIR__ . "/../../../helpers/functions.php";
 
-
-// Request Method
-
 if ($_SERVER["REQUEST_METHOD"] !== "GET") {
     methodNotAllowedResponse(["GET"]);
 }
-
-
-// Query Parameters
 
 $BookId = $_GET["book_id"] ?? null;
 $Page = isset($_GET["page"]) ? max(1, (int)$_GET["page"]) : 1;
 $Limit = isset($_GET["limit"]) ? min(100, max(1, (int)$_GET["limit"])) : 10;
 $Offset = ($Page - 1) * $Limit;
-
-
-// If specific BookId provided
 
 if ($BookId !== null) {
     $IdError = validatePositiveInteger($BookId, "Book ID");
@@ -33,23 +22,21 @@ if ($BookId !== null) {
     }
 
     try {
-        // Get Stats
+
         $StatsStmt = $pdo->prepare(
-            "SELECT 
+            "SELECT
                 COUNT(id) AS total_reviews,
                 COALESCE(ROUND(AVG(rating), 1), 0.0) AS average_rating
-             FROM reviews 
+             FROM reviews
              WHERE book_id = ?"
         );
         $StatsStmt->execute([(int)$BookId]);
         $Stats = $StatsStmt->fetch();
 
-        // Get Total for pagination
         $Total = (int)($Stats["total_reviews"] ?? 0);
 
-        // Get Reviews
         $Stmt = $pdo->prepare(
-            "SELECT 
+            "SELECT
                 reviews.id,
                 reviews.book_id,
                 reviews.user_id,
@@ -96,15 +83,12 @@ if ($BookId !== null) {
     }
 }
 
-
-// All Reviews (e.g. for general listing or admin)
-
 try {
     $CountStmt = $pdo->query("SELECT COUNT(id) FROM reviews");
     $Total = (int)$CountStmt->fetchColumn();
 
     $Stmt = $pdo->prepare(
-        "SELECT 
+        "SELECT
             reviews.id,
             reviews.book_id,
             reviews.user_id,

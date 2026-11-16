@@ -1,7 +1,5 @@
 <?php
 
-// Configuration
-
 require_once __DIR__ . "/../../../config/config.php";
 require_once __DIR__ . "/../../../config/database.php";
 require_once __DIR__ . "/../../../helpers/response.php";
@@ -9,21 +7,12 @@ require_once __DIR__ . "/../../../helpers/functions.php";
 require_once __DIR__ . "/../../../middleware/auth.php";
 require_once __DIR__ . "/../../../middleware/admin.php";
 
-
-// Request Method
-
 if ($_SERVER["REQUEST_METHOD"] !== "GET") {
     methodNotAllowedResponse(["GET"]);
 }
 
-
-// Authentication
-
 $User = requireAuth();
 requireAdmin($User);
-
-
-// Database Query
 
 try {
     $Stmt = $pdo->prepare(
@@ -66,9 +55,6 @@ try {
 } catch (PDOException $e) {
     errorResponse("Database error", 500);
 }
-
-
-// Response
 
 successResponse(
     $Books,

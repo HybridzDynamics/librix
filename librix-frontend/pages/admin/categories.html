@@ -61,7 +61,6 @@
         </main>
     </div>
 
-    <!-- Modal -->
     <div id="category-modal" class="modal-backdrop">
         <div class="modal">
             <div class="modal-header">
@@ -97,11 +96,10 @@
         if (user) { document.getElementById('admin-name').textContent = user.name; document.getElementById('admin-avatar').textContent = user.name.charAt(0).toUpperCase(); }
         function toggleSidebar() { document.getElementById('sidebar').classList.toggle('is-open'); }
 
-        async function loadCategories() {
+        function loadCategories() {
             const container = document.getElementById('categories-table-wrap');
             container.innerHTML = `<div style="padding:60px;text-align:center;"><div class="spinner"></div></div>`;
-            try {
-                const res = await api.get('/categories');
+            api.get('/categories').then(function(res) {
                 const categories = Array.isArray(res.data) ? res.data : [];
                 if (categories.length === 0) {
                     container.innerHTML = `<div class="empty-state"><div class="empty-state-icon"><svg xmlns="http://www.w3.org/2000/svg" width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2H2v10l9.29 9.29c.94.94 2.48.94 3.42 0l6.58-6.58c.94-.94.94-2.48 0-3.42L12 2Z"/><path d="M7 7h.01"/></svg></div><div class="empty-state-title">No categories created</div><div class="empty-state-desc">Click '+ Add New Category' to create taxonomy groupings.</div></div>`;
@@ -125,9 +123,9 @@
                             </tbody>
                         </table>
                     </div>`;
-            } catch (err) {
+            }).catch(function(err) {
                 container.innerHTML = `<div style="padding:40px;text-align:center;color:var(--danger);">Failed to retrieve categories.</div>`;
-            }
+            });
         }
 
         function openCategoryModal(cat = null) {
@@ -138,43 +136,40 @@
             utils.modal('category-modal').open();
         }
 
-        async function deleteCategory(id, name) {
-            const confirmed = await utils.confirm({
+        function deleteCategory(id, name) {
+            utils.confirm({
                 title: 'Delete Book Category',
                 message: `Delete category "${name}"? Books assigned to this category will become unassigned.`,
                 confirmText: 'Delete Category',
                 type: 'danger',
                 icon: 'trash-2'
+            }).then(function(confirmed) {
+                if (!confirmed) return;
+
+                api.delete(`/categories?id=${id}`).then(function() {
+                    utils.toast("Category Deleted", `Removed "${name}".`, "success");
+                    loadCategories();
+                }).catch(function(err) { utils.toast("Delete Failed", err.message, "danger"); });
             });
-
-            if (!confirmed) return;
-
-            try {
-                await api.delete(`/categories?id=${id}`);
-                utils.toast("Category Deleted", `Removed "${name}".`, "success");
-                loadCategories();
-            } catch (err) { utils.toast("Delete Failed", err.message, "danger"); }
         }
 
-        document.getElementById('category-form').addEventListener('submit', async function(e) {
+        document.getElementById('category-form').addEventListener('submit', function(e) {
             e.preventDefault();
             const id = document.getElementById('category-id').value;
             const name = document.getElementById('cat-name-input').value.trim();
             const desc = document.getElementById('cat-desc-input').value.trim();
             const btn = document.getElementById('save-category-btn');
             btn.disabled = true;
-            try {
-                if (id) {
-                    await api.put(`/categories?id=${id}`, { name, description: desc });
-                    utils.toast("Category Updated", `Updated "${name}".`, "success");
-                } else {
-                    await api.post('/categories', { name, description: desc });
-                    utils.toast("Category Added", `Added "${name}".`, "success");
-                }
+            const saveRequest = id
+                ? api.put(`/categories?id=${id}`, { name: name, description: desc })
+                : api.post('/categories', { name: name, description: desc });
+
+            saveRequest.then(function() {
+                utils.toast(id ? "Category Updated" : "Category Added", id ? `Updated "${name}".` : `Added "${name}".`, "success");
                 utils.modal('category-modal').close();
                 loadCategories();
-            } catch (err) { utils.toast("Save Failed", err.message, "error"); }
-            finally { btn.disabled = false; }
+            }).catch(function(err) { utils.toast("Save Failed", err.message, "error"); })
+            .then(function() { btn.disabled = false; });
         });
 
         loadCategories();

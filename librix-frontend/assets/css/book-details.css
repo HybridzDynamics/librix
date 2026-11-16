@@ -1,6 +1,3 @@
-/* ==========================================================================
-   LibriX Book Details Styles
-   ========================================================================== */
 
 .book-details-layout {
     display: grid;
@@ -48,7 +45,6 @@
     gap: 12px;
 }
 
-/* Readability Highlight Card */
 .readability-hero-card {
     background: linear-gradient(135deg, #f8fafc 0%, #eef2ff 100%);
     border: 1px solid var(--primary-border);
@@ -93,7 +89,6 @@
     font-weight: 500;
 }
 
-/* Review Item */
 .review-item {
     background: #ffffff;
     border: 1px solid var(--border);
@@ -131,7 +126,6 @@
     line-height: 1.6;
 }
 
-/* Star Rating Selector in Review Form */
 .star-rating-select {
     display: inline-flex;
     flex-direction: row-reverse;

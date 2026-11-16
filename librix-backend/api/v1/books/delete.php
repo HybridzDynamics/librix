@@ -1,7 +1,5 @@
 <?php
 
-// Configuration
-
 require_once __DIR__ . "/../../../config/config.php";
 require_once __DIR__ . "/../../../config/database.php";
 require_once __DIR__ . "/../../../helpers/response.php";
@@ -10,21 +8,12 @@ require_once __DIR__ . "/../../../helpers/functions.php";
 require_once __DIR__ . "/../../../middleware/auth.php";
 require_once __DIR__ . "/../../../middleware/admin.php";
 
-
-// Request Method
-
 if ($_SERVER["REQUEST_METHOD"] !== "DELETE") {
     methodNotAllowedResponse(["DELETE"]);
 }
 
-
-// Authentication
-
 $User = requireAuth();
 requireAdmin($User);
-
-
-// Request Data
 
 $BookId = $bookId ?? ($parts[3] ?? null);
 
@@ -35,9 +24,6 @@ if ($IdError !== null) {
 }
 
 $BookId = (int)$BookId;
-
-
-// Check Existing Book
 
 try {
     $Stmt = $pdo->prepare("SELECT id, title FROM books WHERE id = ? LIMIT 1");
@@ -51,9 +37,6 @@ try {
 if (!$ExistingBook) {
     notFoundResponse("Book not found");
 }
-
-
-// Check Active Issues
 
 try {
     $Stmt = $pdo->prepare(
@@ -73,9 +56,6 @@ try {
     errorResponse("Database error", 500);
 }
 
-
-// Delete Book
-
 try {
     $Stmt = $pdo->prepare("DELETE FROM books WHERE id = ?");
     $Stmt->execute([$BookId]);
@@ -85,9 +65,6 @@ try {
 } catch (PDOException $e) {
     errorResponse("Unable to delete book", 500);
 }
-
-
-// Response
 
 successResponse(
     [

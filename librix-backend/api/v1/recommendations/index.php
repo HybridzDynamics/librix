@@ -1,7 +1,5 @@
 <?php
 
-// Configuration
-
 require_once __DIR__ . "/../../../config/config.php";
 require_once __DIR__ . "/../../../config/database.php";
 require_once __DIR__ . "/../../../config/bookmind.php";
@@ -9,42 +7,28 @@ require_once __DIR__ . "/../../../helpers/response.php";
 require_once __DIR__ . "/../../../helpers/functions.php";
 require_once __DIR__ . "/../../../middleware/auth.php";
 
-
-// Request Method
-
 if ($_SERVER["REQUEST_METHOD"] !== "GET") {
     methodNotAllowedResponse(["GET"]);
 }
 
-
-// Authentication (optional for recommendations, but good for personalization)
-
 $User = null;
 try {
-    $User = requireAuth(false); // Not required
+    $User = requireAuth(false);
 } catch (Exception $e) {
-    // Continue without auth for public recommendations
+
 }
 
-
-// Query Parameters
-
 $Limit = isset($_GET["limit"]) ? min(50, max(1, (int)$_GET["limit"])) : 10;
-$Type = $_GET["type"] ?? "popular"; // popular, content, collaborative, hybrid
+$Type = $_GET["type"] ?? "popular";
 $BookId = isset($_GET["book_id"]) ? (int)$_GET["book_id"] : null;
 $UserId = isset($_GET["user_id"]) ? (int)$_GET["user_id"] : null;
 
-
-// BookMind API Configuration (loaded from config/bookmind.php)
-
 $BookMindBaseUrl = BOOKMIND_API_URL;
-
 
 try {
     $Recommendations = [];
     $BookMindAvailable = false;
-    
-    // Check if BookMind is available
+
     $HealthCheckUrl = BOOKMEND_HEALTH_ENDPOINT;
     $HealthCheck = @file_get_contents($HealthCheckUrl);
     if ($HealthCheck !== false) {
@@ -53,11 +37,11 @@ try {
             $BookMindAvailable = true;
         }
     }
-    
+
     if ($BookMindAvailable) {
         switch ($Type) {
             case "popular":
-                // Get popular books from BookMind
+
                 $Url = $BookMindBaseUrl . "/recommendations/popular?limit=" . $Limit;
                 $Response = @file_get_contents($Url);
                 if ($Response !== false) {
@@ -67,9 +51,9 @@ try {
                     }
                 }
                 break;
-                
+
             case "content":
-                // Get content-based recommendations for a specific book
+
                 if (!$BookId) {
                     errorResponse("book_id parameter is required for content recommendations", 400);
                 }
@@ -82,9 +66,9 @@ try {
                     }
                 }
                 break;
-                
+
             case "collaborative":
-                // Get collaborative filtering recommendations
+
                 $TargetUserId = $UserId ?: ($User ? $User["id"] : null);
                 if (!$TargetUserId) {
                     errorResponse("user_id parameter is required for collaborative recommendations", 400);
@@ -98,9 +82,9 @@ try {
                     }
                 }
                 break;
-                
+
             case "hybrid":
-                // Get hybrid recommendations (best of both worlds)
+
                 $TargetUserId = $UserId ?: ($User ? $User["id"] : null);
                 if ($TargetUserId) {
                     $Url = $BookMindBaseUrl . "/recommendations/hybrid/" . $TargetUserId . "?limit=" . $Limit;
@@ -112,14 +96,14 @@ try {
                         }
                     }
                 } else {
-                    // Fallback to popular for unauthenticated users
+
                     $Url = $BookMindBaseUrl . "/recommendations/popular?limit=" . $Limit;
                     $Response = @file_get_contents($Url);
                     if ($Response !== false) {
                         $Data = json_decode($Response, true);
                         if (isset($Data["recommendations"])) {
                             $Recommendations = $Data["recommendations"];
-                            // Add note that this is a fallback
+
                             foreach ($Recommendations as &$Rec) {
                                 $Rec["fallback_reason"] = "cold_start_recommendation";
                             }
@@ -127,20 +111,19 @@ try {
                     }
                 }
                 break;
-                
+
             default:
                 errorResponse("Invalid recommendation type. Use: popular, content, collaborative, or hybrid", 400);
         }
     }
-    
-    // If BookMind is not available or has no results, fall back to database-based recommendations
+
     if (empty($Recommendations) || !$BookMindAvailable) {
         $Recommendations = getFallbackRecommendations($pdo, $Limit, $Type, $BookId, $User);
         $Source = $BookMindAvailable ? "bookmind" : "database_fallback";
     } else {
         $Source = "bookmind";
     }
-    
+
     successResponse([
         "recommendations" => $Recommendations,
         "type" => $Type,
@@ -149,8 +132,17 @@ try {
         "bookmind_available" => $BookMindAvailable
     ], "Recommendations retrieved successfully");
 
+} catch (Exception $e) {
+    $Recommendations = getFallbackRecommendations($pdo, $Limit, $Type, $BookId, $User);
 
-// Fallback function when BookMind is unavailable
+    successResponse([
+        "recommendations" => $Recommendations,
+        "type" => $Type,
+        "count" => count($Recommendations),
+        "source" => "database_fallback",
+        "bookmind_available" => false
+    ], "Recommendations retrieved successfully");
+}
 
 function getFallbackRecommendations($pdo, $limit, $type, $bookId, $user) {
     try {
@@ -166,7 +158,7 @@ function getFallbackRecommendations($pdo, $limit, $type, $bookId, $user) {
                 );
                 $Stmt->execute([$limit]);
                 return $Stmt->fetchAll();
-                
+
             case "content":
                 if (!$bookId) return [];
                 $Stmt = $pdo->prepare(
@@ -174,17 +166,17 @@ function getFallbackRecommendations($pdo, $limit, $type, $bookId, $user) {
                             b.category, b.language
                      FROM books b
                      WHERE b.id != ? AND b.available_copies > 0
-                     ORDER BY 
+                     ORDER BY
                         CASE WHEN b.category = (SELECT category FROM books WHERE id = ?) THEN 0 ELSE 1 END,
                         b.average_rating DESC
                      LIMIT ?"
                 );
                 $Stmt->execute([$bookId, $bookId, $limit]);
                 return $Stmt->fetchAll();
-                
+
             case "hybrid":
             case "collaborative":
-                // For logged-in users, get books from their favorite categories
+
                 if ($user) {
                     $Stmt = $pdo->prepare(
                         "SELECT b.id, b.title, b.author_name as author, b.cover_image, b.average_rating,
@@ -197,8 +189,7 @@ function getFallbackRecommendations($pdo, $limit, $type, $bookId, $user) {
                     $Stmt->execute([$limit]);
                     return $Stmt->fetchAll();
                 }
-                // Fall through to default
-                
+
             default:
                 $Stmt = $pdo->prepare(
                     "SELECT b.id, b.title, b.author_name as author, b.cover_image, b.average_rating,

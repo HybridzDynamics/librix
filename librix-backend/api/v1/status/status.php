@@ -1,21 +1,13 @@
 <?php
 
-// Configuration
-
 require_once __DIR__ . "/../../../config/config.php";
 require_once __DIR__ . "/../../../config/database.php";
 require_once __DIR__ . "/../../../helpers/response.php";
 require_once __DIR__ . "/../../../helpers/functions.php";
 
-
-// Request Method
-
 if ($_SERVER["REQUEST_METHOD"] !== "GET") {
     methodNotAllowedResponse(["GET"]);
 }
-
-
-// Check Database Health
 
 $IsDbConnected = false;
 
@@ -39,9 +31,6 @@ if (!$IsDbConnected) {
     ]);
 }
 
-
-// Check Active Maintenance
-
 $HasActiveMaintenance = false;
 
 try {
@@ -59,7 +48,7 @@ try {
     }
 
 } catch (PDOException $e) {
-    // Graceful fallback
+
 }
 
 if ($HasActiveMaintenance) {
@@ -70,9 +59,6 @@ if ($HasActiveMaintenance) {
         "updated_at" => currentTime()
     ]);
 }
-
-
-// Check Unresolved Incidents
 
 $HighestIncidentSeverity = null;
 
@@ -98,11 +84,8 @@ try {
     }
 
 } catch (PDOException $e) {
-    // Graceful fallback
+
 }
-
-
-// Calculate Overall Status
 
 $OverallStatus = "operational";
 
@@ -113,9 +96,6 @@ if ($HighestIncidentSeverity === "critical") {
 } elseif ($HighestIncidentSeverity === "minor") {
     $OverallStatus = "degraded";
 }
-
-
-// Response
 
 successResponse([
     "status" => $OverallStatus,

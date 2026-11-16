@@ -61,7 +61,6 @@
         </main>
     </div>
 
-    <!-- Modal -->
     <div id="author-modal" class="modal-backdrop">
         <div class="modal">
             <div class="modal-header">
@@ -97,11 +96,10 @@
         if (user) { document.getElementById('admin-name').textContent = user.name; document.getElementById('admin-avatar').textContent = user.name.charAt(0).toUpperCase(); }
         function toggleSidebar() { document.getElementById('sidebar').classList.toggle('is-open'); }
 
-        async function loadAuthors() {
+        function loadAuthors() {
             const container = document.getElementById('authors-table-wrap');
             container.innerHTML = `<div style="padding:60px;text-align:center;"><div class="spinner"></div></div>`;
-            try {
-                const res = await api.get('/authors');
+            api.get('/authors').then(function(res) {
                 const authors = Array.isArray(res.data) ? res.data : [];
                 if (authors.length === 0) {
                     container.innerHTML = `<div class="empty-state"><div class="empty-state-icon"><svg xmlns="http://www.w3.org/2000/svg" width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M17 3a2.85 2.83 0 1 1 4 4L7.5 20.5 2 22l1.5-5.5Z"/></svg></div><div class="empty-state-title">No authors in directory</div><div class="empty-state-desc">Click '+ Add New Author' above to add authors to your catalog.</div></div>`;
@@ -125,9 +123,9 @@
                             </tbody>
                         </table>
                     </div>`;
-            } catch (err) {
+            }).catch(function(err) {
                 container.innerHTML = `<div style="padding:40px;text-align:center;color:var(--danger);">Failed to retrieve authors.</div>`;
-            }
+            });
         }
 
         function openAuthorModal(author = null) {
@@ -138,43 +136,40 @@
             utils.modal('author-modal').open();
         }
 
-        async function deleteAuthor(id, name) {
-            const confirmed = await utils.confirm({
+        function deleteAuthor(id, name) {
+            utils.confirm({
                 title: 'Delete Author Profile',
                 message: `Delete author "${name}"? Books linked to this author will remain in catalog.`,
                 confirmText: 'Delete Author',
                 type: 'danger',
                 icon: 'trash-2'
+            }).then(function(confirmed) {
+                if (!confirmed) return;
+
+                api.delete(`/authors?id=${id}`).then(function() {
+                    utils.toast("Author Deleted", `Removed "${name}".`, "success");
+                    loadAuthors();
+                }).catch(function(err) { utils.toast("Delete Failed", err.message, "danger"); });
             });
-
-            if (!confirmed) return;
-
-            try {
-                await api.delete(`/authors?id=${id}`);
-                utils.toast("Author Deleted", `Removed "${name}".`, "success");
-                loadAuthors();
-            } catch (err) { utils.toast("Delete Failed", err.message, "danger"); }
         }
 
-        document.getElementById('author-form').addEventListener('submit', async function(e) {
+        document.getElementById('author-form').addEventListener('submit', function(e) {
             e.preventDefault();
             const id = document.getElementById('author-id').value;
             const name = document.getElementById('author-name-input').value.trim();
             const bio = document.getElementById('author-bio-input').value.trim();
             const btn = document.getElementById('save-author-btn');
             btn.disabled = true;
-            try {
-                if (id) {
-                    await api.put(`/authors?id=${id}`, { name, biography: bio });
-                    utils.toast("Author Updated", `Updated "${name}".`, "success");
-                } else {
-                    await api.post('/authors', { name, biography: bio });
-                    utils.toast("Author Added", `Added "${name}".`, "success");
-                }
+            const saveRequest = id
+                ? api.put(`/authors?id=${id}`, { name: name, biography: bio })
+                : api.post('/authors', { name: name, biography: bio });
+
+            saveRequest.then(function() {
+                utils.toast(id ? "Author Updated" : "Author Added", id ? `Updated "${name}".` : `Added "${name}".`, "success");
                 utils.modal('author-modal').close();
                 loadAuthors();
-            } catch (err) { utils.toast("Save Failed", err.message, "error"); }
-            finally { btn.disabled = false; }
+            }).catch(function(err) { utils.toast("Save Failed", err.message, "error"); })
+            .then(function() { btn.disabled = false; });
         });
 
         loadAuthors();

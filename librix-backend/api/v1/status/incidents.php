@@ -1,21 +1,13 @@
 <?php
 
-// Configuration
-
 require_once __DIR__ . "/../../../config/config.php";
 require_once __DIR__ . "/../../../config/database.php";
 require_once __DIR__ . "/../../../helpers/response.php";
 require_once __DIR__ . "/../../../helpers/functions.php";
 
-
-// Request Method
-
 if ($_SERVER["REQUEST_METHOD"] !== "GET") {
     methodNotAllowedResponse(["GET"]);
 }
-
-
-// Filter Parameters
 
 $Status = isset($_GET["status"]) ? trim($_GET["status"]) : null;
 
@@ -26,9 +18,6 @@ if ($Status !== null && $Status !== "") {
     $WhereClause = "WHERE status = ?";
     $Bindings[] = $Status;
 }
-
-
-// Query Incidents
 
 try {
     $Stmt = $pdo->prepare(
@@ -58,9 +47,6 @@ try {
 } catch (PDOException $e) {
     errorResponse("Unable to retrieve incidents", 500);
 }
-
-
-// Response
 
 successResponse($Incidents);
 

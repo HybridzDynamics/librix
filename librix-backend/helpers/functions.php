@@ -1,7 +1,5 @@
 <?php
 
-// Get JSON Input
-
 function getJsonInput()
 {
     $Input = file_get_contents("php://input");
@@ -19,9 +17,6 @@ function getJsonInput()
     return $Data;
 }
 
-
-// Get Request Body (JSON body OR merged POST fields, whichever is present)
-
 function getRequestBody()
 {
     $JsonData = getJsonInput();
@@ -30,16 +25,12 @@ function getRequestBody()
         return $JsonData;
     }
 
-    // Fallback: use POST fields (for multipart/form-data requests)
     if (!empty($_POST)) {
         return $_POST;
     }
 
     return [];
 }
-
-
-// Write structured log entry to logs/ directory
 
 function writeLog($Level, $Message, $Context = [])
 {
@@ -66,15 +57,9 @@ function writeLog($Level, $Message, $Context = [])
     );
 }
 
-
-// Convenience wrappers
-
 function logInfo($Message, $Context = [])  { writeLog("INFO",    $Message, $Context); }
 function logError($Message, $Context = []) { writeLog("ERROR",   $Message, $Context); }
 function logWarn($Message, $Context = [])  { writeLog("WARNING", $Message, $Context); }
-
-
-// Get Request Header
 
 function getRequestHeader($Name)
 {
@@ -107,9 +92,6 @@ function getRequestHeader($Name)
     return null;
 }
 
-
-// Get Authorization Token
-
 function getAuthorizationToken()
 {
     $Header = getRequestHeader("Authorization");
@@ -125,16 +107,10 @@ function getAuthorizationToken()
     return null;
 }
 
-
-// Generate Random Token
-
 function generateToken($Length = 32)
 {
     return bin2hex(random_bytes($Length));
 }
-
-
-// Sanitize String
 
 function sanitizeString($Value)
 {
@@ -145,24 +121,15 @@ function sanitizeString($Value)
     );
 }
 
-
-// Get Current Time
-
 function currentTime()
 {
     return date("Y-m-d H:i:s");
 }
 
-
-// Get Client IP
-
 function getClientIp()
 {
     return $_SERVER["REMOTE_ADDR"] ?? "unknown";
 }
-
-
-// Audit Logging
 
 function logAudit($UserId, $Action, $EntityType, $EntityId, $Description)
 {
@@ -196,10 +163,6 @@ function logAudit($UserId, $Action, $EntityType, $EntityId, $Description)
         return false;
     }
 }
-
-
-// Rate Limiting Check
-// Returns 0 if allowed, or positive integer seconds to wait if exceeded
 
 function checkRateLimit($Key, $MaxRequests = 10, $WindowSeconds = 900)
 {

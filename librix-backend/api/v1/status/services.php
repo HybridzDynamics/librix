@@ -1,21 +1,13 @@
 <?php
 
-// Configuration
-
 require_once __DIR__ . "/../../../config/config.php";
 require_once __DIR__ . "/../../../config/database.php";
 require_once __DIR__ . "/../../../helpers/response.php";
 require_once __DIR__ . "/../../../helpers/functions.php";
 
-
-// Request Method
-
 if ($_SERVER["REQUEST_METHOD"] !== "GET") {
     methodNotAllowedResponse(["GET"]);
 }
-
-
-// Service Check Helper Function
 
 function CheckServiceHealth($ServiceName, $TestCallable)
 {
@@ -37,7 +29,6 @@ function CheckServiceHealth($ServiceName, $TestCallable)
     $EndTime = microtime(true);
     $ResponseTimeMs = (int)round(($EndTime - $StartTime) * 1000);
 
-    // Record Check in status_checks
     try {
         if ($pdo) {
             $Stmt = $pdo->prepare(
@@ -47,7 +38,7 @@ function CheckServiceHealth($ServiceName, $TestCallable)
             $Stmt->execute([$ServiceName, $Status, $ResponseTimeMs]);
         }
     } catch (Exception $e) {
-        // Suppress logging errors to preserve status reporting
+
     }
 
     return [
@@ -57,69 +48,55 @@ function CheckServiceHealth($ServiceName, $TestCallable)
     ];
 }
 
-
-// Perform Real Component Checks
-
 $Services = [];
 
-// API Service
 $Services[] = [
     "name" => "API",
     "status" => "operational",
     "response_time_ms" => 1
 ];
 
-// Database Service
 $Services[] = CheckServiceHealth("Database", function ($pdo) {
     if (!$pdo) return false;
     $Stmt = $pdo->query("SELECT 1");
     return ($Stmt && $Stmt->fetchColumn() !== false);
 });
 
-// Authentication Service
 $Services[] = CheckServiceHealth("Authentication", function ($pdo) {
     if (!$pdo) return false;
     $Stmt = $pdo->query("SELECT id FROM users LIMIT 1");
     return ($Stmt !== false);
 });
 
-// Books Service
 $Services[] = CheckServiceHealth("Books", function ($pdo) {
     if (!$pdo) return false;
     $Stmt = $pdo->query("SELECT id FROM books LIMIT 1");
     return ($Stmt !== false);
 });
 
-// Authors Service
 $Services[] = CheckServiceHealth("Authors", function ($pdo) {
     if (!$pdo) return false;
     $Stmt = $pdo->query("SELECT id FROM authors LIMIT 1");
     return ($Stmt !== false);
 });
 
-// Library Service
 $Services[] = CheckServiceHealth("Library", function ($pdo) {
     if (!$pdo) return false;
     $Stmt = $pdo->query("SELECT id FROM book_issues LIMIT 1");
     return ($Stmt !== false);
 });
 
-// Admin Service
 $Services[] = CheckServiceHealth("Admin", function ($pdo) {
     if (!$pdo) return false;
     $Stmt = $pdo->query("SELECT id FROM users WHERE role = 'admin' LIMIT 1");
     return ($Stmt !== false);
 });
 
-// Search Service
 $Services[] = CheckServiceHealth("Search", function ($pdo) {
     if (!$pdo) return false;
     $Stmt = $pdo->query("SELECT id FROM books WHERE title LIKE '%a%' LIMIT 1");
     return ($Stmt !== false);
 });
-
-
-// Response
 
 successResponse($Services);
 

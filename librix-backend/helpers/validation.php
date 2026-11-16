@@ -1,7 +1,5 @@
 <?php
 
-// required Field
-
 function required($Value, $FieldName)
 {
     if ($Value === null || (is_string($Value) && trim($Value) === "")) {
@@ -10,9 +8,6 @@ function required($Value, $FieldName)
 
     return null;
 }
-
-
-// Email Validation
 
 function validateEmail($Email)
 {
@@ -23,9 +18,6 @@ function validateEmail($Email)
     return null;
 }
 
-
-// Minimum Length
-
 function minLength($Value, $Length, $FieldName)
 {
     if (strlen((string)$Value) < $Length) {
@@ -34,9 +26,6 @@ function minLength($Value, $Length, $FieldName)
 
     return null;
 }
-
-
-// Maximum Length
 
 function maxLength($Value, $Length, $FieldName)
 {
@@ -47,9 +36,6 @@ function maxLength($Value, $Length, $FieldName)
     return null;
 }
 
-
-// Integer Validation
-
 function validateInteger($Value, $FieldName)
 {
     if (filter_var($Value, FILTER_VALIDATE_INT) === false) {
@@ -59,9 +45,6 @@ function validateInteger($Value, $FieldName)
     return null;
 }
 
-
-// Positive Integer
-
 function validatePositiveInteger($Value, $FieldName)
 {
     if (!filter_var($Value, FILTER_VALIDATE_INT) || (int)$Value <= 0) {
@@ -70,9 +53,6 @@ function validatePositiveInteger($Value, $FieldName)
 
     return null;
 }
-
-
-// Page Number Validation
 
 function validatePageNumber($Page)
 {
@@ -86,9 +66,6 @@ function validatePageNumber($Page)
 
     return (int)$Page;
 }
-
-
-// Page Limit Validation
 
 function validatePageLimit($Limit, $Default = 20, $Max = 100)
 {
@@ -108,9 +85,6 @@ function validatePageLimit($Limit, $Default = 20, $Max = 100)
 
     return $Parsed;
 }
-
-
-// Validation Errors Check
 
 function hasValidationErrors($Errors)
 {

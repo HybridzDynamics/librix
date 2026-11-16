@@ -1,7 +1,5 @@
 <?php
 
-// Configuration
-
 require_once __DIR__ . "/../../../config/config.php";
 require_once __DIR__ . "/../../../config/database.php";
 require_once __DIR__ . "/../../../helpers/response.php";
@@ -9,28 +7,16 @@ require_once __DIR__ . "/../../../helpers/validation.php";
 require_once __DIR__ . "/../../../helpers/functions.php";
 require_once __DIR__ . "/../../../middleware/auth.php";
 
-
-// Request Method
-
 if ($_SERVER["REQUEST_METHOD"] !== "POST") {
     methodNotAllowedResponse(["POST"]);
 }
 
-
-// Authentication
-
 $User = requireAuth();
-
-
-// Request Data
 
 $RequestData = getJsonInput();
 
 $BookId = $RequestData["book_id"] ?? null;
 $DueDate = $RequestData["due_date"] ?? date("Y-m-d", strtotime("+14 days"));
-
-
-// Validation
 
 $Errors = [];
 
@@ -50,9 +36,6 @@ if (hasValidationErrors($Errors)) {
 
 $BookId = (int)$BookId;
 $UserId = (int)$User["id"];
-
-
-// Check Book Availability
 
 try {
     $Stmt = $pdo->prepare(
@@ -78,9 +61,6 @@ if ((int)$Book["available_copies"] <= 0) {
     errorResponse("Book is currently not available for issue", 400);
 }
 
-
-// Check User Existing Active Issue
-
 try {
     $Stmt = $pdo->prepare(
         "SELECT id FROM book_issues
@@ -98,13 +78,9 @@ try {
     errorResponse("Database error", 500);
 }
 
-
-// Issue Book Transaction
-
 try {
     $pdo->beginTransaction();
 
-    // Decrease Available Copies
     $Stmt = $pdo->prepare(
         "UPDATE books
          SET available_copies = available_copies - 1
@@ -118,7 +94,6 @@ try {
         errorResponse("Book is no longer available", 400);
     }
 
-    // Create Issue Record
     $Stmt = $pdo->prepare(
         "INSERT INTO book_issues
         (book_id, user_id, due_date, status)
@@ -133,7 +108,6 @@ try {
 
     $IssueId = (int)$pdo->lastInsertId();
 
-    // Mark Existing Reservation Fulfilled if any
     $Stmt = $pdo->prepare(
         "UPDATE reservations
          SET status = 'fulfilled'
@@ -152,9 +126,6 @@ try {
     }
     errorResponse("Unable to issue book", 500);
 }
-
-
-// Fetch Created Issue
 
 try {
     $Stmt = $pdo->prepare(
@@ -180,9 +151,6 @@ try {
 } catch (PDOException $e) {
     errorResponse("Unable to retrieve issue details", 500);
 }
-
-
-// Response
 
 successResponse(
     $IssueRecord,

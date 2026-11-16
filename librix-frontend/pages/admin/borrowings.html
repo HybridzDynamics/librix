@@ -13,7 +13,7 @@
 
 <body>
     <div class="admin-wrapper">
-        <!-- Sidebar -->
+
         <aside class="admin-sidebar" id="sidebar">
             <div class="admin-sidebar-brand">
                 <img src="../../assets/images/logo.png" alt="Librix Logo">
@@ -54,9 +54,8 @@
             </div>
         </aside>
 
-        <!-- Main Workspace -->
         <main class="admin-main">
-            <!-- Topbar -->
+
             <header class="admin-topbar">
                 <div style="display: flex; align-items: center; gap: 14px;">
                     <button class="mobile-menu-toggle" onclick="toggleSidebar()" style="display: flex; align-items: center; justify-content: center;"><i data-lucide="menu" data-size="22"></i></button>
@@ -68,14 +67,12 @@
                 </button>
             </header>
 
-            <!-- Admin Body -->
             <div class="admin-body">
                 <div class="page-header">
                     <h1 class="page-title">Circulation Ledger</h1>
                     <p class="page-subtitle">Track all active borrowings, process book returns, and monitor overdue deadlines.</p>
                 </div>
 
-                <!-- Table Toolbar -->
                 <div class="table-toolbar">
                     <div class="toolbar-search">
                         <span class="toolbar-search-icon">data-lucide="search"</span>
@@ -91,20 +88,17 @@
                     </div>
                 </div>
 
-                <!-- Borrowings Table Card -->
                 <div class="table-container-card">
                     <div id="borrowings-table-wrap">
                         <div style="padding: 60px; text-align: center;"><div class="spinner"></div></div>
                     </div>
                 </div>
 
-                <!-- Pagination -->
                 <div id="admin-borrowings-pagination" style="display: flex; justify-content: center; gap: 8px; margin-top: 24px;"></div>
             </div>
         </main>
     </div>
 
-    <!-- Issue Book Modal -->
     <div id="issue-modal" class="modal-backdrop">
         <div class="modal">
             <div class="modal-header">
@@ -140,7 +134,6 @@
         </div>
     </div>
 
-    <!-- Scripts -->
     <script src="../../assets/js/api.js"></script>
     <script src="../../assets/js/utils.js"></script>
     <script src="../../assets/js/auth.js"></script>
@@ -160,42 +153,40 @@
         let currentPage = 1;
         const limit = 15;
 
-        // Default due date to +14 days
         const defaultDue = new Date();
         defaultDue.setDate(defaultDue.getDate() + 14);
         document.getElementById('issue-due-date').value = defaultDue.toISOString().split('T')[0];
 
-        async function loadModalOptions() {
-            try {
-                const uRes = await api.get('/admin/users');
+        function loadModalOptions() {
+            api.get('/admin/users').then(function(uRes) {
                 const users = Array.isArray(uRes.data) ? uRes.data : [];
                 const uSelect = document.getElementById('issue-user-select');
                 uSelect.innerHTML = users.map(u => `<option value="${u.id}">${utils.escapeHtml(u.name)} (${u.email}) [ID #${u.id}]</option>`).join('');
-
-                const bRes = await api.get('/books', { limit: 100 });
+            }).catch(function(e) {}).then(function() {
+                return api.get('/books', { limit: 100 });
+            }).then(function(bRes) {
                 const books = bRes.data && bRes.data.books ? bRes.data.books : (Array.isArray(bRes.data) ? bRes.data : []);
                 const bSelect = document.getElementById('issue-book-select');
                 bSelect.innerHTML = books.map(b => `<option value="${b.id}">${utils.escapeHtml(b.title)} - ${b.available_copies} avail [ID #${b.id}]</option>`).join('');
-            } catch (e) {}
+            }).catch(function(e) {});
         }
 
-        async function loadBorrowings() {
+        function loadBorrowings() {
             const container = document.getElementById('borrowings-table-wrap');
             const search = document.getElementById('borrowing-search').value.trim();
             const status = document.getElementById('borrowing-status-filter').value;
 
             container.innerHTML = `<div style="padding: 60px; text-align: center;"><div class="spinner"></div></div>`;
 
-            try {
-                const res = await api.get('/admin/issues', {
-                    page: currentPage,
-                    limit: limit,
-                    search: search,
-                    status: status
-                });
+            api.get('/admin/issues', {
+                page: currentPage,
+                limit: limit,
+                search: search,
+                status: status
+            }).then(function(res) {
 
                 let issues = res.data && res.data.issues ? res.data.issues : (Array.isArray(res.data) ? res.data : []);
-                
+
                 if (status) {
                     if (status === 'overdue') {
                         issues = issues.filter(i => i.status === 'overdue' || (i.status === 'issued' && new Date(i.due_date) < new Date()));
@@ -275,13 +266,13 @@
 
                 renderPagination(pagination.page || currentPage, pagination.total_pages || 1);
 
-            } catch (err) {
+            }).catch(function(err) {
                 container.innerHTML = `
                     <div style="padding: 40px; text-align: center; color: var(--danger);">
                         Failed to retrieve circulation ledger.
                     </div>
                 `;
-            }
+            });
         }
 
         function renderPagination(current, total) {
@@ -312,28 +303,26 @@
             utils.modal('issue-modal').open();
         }
 
-        async function processReturn(issueId, title) {
-            const confirmed = await utils.confirm({
+        function processReturn(issueId, title) {
+            utils.confirm({
                 title: 'Check-in Book Return',
                 message: `Process check-in return for loan #${issueId} ("${title}") and restore available copies?`,
                 confirmText: 'Check-in Return',
                 type: 'primary',
                 icon: 'check-circle'
+            }).then(function(confirmed) {
+                if (!confirmed) return;
+
+                api.post('/library/return', { issue_id: issueId }).then(function() {
+                    utils.toast("Book Returned", `Check-in complete for "${title}".`, "success");
+                    loadBorrowings();
+                }).catch(function(err) {
+                    utils.toast("Return Error", err.message, "danger");
+                });
             });
-
-            if (!confirmed) return;
-
-            try {
-                await api.post('/library/return', { issue_id: issueId });
-                utils.toast("Book Returned", `Check-in complete for "${title}".`, "success");
-                loadBorrowings();
-            } catch (err) {
-                utils.toast("Return Error", err.message, "danger");
-            }
         }
 
-        // Issue form
-        document.getElementById('issue-form').addEventListener('submit', async function(e) {
+        document.getElementById('issue-form').addEventListener('submit', function(e) {
             e.preventDefault();
             const userId = parseInt(document.getElementById('issue-user-select').value, 10);
             const bookId = parseInt(document.getElementById('issue-book-select').value, 10);
@@ -342,21 +331,20 @@
             const btn = document.getElementById('submit-issue-btn');
             btn.disabled = true;
 
-            try {
-                await api.post('/library/issue', {
-                    user_id: userId,
-                    book_id: bookId,
-                    due_date: dueDate
-                });
+            api.post('/library/issue', {
+                user_id: userId,
+                book_id: bookId,
+                due_date: dueDate
+            }).then(function() {
                 utils.toast("Loan Created", `Book successfully issued.`, "success");
                 utils.modal('issue-modal').close();
                 document.getElementById('issue-form').reset();
                 loadBorrowings();
-            } catch (err) {
+            }).catch(function(err) {
                 utils.toast("Issue Failed", err.message, "error");
-            } finally {
+            }).then(function() {
                 btn.disabled = false;
-            }
+            });
         });
 
         document.getElementById('borrowing-search').addEventListener('input', utils.debounce(() => {

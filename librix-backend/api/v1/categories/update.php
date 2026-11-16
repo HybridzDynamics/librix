@@ -1,7 +1,5 @@
 <?php
 
-// Configuration
-
 require_once __DIR__ . "/../../../config/config.php";
 require_once __DIR__ . "/../../../config/database.php";
 require_once __DIR__ . "/../../../helpers/response.php";
@@ -10,22 +8,13 @@ require_once __DIR__ . "/../../../helpers/functions.php";
 require_once __DIR__ . "/../../../middleware/auth.php";
 require_once __DIR__ . "/../../../middleware/admin.php";
 
-
-// Request Method
-
 if ($_SERVER["REQUEST_METHOD"] !== "PUT") {
     methodNotAllowedResponse(["PUT"]);
 }
 
-
-// Authentication & Admin Check
-
 $User = requireAuth();
 requireAdmin($User);
 $UserId = (int)$User["id"];
-
-
-// Category ID
 
 $CategoryId = $categoryId ?? ($parts[3] ?? null);
 $Input = getJsonInput();
@@ -41,9 +30,6 @@ if ($IdError !== null) {
 
 $CategoryId = (int)$CategoryId;
 
-
-// Find Category
-
 try {
     $Stmt = $pdo->prepare("SELECT id, name, description FROM categories WHERE id = ? LIMIT 1");
     $Stmt->execute([$CategoryId]);
@@ -56,9 +42,6 @@ try {
     errorResponse("Database error", 500);
 }
 
-
-// Fields to update
-
 $Name = isset($Input["name"]) ? sanitizeString($Input["name"]) : $Existing["name"];
 $Description = array_key_exists("description", $Input) ? ($Input["description"] ? sanitizeString($Input["description"]) : null) : $Existing["description"];
 
@@ -69,9 +52,6 @@ if (empty($Name)) {
 if (mb_strlen($Name) > 100) {
     errorResponse("Category name cannot exceed 100 characters", 422);
 }
-
-
-// Check Duplicate Name
 
 try {
     $Check = $pdo->prepare("SELECT id FROM categories WHERE LOWER(name) = LOWER(?) AND id != ? LIMIT 1");

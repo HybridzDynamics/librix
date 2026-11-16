@@ -1,7 +1,5 @@
 <?php
 
-// Configuration
-
 require_once __DIR__ . "/../../../config/config.php";
 require_once __DIR__ . "/../../../config/database.php";
 require_once __DIR__ . "/../../../helpers/response.php";
@@ -9,28 +7,16 @@ require_once __DIR__ . "/../../../helpers/validation.php";
 require_once __DIR__ . "/../../../helpers/functions.php";
 require_once __DIR__ . "/../../../middleware/auth.php";
 
-
-// Request Method
-
 if ($_SERVER["REQUEST_METHOD"] !== "POST") {
     methodNotAllowedResponse(["POST"]);
 }
 
-
-// Authentication
-
 $User = requireAuth();
-
-
-// Request Data
 
 $RequestData = getJsonInput();
 
 $ReservationId = $RequestData["reservation_id"] ?? null;
 $BookId = $RequestData["book_id"] ?? null;
-
-
-// Validation
 
 if ($ReservationId === null && $BookId === null) {
     errorResponse("Either reservation_id or book_id is required", 400);
@@ -38,9 +24,6 @@ if ($ReservationId === null && $BookId === null) {
 
 $UserId = (int)$User["id"];
 $IsAdmin = ($User["role"] === "admin");
-
-
-// Find Reservation
 
 try {
     if ($ReservationId !== null) {
@@ -97,9 +80,6 @@ if ($Reservation["status"] !== "active") {
 
 $TargetReservationId = (int)$Reservation["id"];
 
-
-// Cancel Reservation
-
 try {
     $Stmt = $pdo->prepare(
         "UPDATE reservations
@@ -112,9 +92,6 @@ try {
 } catch (PDOException $e) {
     errorResponse("Unable to cancel reservation", 500);
 }
-
-
-// Response
 
 successResponse(
     [

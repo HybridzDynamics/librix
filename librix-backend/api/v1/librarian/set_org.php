@@ -1,7 +1,5 @@
 <?php
 
-// Set / Switch Active Organization
-
 require_once __DIR__ . "/../../../config/config.php";
 require_once __DIR__ . "/../../../config/database.php";
 require_once __DIR__ . "/../../../helpers/response.php";
@@ -37,7 +35,6 @@ try {
         notFoundResponse("Organization not found");
     }
 
-    // Update user's current org_id in DB
     $UpdateStmt = $pdo->prepare("UPDATE users SET org_id = ? WHERE id = ?");
     $UpdateStmt->execute([(int)$Org["id"], (int)$User["id"]]);
 

@@ -1,27 +1,16 @@
 <?php
 
-// Configuration
-
 require_once __DIR__ . "/../../../config/config.php";
 require_once __DIR__ . "/../../../config/database.php";
 require_once __DIR__ . "/../../../helpers/response.php";
 require_once __DIR__ . "/../../../helpers/validation.php";
 require_once __DIR__ . "/../../../helpers/functions.php";
 
-
-// Request Method
-
 if ($_SERVER["REQUEST_METHOD"] !== "GET") {
     methodNotAllowedResponse(["GET"]);
 }
 
-
-// Request Data
-
 $AuthorId = $authorId ?? ($parts[3] ?? ($_GET["id"] ?? null));
-
-
-// Single Author
 
 if ($AuthorId !== null) {
 
@@ -64,9 +53,6 @@ if ($AuthorId !== null) {
 
     successResponse($Author);
 }
-
-
-// All Authors
 
 try {
     $Stmt = $pdo->prepare(

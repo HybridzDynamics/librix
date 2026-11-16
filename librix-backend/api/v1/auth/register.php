@@ -1,22 +1,14 @@
 <?php
 
-// Configuration
-
 require_once __DIR__ . "/../../../config/config.php";
 require_once __DIR__ . "/../../../config/database.php";
 require_once __DIR__ . "/../../../helpers/response.php";
 require_once __DIR__ . "/../../../helpers/validation.php";
 require_once __DIR__ . "/../../../helpers/functions.php";
 
-
-// Request Method
-
 if ($_SERVER["REQUEST_METHOD"] !== "POST") {
     methodNotAllowedResponse(["POST"]);
 }
-
-
-// Rate Limiting
 
 $ClientIp = getClientIp();
 $RateLimitKey = "register_" . $ClientIp;
@@ -26,17 +18,11 @@ if ($RetryAfter > 0) {
     tooManyRequestsResponse("Too many registration attempts. Please try again later.", $RetryAfter);
 }
 
-
-// Request Data
-
 $RequestData = getJsonInput();
 
 $UserName = trim($RequestData["name"] ?? "");
 $UserEmail = trim($RequestData["email"] ?? "");
 $Password = $RequestData["password"] ?? "";
-
-
-// Validation
 
 $Errors = [];
 
@@ -80,9 +66,6 @@ if (hasValidationErrors($Errors)) {
     validationErrorResponse($Errors);
 }
 
-
-// Check Existing User
-
 try {
     $Stmt = $pdo->prepare(
         "SELECT id FROM users WHERE email = ? LIMIT 1"
@@ -100,9 +83,6 @@ if ($ExistingUser) {
     errorResponse("Email is already registered", 409);
 }
 
-
-// Create User
-
 $HashedPassword = password_hash(
     $Password,
     PASSWORD_DEFAULT
@@ -110,12 +90,12 @@ $HashedPassword = password_hash(
 
 $UserRole = $RequestData["role"] ?? "user";
 if (!in_array($UserRole, ["user", "librarian"])) {
-    $UserRole = "user"; // Default to user if invalid
+    $UserRole = "user";
 }
 
 $OrgId = isset($RequestData["org_id"]) ? (int)$RequestData["org_id"] : null;
 
-$InitialStatus = "pending"; // Always require approval for librarians and users joining orgs
+$InitialStatus = "pending";
 $EmailVerifiedAt = EMAIL_VERIFICATION_ENABLED ? null : date("Y-m-d H:i:s");
 
 try {
@@ -167,9 +147,6 @@ try {
     errorResponse("Unable to create account", 500);
 }
 
-
-// Get Created User
-
 try {
     $Stmt = $pdo->prepare(
         "SELECT id, name, email, role, status, email_verified_at, created_at
@@ -185,9 +162,6 @@ try {
 } catch (PDOException $e) {
     errorResponse("Unable to retrieve account", 500);
 }
-
-
-// Registration Response
 
 successResponse(
     [

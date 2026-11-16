@@ -1,20 +1,12 @@
 <?php
 
-// Configuration
-
 require_once __DIR__ . "/../../config/config.php";
 require_once __DIR__ . "/../../config/database.php";
 require_once __DIR__ . "/../../helpers/response.php";
 
-
-// Request Method
-
 if ($_SERVER["REQUEST_METHOD"] !== "GET") {
     methodNotAllowedResponse(["GET"]);
 }
-
-
-// Database Health Check
 
 $DatabaseStatus = "disconnected";
 
@@ -36,9 +28,6 @@ if ($DatabaseStatus !== "connected") {
         "database" => "disconnected"
     ]);
 }
-
-
-// Health Response
 
 successResponse(
     [

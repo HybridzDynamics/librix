@@ -1,7 +1,5 @@
 <?php
 
-// Configuration
-
 require_once __DIR__ . "/../../../config/config.php";
 require_once __DIR__ . "/../../../config/database.php";
 require_once __DIR__ . "/../../../helpers/response.php";
@@ -10,30 +8,18 @@ require_once __DIR__ . "/../../../helpers/functions.php";
 require_once __DIR__ . "/../../../middleware/auth.php";
 require_once __DIR__ . "/../../../middleware/admin.php";
 
-
-// Request Method
-
 if ($_SERVER["REQUEST_METHOD"] !== "POST") {
     methodNotAllowedResponse(["POST"]);
 }
-
-
-// Authentication & Admin Check
 
 $User = requireAuth();
 requireAdmin($User);
 $UserId = (int)$User["id"];
 
-
-// Request Data
-
 $Input = getJsonInput();
 $Name = isset($Input["name"]) ? sanitizeString($Input["name"]) : null;
 $Address = isset($Input["address"]) ? sanitizeString($Input["address"]) : null;
 $Website = isset($Input["website"]) ? sanitizeString($Input["website"]) : null;
-
-
-// Validation
 
 $Errors = [];
 
@@ -50,9 +36,6 @@ if (!empty($Website) && !filter_var($Website, FILTER_VALIDATE_URL)) {
 if (!empty($Errors)) {
     errorResponse("Validation failed", 422, $Errors);
 }
-
-
-// Create Publisher
 
 try {
     $Stmt = $pdo->prepare("INSERT INTO publishers (name, address, website) VALUES (?, ?, ?)");

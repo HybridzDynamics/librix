@@ -15,24 +15,21 @@
 <body>
     <main class="login-page">
         <div class="login-container">
-            <!-- Brand -->
+
             <div class="login-brand">
                 <img src="../assets/images/logo.png" alt="Librix Logo">
                 <h1>Librix</h1>
             </div>
 
-            <!-- Register Card -->
             <div class="login-card">
                 <div class="login-header">
                     <h2>Join Librix Today</h2>
                     <p>Unlock thousands of digital books and smart readability analytics.</p>
                 </div>
 
-                <!-- Registration Form -->
                 <form id="register-form" class="login-form" novalidate>
                     <div id="alert-box" style="display: none; padding: 10px 14px; margin-bottom: 16px; border-radius: var(--radius-md); font-size: var(--font-sm);"></div>
 
-                    <!-- Full Name -->
                     <div class="form-group">
                         <label for="name" class="form-label">Full Name <span class="required">*</span></label>
                         <input
@@ -47,7 +44,6 @@
                         <div class="form-error" id="name-error"></div>
                     </div>
 
-                    <!-- Email -->
                     <div class="form-group">
                         <label for="email" class="form-label">Email Address <span class="required">*</span></label>
                         <input
@@ -62,7 +58,6 @@
                         <div class="form-error" id="email-error"></div>
                     </div>
 
-                    <!-- Role -->
                     <div class="form-group">
                         <label for="role_select" class="form-label">Account Type <span class="required">*</span></label>
                         <select id="role_select" name="role" class="form-input" style="height: 44px;">
@@ -71,7 +66,6 @@
                         </select>
                     </div>
 
-                    <!-- Organization -->
                     <div class="form-group">
                         <label for="org_select" class="form-label">Affiliated Library Organization <span class="required">*</span></label>
                         <select id="org_select" name="org_id" class="form-input" style="height: 44px;">
@@ -82,7 +76,6 @@
                         </select>
                     </div>
 
-                    <!-- Password -->
                     <div class="form-group">
                         <label for="password" class="form-label">Password <span class="required">*</span></label>
                         <div class="password-input">
@@ -110,7 +103,6 @@
                         <div class="form-error" id="password-error"></div>
                     </div>
 
-                    <!-- Confirm Password -->
                     <div class="form-group">
                         <label for="confirm-password" class="form-label">Confirm Password <span class="required">*</span></label>
                         <input
@@ -125,7 +117,6 @@
                         <div class="form-error" id="confirm-password-error"></div>
                     </div>
 
-                    <!-- Terms -->
                     <div class="remember-row" style="margin-bottom: 20px;">
                         <label class="form-checkbox-label">
                             <input type="checkbox" id="terms" name="terms" class="form-checkbox" required>
@@ -133,7 +124,6 @@
                         </label>
                     </div>
 
-                    <!-- Submit Button -->
                     <button type="submit" id="submit-btn" class="login-submit btn-primary">
                         <span>Create Account</span>
                     </button>
@@ -149,27 +139,23 @@
                 </div>
             </div>
 
-            <!-- Back Home -->
             <a href="../index.html" class="back-home">← Back to Home</a>
         </div>
     </main>
 
-    <!-- Footer -->
     <footer class="login-footer">
         <p>&copy; 2026 Librix. All rights reserved.</p>
     </footer>
 
-    <!-- Scripts -->
     <script src="../assets/js/api.js"></script>
     <script src="../assets/js/utils.js"></script>
     <script src="../assets/js/auth.js"></script>
     <script>
-        // Update navigation based on auth state
+
         document.addEventListener('DOMContentLoaded', function() {
             auth.updateNav();
         });
-        
-        // Toggle password
+
         const passwordInput = document.getElementById("password");
         const togglePassword = document.getElementById("togglePassword");
         const eyeIcon = document.getElementById("eyeIcon");
@@ -184,7 +170,6 @@
             }
         });
 
-        // Form Submission
         const form = document.getElementById("register-form");
         const submitBtn = document.getElementById("submit-btn");
         const alertBox = document.getElementById("alert-box");
@@ -195,7 +180,7 @@
             alertBox.style.display = "none";
         }
 
-        form.addEventListener("submit", async function(e) {
+        form.addEventListener("submit", function(e) {
             e.preventDefault();
             clearErrors();
 
@@ -246,15 +231,14 @@
 
             if (hasError) return;
 
-            // Submit
             submitBtn.disabled = true;
             submitBtn.innerHTML = '<span class="spinner spinner-sm spinner-white"></span> Creating account...';
 
-            try {
-                const orgId = parseInt(document.getElementById("org_select").value) || 1;
-                const role = document.getElementById("role_select").value || 'user';
-                const res = await auth.register(name, email, password, orgId, role);
-                
+            const orgId = parseInt(document.getElementById("org_select").value) || 1;
+            const role = document.getElementById("role_select").value || 'user';
+
+            auth.register(name, email, password, orgId, role).then(function(res) {
+
                 if (res.user && res.user.status === 'pending') {
                     utils.toast("Registration Pending", "Your account has been created but requires approval before you can log in.", "info", 8000);
                     setTimeout(() => {
@@ -267,7 +251,7 @@
                     }, 1000);
                 }
 
-            } catch (err) {
+            }).catch(function(err) {
                 submitBtn.disabled = false;
                 submitBtn.innerHTML = '<span>Create Account</span>';
 
@@ -282,7 +266,7 @@
                     if (err.errors.email) document.getElementById("email-error").textContent = err.errors.email;
                     if (err.errors.password) document.getElementById("password-error").textContent = err.errors.password;
                 }
-            }
+            });
         });
     </script>
 </body>

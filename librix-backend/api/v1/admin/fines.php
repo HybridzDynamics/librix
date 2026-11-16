@@ -1,7 +1,5 @@
 <?php
 
-// Configuration
-
 require_once __DIR__ . "/../../../config/config.php";
 require_once __DIR__ . "/../../../config/database.php";
 require_once __DIR__ . "/../../../helpers/response.php";
@@ -10,19 +8,10 @@ require_once __DIR__ . "/../../../helpers/functions.php";
 require_once __DIR__ . "/../../../middleware/auth.php";
 require_once __DIR__ . "/../../../middleware/admin.php";
 
-
-// Authentication
-
 $AdminUser = requireAuth();
 requireAdmin($AdminUser);
 
-
-// Request Method
-
 $Method = $_SERVER["REQUEST_METHOD"];
-
-
-// Update Fine Status (PUT/PATCH)
 
 if ($Method === "PUT" || $Method === "PATCH") {
 
@@ -45,7 +34,6 @@ if ($Method === "PUT" || $Method === "PATCH") {
         errorResponse("Invalid fine status. Allowed: " . implode(", ", $AllowedStatuses), 422);
     }
 
-    // Verify Fine Exists
     try {
         $Stmt = $pdo->prepare("SELECT id, user_id, amount, status FROM fines WHERE id = ? LIMIT 1");
         $Stmt->execute([$FineId]);
@@ -94,9 +82,6 @@ if ($Method === "PUT" || $Method === "PATCH") {
     ], "Fine updated successfully");
 }
 
-
-// List Fines (GET)
-
 if ($Method === "GET") {
 
     $Page = validatePageNumber($_GET["page"] ?? 1);
@@ -115,7 +100,6 @@ if ($Method === "GET") {
 
     $WhereSql = !empty($WhereClauses) ? "WHERE " . implode(" AND ", $WhereClauses) : "";
 
-    // Count Total
     try {
         $CountStmt = $pdo->prepare("SELECT COUNT(*) AS total FROM fines $WhereSql");
         $CountStmt->execute($Bindings);
@@ -125,7 +109,6 @@ if ($Method === "GET") {
         errorResponse("Database error", 500);
     }
 
-    // Fetch Fines
     try {
         $DataSql = "SELECT
                         fines.id,

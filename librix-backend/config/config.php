@@ -35,15 +35,10 @@ function librix_load_env_file(string $path): void
 
 librix_load_env_file(dirname(__DIR__, 2) . "/.env");
 
-// LibriX Application Configuration
-
 define("APP_NAME", "LibriX");
 define("APP_VERSION", "1.1.2");
 define("API_VERSION", "v1");
 define("APP_ENV", getenv("APP_ENV") ?: "development");
-
-
-// API
 
 define("API_BASE_URL", "/api/" . API_VERSION);
 define("API_FULL_VERSION", API_VERSION);
@@ -51,41 +46,21 @@ $protocol = isset($_SERVER['HTTPS']) && $_SERVER['HTTPS'] === 'on' ? 'https' : '
 $host = $_SERVER['HTTP_HOST'] ?? 'localhost';
 define("BASE_URL", "$protocol://$host");
 
-
-// Server
-
 define("SERVER_NAME", "LibriX Backend");
 define("SERVER_STATUS", "online");
-
-
-// Security
 
 define("JWT_SECRET", getenv("JWT_SECRET") ?: "CHANGE_THIS_TO_A_LONG_RANDOM_SECRET");
 define("SESSION_NAME", "LIBRIX_SESSION");
 
-
-// CORS
-
 define("CORS_ORIGIN", getenv("CORS_ORIGIN") ?: "*");
 
-// Profile picture upload paths
-// Filesystem path for storing uploaded profile pictures (ensure this directory exists and is writable)
 define("PROFILE_PIC_UPLOAD_PATH", dirname(__DIR__) . "/uploads/profile-pictures/");
-// URL path used by frontend to display profile pictures
+
 define("PROFILE_PIC_URL_PATH", "/uploads/profile-pictures/");
-
-
-// Response
 
 define("JSON_FLAGS", JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE);
 
-
-// Timezone
-
 date_default_timezone_set("Asia/Kolkata");
-
-
-// Library Business Rules
 
 define("FINE_RATE_PER_DAY", (float)(getenv("FINE_RATE_PER_DAY") ?: 5.00));
 define("DEFAULT_LOAN_DAYS", (int)(getenv("DEFAULT_LOAN_DAYS") ?: 14));
@@ -93,15 +68,9 @@ define("DEFAULT_PAGE_SIZE", 20);
 define("MAX_PAGE_SIZE", 100);
 define("EMAIL_VERIFICATION_ENABLED", filter_var(getenv("EMAIL_VERIFICATION_ENABLED") ?: "false", FILTER_VALIDATE_BOOLEAN));
 
-
-// Rate Limiting
-
 define("RATE_LIMIT_LOGIN_MAX", 5);
 define("RATE_LIMIT_AUTH_MAX", 10);
-define("RATE_LIMIT_WINDOW_SECONDS", 900); // 15 minutes
-
-
-// Debug
+define("RATE_LIMIT_WINDOW_SECONDS", 900);
 
 if (APP_ENV === "development") {
     error_reporting(E_ALL);

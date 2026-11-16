@@ -1,33 +1,19 @@
 <?php
 
-// Configuration
-
 require_once __DIR__ . "/../../../config/config.php";
 require_once __DIR__ . "/../../../config/database.php";
 require_once __DIR__ . "/../../../helpers/response.php";
 require_once __DIR__ . "/../../../helpers/functions.php";
 
-
-// Request Method
-
 if ($_SERVER["REQUEST_METHOD"] !== "GET") {
     methodNotAllowedResponse(["GET"]);
 }
 
-
-// Authorization Token
-
 $AccessToken = getAuthorizationToken();
-
-
-// Check Token
 
 if (!$AccessToken) {
     unauthorizedResponse("Authorization token is required");
 }
-
-
-// Find Token
 
 try {
     $Stmt = $pdo->prepare(
@@ -54,15 +40,9 @@ try {
     errorResponse("Database error", 500);
 }
 
-
-// Check Token
-
 if (!$Session) {
     unauthorizedResponse("Invalid authentication token");
 }
-
-
-// Check Expiration
 
 if (strtotime($Session["expires_at"]) <= time()) {
 
@@ -81,15 +61,9 @@ if (strtotime($Session["expires_at"]) <= time()) {
     unauthorizedResponse("Authentication token has expired");
 }
 
-
-// Check User Status
-
 if ($Session["status"] !== "active") {
     unauthorizedResponse("User account is not active");
 }
-
-
-// Session Response
 
 successResponse(
     [

@@ -14,7 +14,7 @@
 
 <body>
     <div class="dashboard-wrapper">
-        <!-- Sidebar -->
+
         <aside class="dashboard-sidebar" id="sidebar">
             <div class="sidebar-brand">
                 <img src="../../assets/images/logo.png" alt="LibriX Logo">
@@ -106,9 +106,8 @@
             </div>
         </aside>
 
-        <!-- Main Area -->
         <main class="dashboard-main">
-            <!-- Topbar -->
+
             <header class="dashboard-topbar">
                 <div style="display: flex; align-items: center; gap: 14px;">
                     <button class="mobile-menu-toggle" onclick="toggleSidebar()" style="display:flex;align-items:center;justify-content:center;">
@@ -130,14 +129,12 @@
                 </div>
             </header>
 
-            <!-- Body -->
             <div class="dashboard-body">
                 <div class="page-header">
                     <h1 class="page-title">Patron Overview</h1>
                     <p class="page-subtitle">Track your current loans, book return deadlines, reading history, and reservations.</p>
                 </div>
 
-                <!-- 4 Stat Cards -->
                 <div class="grid grid-4" style="margin-bottom: 32px;">
                     <div class="stat-card">
                         <div class="stat-icon stat-icon-primary">
@@ -177,9 +174,8 @@
                     </div>
                 </div>
 
-                <!-- Two Column Layout: Current Books & Notifications -->
                 <div class="grid grid-3" style="gap: 28px; align-items: start;">
-                    <!-- Currently Issued Books (2 Cols) -->
+
                     <div class="card" style="grid-column: span 2;">
                         <div class="card-header">
                             <span class="card-title" style="font-size: var(--font-base);">Currently Checked Out</span>
@@ -192,9 +188,8 @@
                         </div>
                     </div>
 
-                    <!-- Right Column: Recent Notifications & Quick Links -->
                     <div style="display: flex; flex-direction: column; gap: 24px;">
-                        <!-- Notifications Preview -->
+
                         <div class="card">
                             <div class="card-header">
                                 <span class="card-title" style="font-size: var(--font-base);">Recent Alerts</span>
@@ -207,7 +202,6 @@
                             </div>
                         </div>
 
-                        <!-- Readability Quick Tip -->
                         <div class="card" style="padding: 20px; background: linear-gradient(135deg, #eef2ff 0%, #f0fdf4 100%); border-color: var(--primary-border);">
                             <span class="badge badge-primary" style="margin-bottom: 8px;">SMART TIP</span>
                             <h4 style="font-size: var(--font-sm); font-weight: 700; margin-bottom: 6px;">Reading Level Optimization</h4>
@@ -221,18 +215,16 @@
         </main>
     </div>
 
-    <!-- Scripts -->
     <script src="../../assets/js/api.js"></script>
     <script src="../../assets/js/utils.js"></script>
     <script src="../../assets/js/auth.js"></script>
     <script>
-        // Update navigation based on auth state
+
         document.addEventListener('DOMContentLoaded', function() {
             auth.updateNav();
         });
-        
-        // Protect Route
-        if (!auth.requireAuth()) { /* redirect handled */ }
+
+        if (!auth.requireAuth()) {  }
 
         const user = auth.getUser();
         if (user) {
@@ -245,14 +237,12 @@
             document.getElementById('sidebar').classList.toggle('is-open');
         }
 
-        // Re-process icons in dynamically inserted HTML
         function applyIcons(root) {
             if (window.lucide) lucide.createIcons(root || document);
         }
 
-        async function loadDashboardData() {
-            try {
-                const res = await api.get('/library/my-books');
+        function loadDashboardData() {
+            api.get('/library/my-books').then(function(res) {
                 const data = res.data;
 
                 const currentlyIssued = data.currently_issued || [];
@@ -270,18 +260,16 @@
 
                 renderCurrentBooks(currentlyIssued);
 
-            } catch (err) {
+            }).catch(function(err) {
                 console.error('Dashboard data error:', err);
                 document.getElementById('current-books-container').innerHTML = `
                     <div style="padding: 24px; text-align: center; color: var(--danger); font-size: var(--font-sm);">
                         Could not load borrowing data. Please try again later.
                     </div>
                 `;
-            }
-
-            // Fetch notifications
-            try {
-                const notifRes = await api.get('/notifications', { limit: 4 });
+            }).then(function() {
+                return api.get('/notifications', { limit: 4 });
+            }).then(function(notifRes) {
                 const notifs = notifRes.data && notifRes.data.notifications ? notifRes.data.notifications : [];
                 const unread = notifRes.data ? notifRes.data.unread_count : 0;
 
@@ -294,9 +282,9 @@
 
                 renderRecentNotifications(notifs);
 
-            } catch (e) { 
+            }).catch(function(e) {
                 console.error('Notifications error:', e);
-            }
+            });
         }
 
         function renderCurrentBooks(books) {
@@ -376,18 +364,17 @@
             `).join('');
         }
 
-        async function returnBook(issueId, title) {
+        function returnBook(issueId, title) {
             if (!confirm(`Are you ready to return "${title}" to the library?`)) {
                 return;
             }
 
-            try {
-                await api.post('/library/return', { issue_id: issueId });
+            api.post('/library/return', { issue_id: issueId }).then(function() {
                 utils.toast("Book Returned", `"${title}" was successfully checked back in.`, "success");
                 loadDashboardData();
-            } catch (err) {
+            }).catch(function(err) {
                 utils.toast("Return Error", err.message, "error");
-            }
+            });
         }
 
         loadDashboardData();

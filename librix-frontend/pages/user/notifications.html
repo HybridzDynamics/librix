@@ -72,11 +72,11 @@
     <script src="../../assets/js/utils.js"></script>
     <script src="../../assets/js/auth.js"></script>
     <script>
-        // Update navigation based on auth state
+
         document.addEventListener('DOMContentLoaded', function() {
             auth.updateNav();
         });
-        
+
         if (!auth.requireAuth()) {}
         const user = auth.getUser();
         if (user) {
@@ -91,11 +91,10 @@
             return `<svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="M12 16v-4"/><path d="M12 8h.01"/></svg>`;
         }
 
-        async function loadNotifications() {
+        function loadNotifications() {
             const container = document.getElementById('notifications-container');
             container.innerHTML = `<div style="padding:60px;text-align:center;"><div class="spinner"></div></div>`;
-            try {
-                const res = await api.get('/notifications');
+            api.get('/notifications').then(function(res) {
                 const notifs = res.data && res.data.notifications ? res.data.notifications : [];
                 const unread = res.data ? res.data.unread_count : 0;
 
@@ -131,21 +130,24 @@
                         </div>`;
                 }).join('');
 
-            } catch (err) {
+            }).catch(function(err) {
                 container.innerHTML = `<div style="padding:40px;text-align:center;color:var(--danger);">Failed to retrieve notifications.</div>`;
-            }
+            });
         }
 
-        async function markAsRead(id) {
-            try { await api.post('/notifications/read', { id }); loadNotifications(); } catch (e) {}
+        function markAsRead(id) {
+            api.post('/notifications/read', { id: id }).then(function() {
+                loadNotifications();
+            }).catch(function(e) {});
         }
 
-        async function markAllAsRead() {
-            try {
-                await api.post('/notifications/read', { all: true });
+        function markAllAsRead() {
+            api.post('/notifications/read', { all: true }).then(function() {
                 utils.toast("Notifications Cleared", "All notifications marked as read.", "success");
                 loadNotifications();
-            } catch (err) { utils.toast("Error", err.message, "error"); }
+            }).catch(function(err) {
+                utils.toast("Error", err.message, "error");
+            });
         }
 
         loadNotifications();

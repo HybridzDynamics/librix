@@ -1,7 +1,3 @@
-/**
- * LibriX Lucide Icons Engine - Extended
- * Standalone offline Lucide Icon set with all icons needed for LibriX
- */
 
 (function(window) {
     'use strict';
@@ -45,7 +41,6 @@
         'file-text': '<path d="M15 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7Z"/><path d="M14 2v4a2 2 0 0 0 2 2h4"/><path d="M10 9H8"/><path d="M16 13H8"/><path d="M16 17H8"/>',
         'map-pin': '<path d="M20 10c0 4.993-5.539 10.193-7.399 11.799a1 1 0 0 1-1.202 0C9.539 20.193 4 14.993 4 10a8 8 0 0 1 16 0"/><circle cx="12" cy="10" r="3"/>',
         'mail': '<rect width="20" height="16" x="2" y="4" rx="2"/><path d="m22 7-8.97 5.7a1.94 1.94 0 0 1-2.06 0L2 7"/>',
-        'home': '<path d="m3 9 9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/>',
         'printer': '<polyline points="6 9 6 2 18 2 18 9"/><path d="M6 18H4a2 2 0 0 1-2-2v-5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-2"/><rect width="12" height="8" x="6" y="14"/>',
         'download': '<path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" x2="12" y1="15" y2="3"/>',
         'filter': '<polygon points="22 3 2 3 10 12.46 10 19 14 21 14 12.46 22 3"/>',
@@ -54,8 +49,6 @@
         'folder-kanban': '<path d="M4 20h16a2 2 0 0 0 2-2V8a2 2 0 0 0-2-2h-7.93a2 2 0 0 1-1.66-.9l-.82-1.2A2 2 0 0 0 7.93 3H4a2 2 0 0 0-2 2v13c0 1.1.9 2 2 2Z"/><path d="M8 10v4"/><path d="M12 10v2"/><path d="M16 10v6"/>',
         'feather': '<path d="M20.24 12.24a6 6 0 0 0-8.49-8.49L5 10.5V19h8.5z"/><line x1="16" x2="2" y1="8" y2="22"/><line x1="17.5" x2="9" y1="15" y2="15"/>',
         'pen-line': '<path d="M12 20h9"/><path d="M16.376 3.622a1 1 0 0 1 3.002 3.002L7.368 19.635a2 2 0 0 1-.855.506l-2.872.838a.5.5 0 0 1-.62-.62l.838-2.872a2 2 0 0 1 .506-.854z"/>',
-        'shield-check': '<path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10"/><path d="m9 12 2 2 4-4"/>',
-        'user-check': '<path d="M16 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="8.5" cy="7" r="4"/><path d="M20 8.5a2.5 2.5 0 1 1-5 0 2.5 2.5 0 0 1 5 0"/><path d="m18 11 1.5 1.5"/><path d="m22 6.5-1.5 1.5"/>',
         'arrow-right': '<path d="M5 12h14"/><path d="m12 5 7 7-7 7"/>',
         'arrow-left': '<path d="m12 19-7-7 7-7"/><path d="M19 12H5"/>',
         'arrow-up-right': '<path d="M7 7h10v10"/><path d="M7 17 17 7"/>',
@@ -109,9 +102,7 @@
     };
 
     const lucide = {
-        /**
-         * Render SVG markup for given icon name
-         */
+
         render: function(name, options) {
             options = options || {};
             const size = options.size || 20;
@@ -125,9 +116,6 @@
             return `<svg xmlns="http://www.w3.org/2000/svg" width="${size}" height="${size}" viewBox="0 0 24 24" fill="${fill}" stroke="${color}" stroke-width="${strokeWidth}" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-${name} ${className}">${content}</svg>`;
         },
 
-        /**
-         * Scan DOM and replace all <i data-lucide="name"></i> elements with inline SVGs
-         */
         createIcons: function(root) {
             root = root || document;
             const elements = root.querySelectorAll('[data-lucide]');
@@ -154,7 +142,7 @@
                 const svgNode = wrapper.firstElementChild;
 
                 if (el.id) svgNode.id = el.id;
-                // Copy style attribute if present
+
                 const style = el.getAttribute('style');
                 if (style) svgNode.setAttribute('style', style);
 
@@ -165,7 +153,6 @@
 
     window.lucide = lucide;
 
-    // Auto-create on DOM ready
     if (document.readyState === 'loading') {
         document.addEventListener('DOMContentLoaded', function() { lucide.createIcons(); });
     } else {

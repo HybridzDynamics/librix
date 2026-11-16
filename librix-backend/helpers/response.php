@@ -1,7 +1,5 @@
 <?php
 
-// Success Response
-
 function successResponse($Data = [], $Message = null, $StatusCode = 200)
 {
     http_response_code($StatusCode);
@@ -22,9 +20,6 @@ function successResponse($Data = [], $Message = null, $StatusCode = 200)
 
     exit;
 }
-
-
-// Paginated Response
 
 function paginatedResponse($Data, $Page, $Limit, $Total, $Message = null, $StatusCode = 200)
 {
@@ -55,9 +50,6 @@ function paginatedResponse($Data, $Page, $Limit, $Total, $Message = null, $Statu
     exit;
 }
 
-
-// Error Response
-
 function errorResponse($Message, $StatusCode = 400, $Errors = [])
 {
     http_response_code($StatusCode);
@@ -79,16 +71,10 @@ function errorResponse($Message, $StatusCode = 400, $Errors = [])
     exit;
 }
 
-
-// Not Found Response
-
 function notFoundResponse($Message = "Resource not found")
 {
     errorResponse($Message, 404);
 }
-
-
-// Method Not Allowed Response
 
 function methodNotAllowedResponse($AllowedMethods = [])
 {
@@ -105,24 +91,15 @@ function methodNotAllowedResponse($AllowedMethods = [])
     );
 }
 
-
-// Unauthorized Response
-
 function unauthorizedResponse($Message = "Authentication required")
 {
     errorResponse($Message, 401);
 }
 
-
-// Forbidden Response
-
 function forbiddenResponse($Message = "Access denied")
 {
     errorResponse($Message, 403);
 }
-
-
-// Validation Error Response
 
 function validationerrorResponse($Errors)
 {
@@ -132,9 +109,6 @@ function validationerrorResponse($Errors)
         $Errors
     );
 }
-
-
-// Too Many Requests Response
 
 function tooManyRequestsResponse($Message = "Too many requests. Please try again later.", $RetryAfter = 60)
 {

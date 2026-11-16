@@ -1,22 +1,14 @@
 <?php
 
-// Configuration
-
 require_once __DIR__ . "/../../../config/config.php";
 require_once __DIR__ . "/../../../config/database.php";
 require_once __DIR__ . "/../../../helpers/response.php";
 require_once __DIR__ . "/../../../helpers/validation.php";
 require_once __DIR__ . "/../../../helpers/functions.php";
 
-
-// Request Method
-
 if ($_SERVER["REQUEST_METHOD"] !== "GET") {
     methodNotAllowedResponse(["GET"]);
 }
-
-
-// Parameters
 
 $Page = validatePageNumber($_GET["page"] ?? 1);
 $Limit = validatePageLimit($_GET["limit"] ?? DEFAULT_PAGE_SIZE, DEFAULT_PAGE_SIZE, MAX_PAGE_SIZE);
@@ -37,9 +29,6 @@ if ($ServiceParam !== null && $ServiceParam !== "") {
     $Bindings[] = $ServiceParam;
 }
 
-
-// Total Count
-
 try {
     $CountSql = "SELECT COUNT(*) AS total FROM status_checks $WhereClause";
     $CountStmt = $pdo->prepare($CountSql);
@@ -49,9 +38,6 @@ try {
 } catch (PDOException $e) {
     errorResponse("Unable to retrieve status history", 500);
 }
-
-
-// Fetch Checks
 
 try {
     $DataSql = "SELECT
@@ -86,9 +72,6 @@ try {
 } catch (PDOException $e) {
     errorResponse("Unable to retrieve status history", 500);
 }
-
-
-// Response
 
 paginatedResponse(
     $History,

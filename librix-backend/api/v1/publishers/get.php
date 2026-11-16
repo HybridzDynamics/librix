@@ -1,27 +1,16 @@
 <?php
 
-// Configuration
-
 require_once __DIR__ . "/../../../config/config.php";
 require_once __DIR__ . "/../../../config/database.php";
 require_once __DIR__ . "/../../../helpers/response.php";
 require_once __DIR__ . "/../../../helpers/validation.php";
 require_once __DIR__ . "/../../../helpers/functions.php";
 
-
-// Request Method
-
 if ($_SERVER["REQUEST_METHOD"] !== "GET") {
     methodNotAllowedResponse(["GET"]);
 }
 
-
-// Request Data
-
 $PublisherId = $publisherId ?? ($parts[3] ?? ($_GET["id"] ?? null));
-
-
-// Single Publisher
 
 if ($PublisherId !== null) {
     $IdError = validatePositiveInteger($PublisherId, "Publisher ID");
@@ -31,7 +20,7 @@ if ($PublisherId !== null) {
 
     try {
         $Stmt = $pdo->prepare(
-            "SELECT 
+            "SELECT
                 publishers.id,
                 publishers.name,
                 publishers.address,
@@ -62,12 +51,9 @@ if ($PublisherId !== null) {
     }
 }
 
-
-// All Publishers
-
 try {
     $Stmt = $pdo->prepare(
-        "SELECT 
+        "SELECT
             publishers.id,
             publishers.name,
             publishers.address,

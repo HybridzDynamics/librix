@@ -1,7 +1,5 @@
 <?php
 
-// Configuration
-
 require_once __DIR__ . "/../../../../config/config.php";
 require_once __DIR__ . "/../../../../config/database.php";
 require_once __DIR__ . "/../../../../helpers/response.php";
@@ -10,19 +8,10 @@ require_once __DIR__ . "/../../../../helpers/functions.php";
 require_once __DIR__ . "/../../../../middleware/auth.php";
 require_once __DIR__ . "/../../../../middleware/admin.php";
 
-
-// Authentication
-
 $AdminUser = requireAuth();
 requireAdmin($AdminUser);
 
-
-// Request Method
-
 $Method = $_SERVER["REQUEST_METHOD"];
-
-
-// Create Incident (POST)
 
 if ($Method === "POST") {
 
@@ -88,7 +77,6 @@ if ($Method === "POST") {
         errorResponse("Unable to create incident", 500);
     }
 
-    // Return Created
     try {
         $Stmt = $pdo->prepare("SELECT * FROM status_incidents WHERE id = ? LIMIT 1");
         $Stmt->execute([$IncidentId]);
@@ -101,9 +89,6 @@ if ($Method === "POST") {
 
     successResponse($Created, "Incident created successfully", 201);
 }
-
-
-// Update Incident (PUT/PATCH)
 
 if ($Method === "PUT" || $Method === "PATCH") {
 
@@ -121,7 +106,6 @@ if ($Method === "PUT" || $Method === "PATCH") {
 
     $IncidentId = (int)$IncidentId;
 
-    // Verify Incident Exists
     try {
         $Stmt = $pdo->prepare("SELECT * FROM status_incidents WHERE id = ? LIMIT 1");
         $Stmt->execute([$IncidentId]);
@@ -191,7 +175,6 @@ if ($Method === "PUT" || $Method === "PATCH") {
         errorResponse("Unable to update incident", 500);
     }
 
-    // Return Updated
     try {
         $Stmt = $pdo->prepare("SELECT * FROM status_incidents WHERE id = ? LIMIT 1");
         $Stmt->execute([$IncidentId]);
@@ -204,9 +187,6 @@ if ($Method === "PUT" || $Method === "PATCH") {
 
     successResponse($Updated, "Incident updated successfully");
 }
-
-
-// Delete Incident (DELETE)
 
 if ($Method === "DELETE") {
 

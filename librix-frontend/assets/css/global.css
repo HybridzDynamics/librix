@@ -1,11 +1,7 @@
 @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap');
 
-/* ==========================================================================
-   LibriX Global Design System Tokens & Base Styles
-   ========================================================================== */
+html {
 
-:root {
-    /* Brand Colors */
     --primary: #4f46e5;
     --primary-hover: #4338ca;
     --primary-active: #3730a3;
@@ -20,7 +16,6 @@
     --accent: #8b5cf6;
     --accent-light: #f5f3ff;
 
-    /* Semantic States */
     --success: #10b981;
     --success-hover: #059669;
     --success-light: #ecfdf5;
@@ -44,7 +39,6 @@
     --info-border: #bfdbfe;
     --info-text: #1e40af;
 
-    /* Neutrals & Surfaces */
     --bg-main: #f8fafc;
     --bg-card: #ffffff;
     --bg-card-alt: #f1f5f9;
@@ -60,19 +54,17 @@
     --text-light: #94a3b8;
     --text-inverse: #ffffff;
 
-    /* Typography */
     --font-family: 'Inter', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
-    --font-xs: 0.75rem;     /* 12px */
-    --font-sm: 0.875rem;    /* 14px */
-    --font-base: 1rem;      /* 16px */
-    --font-md: 1.125rem;    /* 18px */
-    --font-lg: 1.25rem;     /* 20px */
-    --font-xl: 1.5rem;      /* 24px */
-    --font-2xl: 1.875rem;   /* 30px */
-    --font-3xl: 2.25rem;    /* 36px */
-    --font-4xl: 3rem;       /* 48px */
+    --font-xs: 0.75rem;
+    --font-sm: 0.875rem;
+    --font-base: 1rem;
+    --font-md: 1.125rem;
+    --font-lg: 1.25rem;
+    --font-xl: 1.5rem;
+    --font-2xl: 1.875rem;
+    --font-3xl: 2.25rem;
+    --font-4xl: 3rem;
 
-    /* Shadows & Elevation */
     --shadow-xs: 0 1px 2px rgba(15, 23, 42, 0.05);
     --shadow-sm: 0 2px 4px rgba(15, 23, 42, 0.06);
     --shadow-md: 0 4px 12px rgba(15, 23, 42, 0.08);
@@ -80,22 +72,16 @@
     --shadow-xl: 0 20px 35px -5px rgba(15, 23, 42, 0.15), 0 8px 16px -4px rgba(15, 23, 42, 0.08);
     --shadow-glow: 0 0 20px var(--primary-glow);
 
-    /* Border Radius */
     --radius-sm: 6px;
     --radius-md: 10px;
     --radius-lg: 14px;
     --radius-xl: 20px;
     --radius-full: 9999px;
 
-    /* Transitions */
     --transition-fast: 0.15s cubic-bezier(0.4, 0, 0.2, 1);
     --transition-base: 0.25s cubic-bezier(0.4, 0, 0.2, 1);
     --transition-smooth: 0.35s cubic-bezier(0.16, 1, 0.3, 1);
 }
-
-/* ==========================================================================
-   CSS Reset & Base Rules
-   ========================================================================== */
 
 *, *::before, *::after {
     box-sizing: border-box;
@@ -136,7 +122,6 @@ a:hover {
     color: var(--primary-hover);
 }
 
-/* Custom Scrollbar */
 ::-webkit-scrollbar {
     width: 8px;
     height: 8px;
@@ -154,10 +139,6 @@ a:hover {
 ::-webkit-scrollbar-thumb:hover {
     background: #94a3b8;
 }
-
-/* ==========================================================================
-   Layout Containers & Utilities
-   ========================================================================== */
 
 .container {
     width: 100%;
@@ -209,7 +190,7 @@ a:hover {
     .grid-4, .grid-3 { grid-template-columns: 1fr; }
     .grid-2 { grid-template-columns: 1fr; }
     .container { padding: 0 16px; }
-    
+
     .card { border-radius: var(--radius-md); }
     .btn { padding: 8px 16px; font-size: var(--font-xs); }
     .btn-lg { padding: 12px 20px; font-size: var(--font-sm); }
@@ -218,44 +199,38 @@ a:hover {
 @media (max-width: 640px) {
     .grid-4, .grid-3, .grid-2 { grid-template-columns: 1fr; }
     .container { padding: 0 12px; }
-    
+
     .card-body { padding: 16px; }
     .card-header { padding: 14px 16px; }
     .card-footer { padding: 12px 16px; }
-    
+
     .stat-card { padding: 16px; gap: 12px; }
     .stat-icon { width: 42px; height: 42px; font-size: 20px; }
     .stat-value { font-size: var(--font-xl); }
-    
+
     .table { font-size: var(--font-xs); }
     .table th, .table td { padding: 10px 12px; }
-    
+
     .modal { max-width: 95%; margin: 10px; }
     .modal-body { padding: 16px; }
-    
+
     .toast { min-width: 280px; max-width: 90vw; }
 }
 
 @media (max-width: 480px) {
     .container { padding: 0 10px; }
-    
+
     .btn { width: 100%; }
     .btn-icon { width: auto; }
-    
+
     .stat-card { flex-direction: column; text-align: center; }
     .stat-icon { margin-bottom: 8px; }
-    
+
     .table-wrapper { border-radius: var(--radius-md); }
     .table th, .table td { padding: 8px 10px; }
-    
-    .form-input, .form-select, .form-textarea { padding: 8px 12px; font-size: var(--font-xs); }
-    
+
     .badge { padding: 2px 8px; font-size: 10px; }
 }
-
-/* ==========================================================================
-   Buttons
-   ========================================================================== */
 
 .btn {
     display: inline-flex;
@@ -374,10 +349,6 @@ a:hover {
     line-height: 1;
 }
 
-/* ==========================================================================
-   Badges & Pills
-   ========================================================================== */
-
 .badge {
     display: inline-flex;
     align-items: center;
@@ -426,7 +397,6 @@ a:hover {
     border: 1px solid var(--border);
 }
 
-/* Readability Badges */
 .badge-ease-very-easy { background: #dcfce7; color: #166534; border: 1px solid #86efac; }
 .badge-ease-easy { background: #ecfdf5; color: #065f46; border: 1px solid #a7f3d0; }
 .badge-ease-fairly-easy { background: #e0f2fe; color: #075985; border: 1px solid #7dd3fc; }
@@ -434,10 +404,6 @@ a:hover {
 .badge-ease-fairly-difficult { background: #ffedd5; color: #9a3412; border: 1px solid #fdba74; }
 .badge-ease-difficult { background: #fee2e2; color: #991b1b; border: 1px solid #fca5a5; }
 .badge-ease-very-difficult { background: #f3e8ff; color: #6b21a8; border: 1px solid #d8b4fe; }
-
-/* ==========================================================================
-   Cards & Surfaces
-   ========================================================================== */
 
 .card {
     background: var(--bg-card);
@@ -485,7 +451,6 @@ a:hover {
     border: 1px solid rgba(255, 255, 255, 0.4);
 }
 
-/* Stat Cards */
 .stat-card {
     background: #ffffff;
     border: 1px solid var(--border);
@@ -533,91 +498,6 @@ a:hover {
     font-weight: 500;
 }
 
-/* ==========================================================================
-   Form Controls
-   ========================================================================== */
-
-.form-group {
-    display: flex;
-    flex-direction: column;
-    gap: 6px;
-    margin-bottom: 18px;
-}
-
-.form-label {
-    font-size: var(--font-sm);
-    font-weight: 600;
-    color: var(--text-main);
-}
-
-.form-label .required {
-    color: var(--danger);
-    margin-left: 2px;
-}
-
-.form-input,
-.form-select,
-.form-textarea {
-    width: 100%;
-    padding: 10px 14px;
-    font-family: var(--font-family);
-    font-size: var(--font-sm);
-    color: var(--text-main);
-    background-color: #ffffff;
-    border: 1px solid var(--border);
-    border-radius: var(--radius-md);
-    outline: none;
-    transition: border-color var(--transition-fast), box-shadow var(--transition-fast);
-}
-
-.form-input:focus,
-.form-select:focus,
-.form-textarea:focus {
-    border-color: var(--primary);
-    box-shadow: 0 0 0 3px var(--primary-glow);
-}
-
-.form-input.is-invalid,
-.form-select.is-invalid,
-.form-textarea.is-invalid {
-    border-color: var(--danger);
-}
-
-.form-input.is-invalid:focus {
-    box-shadow: 0 0 0 3px rgba(239, 68, 68, 0.2);
-}
-
-.form-hint {
-    font-size: var(--font-xs);
-    color: var(--text-muted);
-}
-
-.form-error {
-    font-size: var(--font-xs);
-    color: var(--danger);
-    font-weight: 500;
-}
-
-.form-checkbox-label {
-    display: flex;
-    align-items: center;
-    gap: 8px;
-    font-size: var(--font-sm);
-    color: var(--text-main);
-    cursor: pointer;
-}
-
-.form-checkbox {
-    width: 18px;
-    height: 18px;
-    accent-color: var(--primary);
-    cursor: pointer;
-}
-
-/* ==========================================================================
-   Data Tables
-   ========================================================================== */
-
 .table-wrapper {
     width: 100%;
     overflow-x: auto;
@@ -659,10 +539,6 @@ a:hover {
 .table-hover tr:hover td {
     background-color: #f8fafc;
 }
-
-/* ==========================================================================
-   Modals & Overlays
-   ========================================================================== */
 
 .modal-backdrop {
     position: fixed;
@@ -745,10 +621,6 @@ a:hover {
     background: #fafbfc;
 }
 
-/* ==========================================================================
-   Toast Notifications System
-   ========================================================================== */
-
 .toast-container {
     position: fixed;
     top: 24px;
@@ -829,10 +701,6 @@ a:hover {
     }
 }
 
-/* ==========================================================================
-   Loading Spinners & Skeletons
-   ========================================================================== */
-
 .spinner {
     display: inline-block;
     width: 20px;
@@ -863,10 +731,6 @@ a:hover {
     100% { background-position: -200% 0; }
 }
 
-/* ==========================================================================
-   Empty States
-   ========================================================================== */
-
 .empty-state {
     padding: 48px 24px;
     text-align: center;
@@ -895,10 +759,6 @@ a:hover {
     max-width: 420px;
     margin-bottom: 20px;
 }
-
-/* ==========================================================================
-   Star Ratings
-   ========================================================================== */
 
 .stars {
     display: inline-flex;

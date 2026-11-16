@@ -1,67 +1,45 @@
-/**
- * LibriX File Upload Module
- * Handles profile pictures, organization logos, and book cover uploads
- */
-
 const upload = {
-    /**
-     * Upload a file to the server
-     */
-    uploadFile: async function(file, uploadType = 'other') {
+
+    uploadFile: function(file, uploadType) {
+        uploadType = uploadType || 'other';
+
         const formData = new FormData();
         formData.append('file', file);
         formData.append('upload_type', uploadType);
 
-        try {
-            const response = await fetch(`${api.baseUrl}/upload`, {
-                method: 'POST',
-                headers: {
-                    'Authorization': `Bearer ${auth.getToken()}`
-                },
-                body: formData
-            });
-
-            const result = await response.json();
-
+        return fetch(api.baseUrl + '/upload', {
+            method: 'POST',
+            headers: {
+                'Authorization': 'Bearer ' + auth.getToken()
+            },
+            body: formData
+        }).then(function(response) {
+            return response.json();
+        }).then(function(result) {
             if (result.success) {
                 return result.data;
-            } else {
-                throw new Error(result.error || 'Upload failed');
             }
-        } catch (error) {
-            throw error;
-        }
+            throw new Error(result.error || 'Upload failed');
+        });
     },
 
-    /**
-     * Upload profile picture
-     */
-    uploadProfilePicture: async function(file) {
-        return await this.uploadFile(file, 'profile_picture');
+    uploadProfilePicture: function(file) {
+        return upload.uploadFile(file, 'profile_picture');
     },
 
-    /**
-     * Upload organization logo
-     */
-    uploadOrgLogo: async function(file) {
-        return await this.uploadFile(file, 'org_logo');
+    uploadOrgLogo: function(file) {
+        return upload.uploadFile(file, 'org_logo');
     },
 
-    /**
-     * Upload book cover
-     */
-    uploadBookCover: async function(file) {
-        return await this.uploadFile(file, 'book_cover');
+    uploadBookCover: function(file) {
+        return upload.uploadFile(file, 'book_cover');
     },
 
-    /**
-     * Validate image file
-     */
     validateImage: function(file) {
         const validTypes = ['image/jpeg', 'image/jpg', 'image/png', 'image/gif', 'image/webp'];
-        const maxSize = 5 * 1024 * 1024; // 5MB
+        const maxSize = 5 * 1024 * 1024;
 
-        if (!validTypes.includes(file.type)) {
+        if (validTypes.indexOf(file.type) === -1) {
             throw new Error('Invalid file type. Only JPG, PNG, GIF, and WebP are allowed.');
         }
 
@@ -72,9 +50,6 @@ const upload = {
         return true;
     },
 
-    /**
-     * Preview image before upload
-     */
     previewImage: function(file, previewElement) {
         const reader = new FileReader();
         reader.onload = function(e) {

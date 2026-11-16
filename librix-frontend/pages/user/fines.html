@@ -53,7 +53,6 @@
                     <p class="page-subtitle">View your outstanding fines and make payments securely.</p>
                 </div>
 
-                <!-- Summary Cards -->
                 <div class="grid grid-3" style="margin-bottom:32px;">
                     <div class="card" style="padding:24px;">
                         <div style="display:flex;align-items:center;gap:12px;margin-bottom:12px;">
@@ -81,7 +80,6 @@
                     </div>
                 </div>
 
-                <!-- Fines Table -->
                 <div class="card" style="padding:24px;">
                     <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:20px;flex-wrap:wrap;gap:16px;">
                         <h3 style="font-size:var(--font-lg);font-weight:700;display:flex;align-items:center;gap:8px;">
@@ -105,7 +103,6 @@
         </main>
     </div>
 
-    <!-- Payment Modal -->
     <div id="payment-modal" class="modal" style="display:none;">
         <div class="modal-content" style="max-width:500px;">
             <div class="modal-header">
@@ -130,7 +127,7 @@
 
                 <form id="payment-form">
                     <input type="hidden" id="payment-fine-id">
-                    
+
                     <div class="form-group">
                         <label class="form-label">Payment Method</label>
                         <select id="payment-method" class="form-input" required>
@@ -171,11 +168,11 @@
     <script src="../../assets/js/utils.js"></script>
     <script src="../../assets/js/auth.js"></script>
     <script>
-        // Update navigation based on auth state
+
         document.addEventListener('DOMContentLoaded', function() {
             auth.updateNav();
         });
-        
+
         if (!auth.requireAuth()) {}
         const user = auth.getUser();
         if (user) {
@@ -192,33 +189,32 @@
         let currentFilter = null;
         let allFines = [];
 
-        async function loadFines(statusFilter = null) {
+        function loadFines(statusFilter) {
+            statusFilter = statusFilter || null;
             currentFilter = statusFilter;
             const container = document.getElementById('fines-container');
-            
-            // Update filter buttons
+
             document.querySelectorAll('[id^="filter-"]').forEach(btn => {
                 btn.classList.remove('btn-primary');
                 btn.classList.add('btn-outline');
             });
-            const activeBtn = statusFilter ? 
-                (statusFilter === 'unpaid' ? document.getElementById('filter-unpaid') : document.getElementById('filter-paid')) : 
+            const activeBtn = statusFilter ?
+                (statusFilter === 'unpaid' ? document.getElementById('filter-unpaid') : document.getElementById('filter-paid')) :
                 document.getElementById('filter-all');
             if (activeBtn) {
                 activeBtn.classList.remove('btn-outline');
                 activeBtn.classList.add('btn-primary');
             }
 
-            try {
-                const params = {};
-                if (statusFilter) params.status = statusFilter;
-                
-                const response = await api.get('/fines', params);
+            const params = {};
+            if (statusFilter) params.status = statusFilter;
+
+            api.get('/fines', params).then(function(response) {
                 allFines = response.data || [];
-                
+
                 updateSummary();
                 renderFines(allFines);
-            } catch (error) {
+            }).catch(function(error) {
                 container.innerHTML = `
                     <div style="text-align:center;padding:40px;color:var(--text-muted);">
                         <i data-lucide="alert-circle" data-size="48" style="opacity:0.5;margin-bottom:12px;"></i>
@@ -226,16 +222,16 @@
                     </div>
                 `;
                 lucide.createIcons();
-            }
+            });
         }
 
         function updateSummary() {
             const unpaid = allFines.filter(f => f.status === 'unpaid');
             const paid = allFines.filter(f => f.status === 'paid');
-            
+
             const outstandingAmount = unpaid.reduce((sum, f) => sum + f.amount, 0);
             const paidAmount = paid.reduce((sum, f) => sum + f.amount, 0);
-            
+
             document.getElementById('outstanding-amount').textContent = `$${outstandingAmount.toFixed(2)}`;
             document.getElementById('outstanding-count').textContent = `${unpaid.length} unpaid fine${unpaid.length !== 1 ? 's' : ''}`;
             document.getElementById('paid-amount').textContent = `$${paidAmount.toFixed(2)}`;
@@ -245,7 +241,7 @@
 
         function renderFines(fines) {
             const container = document.getElementById('fines-container');
-            
+
             if (fines.length === 0) {
                 container.innerHTML = `
                     <div style="text-align:center;padding:40px;color:var(--text-muted);">
@@ -299,7 +295,7 @@
                     </table>
                 </div>
             `;
-            
+
             container.innerHTML = tableHTML;
             lucide.createIcons();
         }
@@ -312,7 +308,7 @@
             document.getElementById('modal-fine-amount').textContent = `$${fine.amount.toFixed(2)}`;
             document.getElementById('modal-fine-reason').textContent = fine.reason;
             document.getElementById('modal-fine-book').textContent = fine.book_title || 'Unknown';
-            
+
             document.getElementById('payment-modal').style.display = 'flex';
             lucide.createIcons();
         }
@@ -322,46 +318,42 @@
             document.getElementById('payment-form').reset();
         }
 
-        // Handle demo payment notice visibility
         document.getElementById('payment-method').addEventListener('change', function() {
             const notice = document.getElementById('demo-payment-notice');
             notice.style.display = this.value === 'demo' ? 'block' : 'none';
         });
 
-        document.getElementById('payment-form').addEventListener('submit', async function(e) {
+        document.getElementById('payment-form').addEventListener('submit', function(e) {
             e.preventDefault();
-            
+
             const fineId = parseInt(document.getElementById('payment-fine-id').value);
             const paymentMethod = document.getElementById('payment-method').value;
             const paymentReference = document.getElementById('payment-reference').value.trim();
             const notes = document.getElementById('payment-notes').value.trim();
-            
+
             const btn = document.getElementById('submit-payment-btn');
             btn.disabled = true;
             btn.innerHTML = '<i data-lucide="loader-2" data-size="16" class="spin"></i> Processing...';
             lucide.createIcons();
 
-            try {
-                await api.post('/fines/pay', {
-                    fine_id: fineId,
-                    payment_method: paymentMethod,
-                    payment_reference: paymentReference,
-                    notes: notes
-                });
-
+            api.post('/fines/pay', {
+                fine_id: fineId,
+                payment_method: paymentMethod,
+                payment_reference: paymentReference,
+                notes: notes
+            }).then(function() {
                 utils.toast('Payment Successful', 'Your fine has been paid successfully.', 'success');
                 closePaymentModal();
-                loadFines(currentFilter); // Reload fines
-            } catch (error) {
+                loadFines(currentFilter);
+            }).catch(function(error) {
                 utils.toast('Payment Failed', error.message || 'Failed to process payment.', 'error');
-            } finally {
+            }).then(function() {
                 btn.disabled = false;
                 btn.innerHTML = '<i data-lucide="credit-card" data-size="16"></i> Process Payment';
                 lucide.createIcons();
-            }
+            });
         });
 
-        // Load fines on page load
         loadFines();
     </script>
 </body>

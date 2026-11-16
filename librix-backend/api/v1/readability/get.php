@@ -1,7 +1,5 @@
 <?php
 
-// Configuration
-
 require_once __DIR__ . "/../../../config/config.php";
 require_once __DIR__ . "/../../../config/database.php";
 require_once __DIR__ . "/../../../helpers/response.php";
@@ -9,15 +7,9 @@ require_once __DIR__ . "/../../../helpers/validation.php";
 require_once __DIR__ . "/../../../helpers/functions.php";
 require_once __DIR__ . "/../../../helpers/readability.php";
 
-
-// Request Method
-
 if ($_SERVER["REQUEST_METHOD"] !== "GET") {
     methodNotAllowedResponse(["GET"]);
 }
-
-
-// Book ID
 
 $BookId = $_GET["book_id"] ?? null;
 
@@ -28,12 +20,9 @@ if ($IdError !== null) {
 
 $BookId = (int)$BookId;
 
-
-// Check Readability Table
-
 try {
     $Stmt = $pdo->prepare(
-        "SELECT 
+        "SELECT
             readability_analysis.id,
             readability_analysis.book_id,
             readability_analysis.word_count,
@@ -66,7 +55,6 @@ try {
         successResponse($Readability);
     }
 
-    // If not analyzed yet, check if book exists
     $BookStmt = $pdo->prepare("SELECT id, title, description FROM books WHERE id = ? LIMIT 1");
     $BookStmt->execute([$BookId]);
     $Book = $BookStmt->fetch();
@@ -75,12 +63,11 @@ try {
         notFoundResponse("Book not found");
     }
 
-    // Auto-analyze if description is available
     if (!empty($Book["description"])) {
         $Analysis = AnalyzeTextReadability($Book["description"]);
 
         $InsertStmt = $pdo->prepare(
-            "INSERT INTO readability_analysis 
+            "INSERT INTO readability_analysis
              (book_id, sample_text, word_count, sentence_count, syllable_count, flesch_reading_ease, flesch_kincaid_grade, difficulty_level, estimated_reading_minutes)
              VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)
              ON DUPLICATE KEY UPDATE

@@ -85,11 +85,10 @@
         if (user) { document.getElementById('admin-name').textContent = user.name; document.getElementById('admin-avatar').textContent = user.name.charAt(0).toUpperCase(); }
         function toggleSidebar() { document.getElementById('sidebar').classList.toggle('is-open'); }
 
-        async function loadPublishers() {
+        function loadPublishers() {
             const container = document.getElementById('publishers-table-wrap');
             container.innerHTML = `<div style="padding:60px;text-align:center;"><div class="spinner"></div></div>`;
-            try {
-                const res = await api.get('/publishers');
+            api.get('/publishers').then(function(res) {
                 const publishers = Array.isArray(res.data) ? res.data : [];
                 if (publishers.length === 0) {
                     container.innerHTML = `<div class="empty-state"><div class="empty-state-icon"><svg xmlns="http://www.w3.org/2000/svg" width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><rect width="16" height="20" x="4" y="2" rx="2" ry="2"/><path d="M9 22v-4h6v4"/><path d="M8 6h.01"/><path d="M16 6h.01"/><path d="M12 6h.01"/><path d="M12 10h.01"/><path d="M12 14h.01"/><path d="M16 10h.01"/><path d="M16 14h.01"/><path d="M8 10h.01"/><path d="M8 14h.01"/></svg></div><div class="empty-state-title">No publishers registered</div><div class="empty-state-desc">Click '+ Add New Publisher' to add publishing houses.</div></div>`;
@@ -112,7 +111,7 @@
                             </tr>`).join('')}</tbody>
                         </table>
                     </div>`;
-            } catch (err) { container.innerHTML = `<div style="padding:40px;text-align:center;color:var(--danger);">Failed to retrieve publishers.</div>`; }
+            }).catch(function(err) { container.innerHTML = `<div style="padding:40px;text-align:center;color:var(--danger);">Failed to retrieve publishers.</div>`; });
         }
 
         function openPublisherModal(pub = null) {
@@ -124,27 +123,26 @@
             utils.modal('publisher-modal').open();
         }
 
-        async function deletePublisher(id, name) {
-            const confirmed = await utils.confirm({
+        function deletePublisher(id, name) {
+            utils.confirm({
                 title: 'Delete Publisher Record',
                 message: `Delete publisher "${name}"? Linked catalog titles will remain.`,
                 confirmText: 'Delete Publisher',
                 type: 'danger',
                 icon: 'trash-2'
+            }).then(function(confirmed) {
+                if (!confirmed) return;
+
+                api.delete(`/publishers?id=${id}`).then(function() {
+                    utils.toast("Publisher Deleted", `Removed "${name}".`, "success");
+                    loadPublishers();
+                }).catch(function(err) {
+                    utils.toast("Delete Failed", err.message, "danger");
+                });
             });
-
-            if (!confirmed) return;
-
-            try {
-                await api.delete(`/publishers?id=${id}`);
-                utils.toast("Publisher Deleted", `Removed "${name}".`, "success");
-                loadPublishers();
-            } catch (err) {
-                utils.toast("Delete Failed", err.message, "danger");
-            }
         }
 
-        document.getElementById('publisher-form').addEventListener('submit', async function(e) {
+        document.getElementById('publisher-form').addEventListener('submit', function(e) {
             e.preventDefault();
             const id = document.getElementById('publisher-id').value;
             const name = document.getElementById('pub-name-input').value.trim();
@@ -152,12 +150,16 @@
             const website = document.getElementById('pub-web-input').value.trim();
             const btn = document.getElementById('save-publisher-btn');
             btn.disabled = true;
-            try {
-                if (id) { await api.put(`/publishers?id=${id}`, { name, address, website }); utils.toast("Publisher Updated", `Updated "${name}".`, "success"); }
-                else { await api.post('/publishers', { name, address, website }); utils.toast("Publisher Added", `Added "${name}".`, "success"); }
-                utils.modal('publisher-modal').close(); loadPublishers();
-            } catch (err) { utils.toast("Save Failed", err.message, "error"); }
-            finally { btn.disabled = false; }
+            const saveRequest = id
+                ? api.put(`/publishers?id=${id}`, { name: name, address: address, website: website })
+                : api.post('/publishers', { name: name, address: address, website: website });
+
+            saveRequest.then(function() {
+                utils.toast(id ? "Publisher Updated" : "Publisher Added", id ? `Updated "${name}".` : `Added "${name}".`, "success");
+                utils.modal('publisher-modal').close();
+                loadPublishers();
+            }).catch(function(err) { utils.toast("Save Failed", err.message, "error"); })
+            .then(function() { btn.disabled = false; });
         });
         loadPublishers();
     </script>

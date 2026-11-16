@@ -1,7 +1,5 @@
 <?php
 
-// Configuration
-
 require_once __DIR__ . "/../../../config/config.php";
 require_once __DIR__ . "/../../../config/database.php";
 require_once __DIR__ . "/../../../helpers/response.php";
@@ -10,21 +8,12 @@ require_once __DIR__ . "/../../../helpers/functions.php";
 require_once __DIR__ . "/../../../middleware/auth.php";
 require_once __DIR__ . "/../../../middleware/admin.php";
 
-
-// Request Method
-
 if ($_SERVER["REQUEST_METHOD"] !== "PUT") {
     methodNotAllowedResponse(["PUT"]);
 }
 
-
-// Authentication
-
 $User = requireAuth();
 requireAdmin($User);
-
-
-// Request Data
 
 $BookId = $bookId ?? ($parts[3] ?? null);
 
@@ -35,9 +24,6 @@ if ($IdError !== null) {
 }
 
 $BookId = (int)$BookId;
-
-
-// Find Existing Book
 
 try {
     $Stmt = $pdo->prepare("SELECT * FROM books WHERE id = ? LIMIT 1");
@@ -64,9 +50,6 @@ $PublicationYear = array_key_exists("publication_year", $RequestData) ? $Request
 $TotalCopies = array_key_exists("total_copies", $RequestData) ? $RequestData["total_copies"] : $ExistingBook["total_copies"];
 $AvailableCopies = array_key_exists("available_copies", $RequestData) ? $RequestData["available_copies"] : null;
 $CoverImage = array_key_exists("cover_image", $RequestData) ? $RequestData["cover_image"] : $ExistingBook["cover_image"];
-
-
-// Validation
 
 $Errors = [];
 
@@ -137,7 +120,7 @@ if ($AvailableCopies !== null) {
         $AvailableCopies = (int)$AvailableCopies;
     }
 } else {
-    // Recalculate available copies if total copies changed
+
     $CopiesDifference = $TotalCopies - (int)$ExistingBook["total_copies"];
     $CalculatedAvailable = (int)$ExistingBook["available_copies"] + $CopiesDifference;
     $AvailableCopies = max(0, min($CalculatedAvailable, $TotalCopies));
@@ -154,9 +137,6 @@ if ($PublicationYear !== null && $PublicationYear !== "") {
 if (hasValidationErrors($Errors)) {
     ValidationerrorResponse($Errors);
 }
-
-
-// Database Query
 
 try {
     $Stmt = $pdo->prepare(
@@ -192,9 +172,6 @@ try {
     errorResponse("Unable to update book", 500);
 }
 
-
-// Fetch Updated Book
-
 try {
     $Stmt = $pdo->prepare(
         "SELECT
@@ -227,13 +204,7 @@ try {
     errorResponse("Unable to retrieve updated book", 500);
 }
 
-
-// Audit Log
-
 logAudit((int)$User["id"], "book_updated", "books", $BookId, "Updated book '$Title'");
-
-
-// Response
 
 successResponse(
     $UpdatedBook,

@@ -12,7 +12,7 @@
 </head>
 
 <body>
-    <!-- Navigation Bar -->
+
     <nav id="nav-bar">
         <div class="nav-brand">
             <a href="../index.html" style="display: flex; align-items: center; gap: 10px; text-decoration: none;">
@@ -32,7 +32,6 @@
         </div>
     </nav>
 
-    <!-- Main Content -->
     <main class="container" style="padding: 60px 20px; max-width: 800px;">
         <div class="card" style="padding: 40px;">
             <div style="text-align: center; margin-bottom: 40px;">
@@ -91,7 +90,6 @@
             </form>
         </div>
 
-        <!-- My Organizations -->
         <div class="card" style="padding: 24px; margin-top: 24px;">
             <h3 style="margin-bottom: 16px;">My Organizations</h3>
             <div id="my-organizations">
@@ -102,7 +100,6 @@
         </div>
     </main>
 
-    <!-- Footer -->
     <footer style="background: #0f172a; color: #94a3b8; padding: 40px 0 20px; border-top: 1px solid #1e293b;">
         <div class="container" style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 16px; font-size: var(--font-sm);">
             <div style="display: flex; align-items: center; gap: 8px;">
@@ -118,17 +115,15 @@
         </div>
     </footer>
 
-    <!-- Scripts -->
     <script src="../assets/js/api.js"></script>
     <script src="../assets/js/utils.js"></script>
     <script src="../assets/js/auth.js"></script>
     <script>
-        // Update navigation based on auth state
+
         document.addEventListener('DOMContentLoaded', function() {
             auth.updateNav();
         });
-        
-        // Check authentication
+
         if (!auth.isLoggedIn()) {
             utils.toast("Authentication Required", "Please log in to join an organization.", "warning");
             setTimeout(() => {
@@ -136,7 +131,6 @@
             }, 1500);
         }
 
-        // Update navigation based on auth state
         if (auth.isLoggedIn()) {
             const user = auth.getUser();
             document.getElementById('nav-auth-container').innerHTML = `
@@ -145,16 +139,14 @@
             `;
         }
 
-        // Load user's current organization
-        async function loadMyOrganizations() {
+        function loadMyOrganizations() {
             const container = document.getElementById('my-organizations');
-            
-            try {
-                const user = auth.getUser();
-                if (user.org_id) {
-                    const res = await api.get(`/organizations?id=${user.org_id}`);
+            const user = auth.getUser();
+
+            if (user && user.org_id) {
+                api.get(`/organizations?id=${user.org_id}`).then(function(res) {
                     const org = res.data;
-                    
+
                     container.innerHTML = `
                         <div style="display: flex; align-items: center; gap: 16px; padding: 16px; background: var(--bg-light); border-radius: 8px;">
                             ${org.logo_url ? `
@@ -171,26 +163,25 @@
                             <span class="badge badge-success">Member</span>
                         </div>
                     `;
-                } else {
+                }).catch(function(err) {
                     container.innerHTML = `
                         <div style="text-align: center; padding: 20px; color: var(--text-muted);">
-                            You are not currently a member of any organization.
+                            Unable to load organization information.
                         </div>
                     `;
-                }
-            } catch (err) {
+                });
+            } else {
                 container.innerHTML = `
                     <div style="text-align: center; padding: 20px; color: var(--text-muted);">
-                        Unable to load organization information.
+                        You are not currently a member of any organization.
                     </div>
                 `;
             }
         }
 
-        // Form submission
-        document.getElementById('join-form').addEventListener('submit', async function(e) {
+        document.getElementById('join-form').addEventListener('submit', function(e) {
             e.preventDefault();
-            
+
             const submitBtn = document.getElementById('submit-btn');
             const originalText = submitBtn.textContent;
             submitBtn.disabled = true;
@@ -201,28 +192,24 @@
                 message: document.getElementById('message').value.trim()
             };
 
-            try {
-                const response = await api.post('/join/request', formData);
-                
+            api.post('/join/request', formData).then(function(response) {
+
                 utils.toast("Request Submitted", "Your join request has been submitted. You'll be notified when it's approved.", "success");
-                
-                // Clear form
+
                 document.getElementById('join-form').reset();
-                
-                // Reload organizations
+
                 loadMyOrganizations();
-                
+
                 submitBtn.disabled = false;
                 submitBtn.textContent = originalText;
-                
-            } catch (error) {
+
+            }).catch(function(error) {
                 utils.toast("Submission Failed", error.message || "Failed to submit join request. Please try again.", "error");
                 submitBtn.disabled = false;
                 submitBtn.textContent = originalText;
-            }
+            });
         });
 
-        // Initialize
         loadMyOrganizations();
     </script>
 </body>

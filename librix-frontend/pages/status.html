@@ -61,7 +61,7 @@
 </head>
 
 <body>
-    <!-- Navigation Bar -->
+
     <nav id="nav-bar">
         <div class="nav-brand">
             <a href="../index.html" style="display: flex; align-items: center; gap: 10px; text-decoration: none;">
@@ -82,7 +82,6 @@
         </div>
     </nav>
 
-    <!-- Header -->
     <header style="background: linear-gradient(135deg, #0f172a 0%, #1e293b 100%); color: #ffffff; padding: 60px 0 40px;">
         <div class="container-narrow" style="text-align: center;">
             <h1 style="font-size: var(--font-3xl); font-weight: 800; color: #ffffff; margin-bottom: 8px;">System Status & Telemetry</h1>
@@ -92,9 +91,8 @@
         </div>
     </header>
 
-    <!-- Main Content -->
     <main class="container-narrow" style="padding: 40px 20px 80px;">
-        <!-- Overall Status Banner -->
+
         <div id="status-banner" class="card" style="padding: 24px; margin-bottom: 32px; display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 16px; border-left: 6px solid var(--success);">
             <div style="display: flex; align-items: center; gap: 16px;">
                 <span class="status-pulse-dot" id="status-dot"></span>
@@ -112,7 +110,6 @@
             </button>
         </div>
 
-        <!-- 90 Days Uptime Visual -->
         <div class="card" style="padding: 24px; margin-bottom: 36px;">
             <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px;">
                 <h3 style="font-size: var(--font-base); font-weight: 700; margin: 0;">System Uptime (Last 90 Days)</h3>
@@ -125,7 +122,6 @@
             </div>
         </div>
 
-        <!-- Services Breakdown -->
         <div class="card" style="margin-bottom: 40px;">
             <div class="card-header">
                 <span class="card-title" style="font-size: var(--font-base);">Services & Infrastructure Components</span>
@@ -170,7 +166,6 @@
             </div>
         </div>
 
-        <!-- Incidents & Maintenance -->
         <div class="card" style="padding: 24px;">
             <h3 style="font-size: var(--font-base); font-weight: 700; margin-bottom: 16px;">Recent Incident History & Maintenance</h3>
             <div id="incidents-container">
@@ -181,7 +176,6 @@
         </div>
     </main>
 
-    <!-- Footer -->
     <footer style="background: #0f172a; color: #94a3b8; padding: 40px 0 20px; border-top: 1px solid #1e293b;">
         <div class="container" style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 16px; font-size: var(--font-sm);">
             <div style="display: flex; align-items: center; gap: 8px;">
@@ -197,17 +191,15 @@
         </div>
     </footer>
 
-    <!-- Scripts -->
     <script src="../assets/js/api.js"></script>
     <script src="../assets/js/utils.js"></script>
     <script src="../assets/js/auth.js"></script>
     <script>
-        // Update navigation based on auth state
+
         document.addEventListener('DOMContentLoaded', function() {
             auth.updateNav();
         });
-        
-        // Render 90 bars for uptime visualization
+
         function renderUptimeBars() {
             const container = document.getElementById('uptime-bar');
             let bars = '';
@@ -217,15 +209,14 @@
             container.innerHTML = bars;
         }
 
-        async function fetchStatus() {
+        function fetchStatus() {
             const dot = document.getElementById('status-dot');
             const text = document.getElementById('overall-status-text');
             const updated = document.getElementById('last-updated-text');
             const banner = document.getElementById('status-banner');
             const servicesList = document.getElementById('services-list');
 
-            try {
-                const res = await api.get('/status');
+            api.get('/status').then(function(res) {
                 const data = res.data;
 
                 if (data && data.status === 'operational') {
@@ -246,22 +237,20 @@
                 }
 
                 updated.textContent = `Last checked: ${new Date().toLocaleTimeString()}`;
-                
-                // Update services list dynamically
+
                 updateServicesList(data);
 
-            } catch (err) {
-                // If offline or local dev without backend running
+            }).catch(function(err) {
+
                 dot.style.backgroundColor = 'var(--success)';
                 text.textContent = 'All Systems Operational';
                 updated.textContent = `Last checked: ${new Date().toLocaleTimeString()} (Fallback)`;
-            }
+            });
         }
 
         function updateServicesList(data) {
             const servicesList = document.getElementById('services-list');
-            
-            // Dynamic services based on actual API response
+
             const services = [
                 {
                     name: 'Core Web & Catalogue APIs',
@@ -294,7 +283,7 @@
                 const isOperational = service.status === 'operational';
                 const badgeClass = isOperational ? 'badge-success' : 'badge-danger';
                 const badgeText = isOperational ? '✓ Operational' : '✗ Down';
-                
+
                 return `
                     <div class="service-row">
                         <div>

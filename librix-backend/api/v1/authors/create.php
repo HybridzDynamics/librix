@@ -1,7 +1,5 @@
 <?php
 
-// Configuration
-
 require_once __DIR__ . "/../../../config/config.php";
 require_once __DIR__ . "/../../../config/database.php";
 require_once __DIR__ . "/../../../helpers/response.php";
@@ -10,29 +8,17 @@ require_once __DIR__ . "/../../../helpers/functions.php";
 require_once __DIR__ . "/../../../middleware/auth.php";
 require_once __DIR__ . "/../../../middleware/admin.php";
 
-
-// Request Method
-
 if ($_SERVER["REQUEST_METHOD"] !== "POST") {
     methodNotAllowedResponse(["POST"]);
 }
 
-
-// Authentication
-
 $User = requireAuth();
 requireAdmin($User);
-
-
-// Request Data
 
 $RequestData = getJsonInput();
 
 $Name = trim($RequestData["name"] ?? "");
 $Biography = isset($RequestData["biography"]) ? trim($RequestData["biography"]) : null;
-
-
-// Validation
 
 $Errors = [];
 
@@ -58,9 +44,6 @@ if (hasValidationErrors($Errors)) {
     ValidationerrorResponse($Errors);
 }
 
-
-// Database Query
-
 try {
     $Stmt = $pdo->prepare(
         "INSERT INTO authors (name, biography)
@@ -78,9 +61,6 @@ try {
     errorResponse("Unable to create author", 500);
 }
 
-
-// Fetch Created Author
-
 try {
     $Stmt = $pdo->prepare(
         "SELECT id, name, biography, created_at, updated_at
@@ -97,13 +77,7 @@ try {
     errorResponse("Unable to retrieve created author", 500);
 }
 
-
-// Audit Log
-
 logAudit((int)$User["id"], "author_created", "authors", $AuthorId, "Created author '$Name'");
-
-
-// Response
 
 successResponse(
     $CreatedAuthor,

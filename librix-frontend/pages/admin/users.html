@@ -96,14 +96,13 @@
         let currentPage = 1;
         const limit = 15;
 
-        async function loadUsers() {
+        function loadUsers() {
             const container = document.getElementById('users-table-wrap');
             const search = document.getElementById('user-search').value.trim();
             const role = document.getElementById('user-role-filter').value;
             const status = document.getElementById('user-status-filter').value;
             container.innerHTML = `<div style="padding:60px;text-align:center;"><div class="spinner"></div></div>`;
-            try {
-                const res = await api.get('/admin/users', { page: currentPage, limit, search, role, status });
+            api.get('/admin/users', { page: currentPage, limit: limit, search: search, role: role, status: status }).then(function(res) {
                 const users = res.data && res.data.users ? res.data.users : (Array.isArray(res.data) ? res.data : []);
                 const pagination = res.pagination || (res.data && res.data.pagination) || { total: users.length, total_pages: 1 };
 
@@ -141,16 +140,15 @@
                             }).join('')}</tbody>
                         </table>
                     </div>`;
-                
-                // Initialize Lucide icons for dynamic content
+
                 if (window.lucide) {
                     lucide.createIcons();
                 }
-                
+
                 renderPagination(pagination.page || currentPage, pagination.total_pages || 1);
-            } catch (err) {
+            }).catch(function(err) {
                 container.innerHTML = `<div style="padding:40px;text-align:center;color:var(--danger);">Failed to retrieve users directory.</div>`;
-            }
+            });
         }
 
         function renderPagination(current, total) {
@@ -163,64 +161,61 @@
 
         function goToPage(p) { currentPage = p; loadUsers(); }
 
-        async function changeRole(id, role, name) {
-            const confirmed = await utils.confirm({
+        function changeRole(id, role, name) {
+            utils.confirm({
                 title: 'Change User Role',
                 message: `Change permission role of "${name}" to ${role.toUpperCase()}?`,
                 confirmText: 'Change Role',
                 type: 'primary',
                 icon: 'shield-check'
+            }).then(function(confirmed) {
+                if (!confirmed) return;
+
+                api.put('/admin/users', { id: id, role: role }).then(function() {
+                    utils.toast("Role Updated", `Role changed to ${role} for ${name}.`, "success");
+                    loadUsers();
+                }).catch(function(err) {
+                    utils.toast("Action Failed", err.message, "danger");
+                });
             });
-
-            if (!confirmed) return;
-
-            try { 
-                await api.put('/admin/users', { id, role }); 
-                utils.toast("Role Updated", `Role changed to ${role} for ${name}.`, "success"); 
-                loadUsers(); 
-            } catch (err) { 
-                utils.toast("Action Failed", err.message, "danger"); 
-            }
         }
 
-        async function changeStatus(id, status, name) {
-            const confirmed = await utils.confirm({
+        function changeStatus(id, status, name) {
+            utils.confirm({
                 title: 'Update User Status',
                 message: `Set account status of "${name}" to ${status.toUpperCase()}?`,
                 confirmText: 'Update Status',
                 type: status === 'suspended' ? 'danger' : 'primary',
                 icon: 'user'
+            }).then(function(confirmed) {
+                if (!confirmed) return;
+
+                api.put('/admin/users', { id: id, status: status }).then(function() {
+                    utils.toast("Status Updated", `Account status changed to ${status}.`, "info");
+                    loadUsers();
+                }).catch(function(err) {
+                    utils.toast("Action Failed", err.message, "danger");
+                });
             });
-
-            if (!confirmed) return;
-
-            try { 
-                await api.put('/admin/users', { id, status }); 
-                utils.toast("Status Updated", `Account status changed to ${status}.`, "info"); 
-                loadUsers(); 
-            } catch (err) { 
-                utils.toast("Action Failed", err.message, "danger"); 
-            }
         }
 
-        async function deleteUser(id, name) {
-            const confirmed = await utils.confirm({
+        function deleteUser(id, name) {
+            utils.confirm({
                 title: 'Delete User Account',
                 message: `Are you sure you want to permanently delete "${name}"? This action cannot be undone and will remove all user data including history and fines.`,
                 confirmText: 'Delete Account',
                 type: 'danger',
                 icon: 'trash-2'
+            }).then(function(confirmed) {
+                if (!confirmed) return;
+
+                api.delete(`/admin/users/delete?id=${id}`).then(function() {
+                    utils.toast("Account Deleted", `User "${name}" has been permanently deleted.`, "success");
+                    loadUsers();
+                }).catch(function(err) {
+                    utils.toast("Deletion Failed", err.message, "danger");
+                });
             });
-
-            if (!confirmed) return;
-
-            try {
-                await api.delete(`/admin/users/delete?id=${id}`);
-                utils.toast("Account Deleted", `User "${name}" has been permanently deleted.`, "success");
-                loadUsers();
-            } catch (err) {
-                utils.toast("Deletion Failed", err.message, "danger");
-            }
         }
 
         document.getElementById('user-search').addEventListener('input', utils.debounce(() => { currentPage = 1; loadUsers(); }, 350));

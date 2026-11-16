@@ -54,7 +54,7 @@
                 </div>
 
                 <div class="grid grid-2" style="gap:32px;align-items:start;">
-                    <!-- Profile Picture Card -->
+
                     <div class="card" style="padding:28px;text-align:center;">
                         <h3 style="font-size:var(--font-lg);font-weight:700;margin-bottom:20px;display:flex;align-items:center;gap:8px;justify-content:center;">
                             <i data-lucide="camera" data-size="20"></i> Profile Picture
@@ -72,7 +72,6 @@
                         <span class="form-hint" style="display:block;margin-top:8px;">JPG, PNG, GIF, WebP (max 5MB)</span>
                     </div>
 
-                    <!-- Edit Profile Card -->
                     <div class="card" style="padding:28px;">
                         <h3 style="font-size:var(--font-lg);font-weight:700;margin-bottom:20px;display:flex;align-items:center;gap:8px;">
                             <i data-lucide="user" data-size="20"></i> Personal Information
@@ -112,7 +111,6 @@
                         </form>
                     </div>
 
-                    <!-- Change Password Card -->
                     <div class="card" style="padding:28px;">
                         <h3 style="font-size:var(--font-lg);font-weight:700;margin-bottom:20px;display:flex;align-items:center;gap:8px;">
                             <i data-lucide="lock" data-size="20"></i> Change Password
@@ -145,11 +143,11 @@
     <script src="../../assets/js/auth.js"></script>
     <script src="../../assets/js/upload.js"></script>
     <script>
-        // Update navigation based on auth state
+
         document.addEventListener('DOMContentLoaded', function() {
             auth.updateNav();
         });
-        
+
         if (!auth.requireAuth()) {}
         const user = auth.getUser();
         if (user) {
@@ -159,13 +157,11 @@
             document.getElementById('profile-email').value = user.email;
             document.getElementById('profile-role').textContent = (user.role || 'patron').toUpperCase();
             document.getElementById('profile-status').textContent = (user.status || 'active').toUpperCase();
-            
-            // Load additional profile fields
+
             if (user.phone) document.getElementById('profile-phone').value = user.phone;
             if (user.address) document.getElementById('profile-address').value = user.address;
             if (user.bio) document.getElementById('profile-bio').value = user.bio;
-            
-            // Load profile picture
+
             if (user.profile_picture_url) {
                 const img = document.getElementById('profile-picture-img');
                 img.src = user.profile_picture_url;
@@ -175,57 +171,59 @@
         }
         function toggleSidebar() { document.getElementById('sidebar').classList.toggle('is-open'); }
 
-        // Profile picture upload
         document.getElementById('upload-profile-btn').addEventListener('click', function() {
             document.getElementById('profile-picture-input').click();
         });
 
-        document.getElementById('profile-picture-input').addEventListener('change', async function(e) {
+        document.getElementById('profile-picture-input').addEventListener('change', function(e) {
             const file = e.target.files[0];
             if (!file) return;
 
             try {
                 upload.validateImage(file);
-                
-                // Show preview
+
                 upload.previewImage(file, document.getElementById('profile-picture-img'));
                 document.getElementById('profile-picture-placeholder').style.display = 'none';
-                
-                // Upload
-                const result = await upload.uploadProfilePicture(file);
-                
-                // Update user data
+            } catch (error) {
+                utils.toast("Upload Error", error.message, "error");
+                return;
+            }
+
+            upload.uploadProfilePicture(file).then(function(result) {
+
                 user.profile_picture_url = result.file_url;
                 localStorage.setItem('librix_user', JSON.stringify(user));
-                
-                // Update avatar in sidebar
+
+                document.getElementById('profile-picture-img').src = result.file_url;
+                document.getElementById('profile-picture-img').style.display = 'block';
+                document.getElementById('profile-picture-placeholder').style.display = 'none';
+
                 document.getElementById('user-avatar').style.backgroundImage = `url(${result.file_url})`;
                 document.getElementById('user-avatar').style.backgroundSize = 'cover';
                 document.getElementById('user-avatar').textContent = '';
-                
+
                 utils.toast("Success", "Profile picture uploaded successfully", "success");
-            } catch (error) {
+            }).catch(function(error) {
                 utils.toast("Upload Error", error.message, "error");
-                // Reset preview on error
+
                 document.getElementById('profile-picture-img').style.display = 'none';
                 document.getElementById('profile-picture-placeholder').style.display = 'block';
-            }
+            });
         });
 
-        document.getElementById('profile-form').addEventListener('submit', async function(e) {
+        document.getElementById('profile-form').addEventListener('submit', function(e) {
             e.preventDefault();
             const name = document.getElementById('profile-name').value.trim();
             const phone = document.getElementById('profile-phone').value.trim();
             const address = document.getElementById('profile-address').value.trim();
             const bio = document.getElementById('profile-bio').value.trim();
-            
+
             if (!name) { utils.toast("Validation Error", "Full name cannot be empty.", "warning"); return; }
-            
+
             const btn = document.getElementById('save-profile-btn');
             btn.disabled = true;
-            
-            try {
-                await api.put('/users/update', { name, phone, address, bio });
+
+            api.put('/users/update', { name: name, phone: phone, address: address, bio: bio }).then(function() {
                 user.name = name;
                 user.phone = phone;
                 user.address = address;
@@ -234,12 +232,12 @@
                 document.getElementById('user-name-display').textContent = name;
                 document.getElementById('user-avatar').textContent = name.charAt(0).toUpperCase();
                 utils.toast("Profile Updated", "Your account has been updated.", "success");
-            } catch (err) {
+            }).catch(function(err) {
                 utils.toast("Error", err.message || "Failed to update profile.", "error");
-            } finally { btn.disabled = false; }
+            }).then(function() { btn.disabled = false; });
         });
 
-        document.getElementById('password-form').addEventListener('submit', async function(e) {
+        document.getElementById('password-form').addEventListener('submit', function(e) {
             e.preventDefault();
             const currentPass = document.getElementById('current-password').value;
             const newPass = document.getElementById('new-password').value;
@@ -248,13 +246,12 @@
             if (newPass !== confirmPass) { utils.toast("Mismatch", "New password confirmation does not match.", "warning"); return; }
             const btn = document.getElementById('change-password-btn');
             btn.disabled = true;
-            try {
-                await api.put('/users/update', { current_password: currentPass, password: newPass });
+            api.put('/users/update', { current_password: currentPass, password: newPass }).then(function() {
                 utils.toast("Password Changed", "Your password was successfully updated.", "success");
                 document.getElementById('password-form').reset();
-            } catch (err) {
+            }).catch(function(err) {
                 utils.toast("Error", err.message || "Failed to change password.", "error");
-            } finally { btn.disabled = false; }
+            }).then(function() { btn.disabled = false; });
         });
     </script>
 </body>

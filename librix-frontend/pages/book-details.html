@@ -15,7 +15,7 @@
 </head>
 
 <body>
-    <!-- Navigation Bar -->
+
     <nav id="nav-bar">
         <div class="nav-brand">
             <a href="../index.html" style="display: flex; align-items: center; gap: 10px; text-decoration: none;">
@@ -36,9 +36,8 @@
         </div>
     </nav>
 
-    <!-- Main Container -->
     <main class="container" style="padding-bottom: 80px;">
-        <!-- Breadcrumb & Back -->
+
         <div style="margin-top: 24px;">
             <a href="catalogue.html" class="btn btn-outline btn-sm" style="display: inline-flex; align-items: center; gap: 6px;">
                 ← Back to Catalogue
@@ -51,7 +50,7 @@
         </div>
 
         <div id="book-content" class="book-details-layout" style="display: none;">
-            <!-- Left Poster Column -->
+
             <div class="book-poster-card">
                 <div class="book-poster-img-wrap" id="poster-wrap">
                     <div id="poster-fallback" style="font-size: 80px; color: #ffffff;">data-lucide="book-open"</div>
@@ -67,7 +66,6 @@
                 </div>
             </div>
 
-            <!-- Right Details Column -->
             <div>
                 <div style="display: flex; gap: 8px; align-items: center; margin-bottom: 12px; flex-wrap: wrap;">
                     <span id="book-category" class="badge badge-primary">Category</span>
@@ -78,18 +76,16 @@
                 <h1 id="book-title" style="font-size: var(--font-3xl); font-weight: 800; color: var(--text-main); margin-bottom: 8px; line-height: 1.25;">
                     Book Title
                 </h1>
-                
+
                 <p id="book-author" style="font-size: var(--font-md); color: var(--text-muted); margin-bottom: 16px;">
                     By Author Name
                 </p>
 
-                <!-- Average Rating Header -->
                 <div style="display: flex; align-items: center; gap: 12px; margin-bottom: 24px;">
                     <div id="book-stars"></div>
                     <span id="reviews-count-header" style="font-size: var(--font-sm); color: var(--text-muted);"></span>
                 </div>
 
-                <!-- SMART READABILITY ANALYSIS CARD -->
                 <div class="readability-hero-card">
                     <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 10px;">
                         <div>
@@ -125,7 +121,6 @@
                     </p>
                 </div>
 
-                <!-- Book Description -->
                 <div style="margin-bottom: 32px;">
                     <h3 style="font-size: var(--font-lg); font-weight: 700; margin-bottom: 10px;">About This Book</h3>
                     <div id="book-description" style="font-size: var(--font-sm); line-height: 1.7; color: var(--text-muted); white-space: pre-line;">
@@ -133,7 +128,6 @@
                     </div>
                 </div>
 
-                <!-- Book Metadata Table -->
                 <div class="card" style="margin-bottom: 40px; padding: 20px;">
                     <h4 style="font-size: var(--font-base); font-weight: 700; margin-bottom: 14px;">Publication & Inventory Details</h4>
                     <div class="grid grid-2" style="font-size: var(--font-sm); gap: 14px;">
@@ -144,7 +138,6 @@
                     </div>
                 </div>
 
-                <!-- Recommended Books Section -->
                 <section id="recommendations-section" style="margin-bottom: 40px;">
                     <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
                         <div>
@@ -162,7 +155,6 @@
                     </div>
                 </section>
 
-                <!-- Reviews & Ratings Section -->
                 <section id="reviews-section" style="border-top: 1px solid var(--border); padding-top: 36px;">
                     <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 24px; flex-wrap: wrap; gap: 12px;">
                         <div>
@@ -174,7 +166,6 @@
                         </button>
                     </div>
 
-                    <!-- Review Form (Hidden by default or toggled) -->
                     <div id="review-form-card" class="card" style="display: none; padding: 24px; margin-bottom: 24px; background: #fafbfc;">
                         <h4 style="font-size: var(--font-base); font-weight: 700; margin-bottom: 12px;">Your Review & Rating</h4>
                         <form id="review-form">
@@ -199,7 +190,6 @@
                         </form>
                     </div>
 
-                    <!-- Reviews List -->
                     <div id="reviews-list">
                         <div style="text-align: center; padding: 30px 0; color: var(--text-muted);">
                             No reviews yet. Be the first to review this book!
@@ -210,7 +200,6 @@
         </div>
     </main>
 
-    <!-- Footer -->
     <footer style="background: #0f172a; color: #94a3b8; padding: 40px 0 20px; border-top: 1px solid #1e293b;">
         <div class="container" style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 16px; font-size: var(--font-sm);">
             <div style="display: flex; align-items: center; gap: 8px;">
@@ -226,16 +215,15 @@
         </div>
     </footer>
 
-    <!-- Scripts -->
     <script src="../assets/js/api.js"></script>
     <script src="../assets/js/utils.js"></script>
     <script src="../assets/js/auth.js"></script>
     <script>
-        // Update navigation based on auth state
+
         document.addEventListener('DOMContentLoaded', function() {
             auth.updateNav();
         });
-        
+
         const navParams = utils.getNavParams();
         const bookId = navParams.id;
         let currentBook = null;
@@ -245,37 +233,31 @@
             alert('Book ID missing.');
             window.location.href = 'catalogue.html';
         }
-        
-        // Clean up navigation params after use
+
         utils.clearNavParams();
 
-        async function initPage() {
-            try {
-                // Fetch book info
-                const bookRes = await api.get(`/books/${bookId}`);
+        function initPage() {
+            api.get(`/books/${bookId}`).then(function(bookRes) {
                 currentBook = bookRes.data;
 
                 renderBookDetails(currentBook);
 
-                // Fetch readability analysis
                 loadReadability(bookId);
 
-                // Fetch reviews
                 loadReviews(bookId);
 
-                // Fetch recommendations
                 loadRecommendations(bookId);
 
                 document.getElementById('loading-spinner').style.display = 'none';
                 document.getElementById('book-content').style.display = 'grid';
 
-            } catch (err) {
+            }).catch(function(err) {
                 document.getElementById('loading-spinner').innerHTML = `
                     <div style="color: var(--danger); font-size: 18px; font-weight: 700;">Book Not Found</div>
                     <p style="color: var(--text-muted); margin-top: 8px;">The requested book could not be loaded.</p>
                     <a href="catalogue.html" class="btn btn-outline btn-sm" style="margin-top: 16px;">Return to Catalogue</a>
                 `;
-            }
+            });
         }
 
         function renderBookDetails(book) {
@@ -286,24 +268,21 @@
             document.getElementById('book-category').textContent = book.category || 'General';
             document.getElementById('book-language').textContent = book.language || 'English';
             document.getElementById('book-year').textContent = book.publication_year || 'N/A';
-            
+
             if (book.description) {
                 document.getElementById('book-description').textContent = book.description;
             }
 
-            // Meta table
             document.getElementById('meta-isbn').textContent = book.isbn || 'N/A';
             document.getElementById('meta-publisher').textContent = book.publisher || 'N/A';
             document.getElementById('meta-language').textContent = book.language || 'English';
             document.getElementById('meta-copies').textContent = `${book.available_copies} available of ${book.total_copies} total`;
 
-            // Cover
             const posterWrap = document.getElementById('poster-wrap');
             if (book.cover_image) {
                 posterWrap.innerHTML = `<img src="${book.cover_image}" alt="${utils.escapeHtml(book.title)}" class="book-poster-img">`;
             }
 
-            // Availability & Action Button
             const stockContainer = document.getElementById('stock-badge-container');
             const actionBtn = document.getElementById('main-action-btn');
 
@@ -319,19 +298,17 @@
                 actionBtn.onclick = handleReserve;
             }
 
-            // Favorites Button
             const favBtn = document.getElementById('favorite-btn');
             favBtn.onclick = handleToggleFavorite;
         }
 
-        async function loadReadability(id) {
-            try {
-                const res = await api.get(`/readability?book_id=${id}`);
+        function loadReadability(id) {
+            api.get(`/readability?book_id=${id}`).then(function(res) {
                 const r = res.data;
                 if (r) {
                     document.getElementById('stat-reading-ease').textContent = r.flesch_reading_ease || '--';
                     document.getElementById('stat-grade-level').textContent = r.flesch_kincaid_grade ? `Grade ${r.flesch_kincaid_grade}` : '--';
-                    
+
                     const minutes = r.estimated_reading_minutes || 0;
                     if (minutes > 60) {
                         const hrs = Math.floor(minutes / 60);
@@ -344,14 +321,13 @@
                     document.getElementById('stat-word-count').textContent = (r.word_count || 0).toLocaleString();
                     document.getElementById('readability-badge-wrap').innerHTML = utils.getReadabilityBadge(r.difficulty_level, r.flesch_reading_ease);
                 }
-            } catch (err) {
+            }).catch(function(err) {
                 document.getElementById('readability-badge-wrap').innerHTML = `<span class="badge badge-neutral">Standard Readability</span>`;
-            }
+            });
         }
 
-        async function loadReviews(id) {
-            try {
-                const res = await api.get(`/reviews?book_id=${id}`);
+        function loadReviews(id) {
+            api.get(`/reviews?book_id=${id}`).then(function(res) {
                 const reviews = res.data && res.data.reviews ? res.data.reviews : (Array.isArray(res.data) ? res.data : []);
                 const avg = res.data && res.data.average_rating ? res.data.average_rating : (res.average_rating || 0);
                 const total = res.data && res.data.total_reviews ? res.data.total_reviews : (res.total_reviews || reviews.length);
@@ -378,27 +354,24 @@
                     </div>
                 `).join('');
 
-            } catch (err) {
-                // Ignore reviews error
+            }).catch(function(err) {
                 console.error('Failed to load reviews:', err);
-            }
+            });
         }
 
-        // Load recommendations
-        async function loadRecommendations(bookId) {
+        function loadRecommendations(bookId) {
             const container = document.getElementById('recommendations-container');
-            try {
-                const response = await api.get('/recommendations', { 
-                    type: 'content', 
-                    book_id: bookId, 
-                    limit: 4 
-                });
-                
+            api.get('/recommendations', {
+                type: 'content',
+                book_id: bookId,
+                limit: 4
+            }).then(function(response) {
+
                 const recommendations = response.data && response.data.recommendations ? response.data.recommendations : [];
-                
+
                 if (recommendations.length > 0) {
                     container.innerHTML = recommendations.map(rec => {
-                        const cover = rec.cover_image 
+                        const cover = rec.cover_image
                             ? `<img src="${rec.cover_image}" alt="${utils.escapeHtml(rec.title)}" style="height: 120px; width: 100%; object-fit: cover; border-radius: var(--radius-md); margin-bottom: 8px;">`
                             : `<div style="height: 120px; width: 100%; background: linear-gradient(135deg, #4f46e5, #0ea5e9); border-radius: var(--radius-md); margin-bottom: 8px; display: flex; align-items: center; justify-content: center; color: #fff;">${lucide.render('book', { size: 24 })}</div>`;
 
@@ -427,7 +400,7 @@
                     `;
                     lucide.createIcons(container);
                 }
-            } catch (err) {
+            }).catch(function(err) {
                 console.error('Failed to load recommendations:', err);
                 container.innerHTML = `
                     <div style="grid-column: 1 / -1; text-align: center; padding: 20px; color: var(--text-muted);">
@@ -436,11 +409,10 @@
                     </div>
                 `;
                 lucide.createIcons(container);
-            }
+            });
         }
 
-        // Borrow handler
-        async function handleBorrow() {
+        function handleBorrow() {
             if (!auth.isLoggedIn()) {
                 utils.toast("Authentication Required", "Please log in to borrow library books.", "warning");
                 setTimeout(() => utils.navigate('login.html', {redirect: window.location.pathname}), 1200);
@@ -451,17 +423,15 @@
                 return;
             }
 
-            try {
-                await api.post('/library/issue', { book_id: currentBook.id });
+            api.post('/library/issue', { book_id: currentBook.id }).then(function() {
                 utils.toast("Book Borrowed Successfully", "You can now view this in your My Books dashboard.", "success");
-                setTimeout(() => window.location.href = 'user/my-books.html', 1200);
-            } catch (err) {
+                setTimeout(function() { window.location.href = 'user/my-books.html'; }, 1200);
+            }).catch(function(err) {
                 utils.toast("Borrowing Error", err.message, "error");
-            }
+            });
         }
 
-        // Reserve handler
-        async function handleReserve() {
+        function handleReserve() {
             if (!auth.isLoggedIn()) {
                 utils.toast("Authentication Required", "Please log in to reserve books.", "warning");
                 setTimeout(() => utils.navigate('login.html', {redirect: window.location.pathname}), 1200);
@@ -472,23 +442,20 @@
                 return;
             }
 
-            try {
-                await api.post('/library/reserve', { book_id: currentBook.id });
+            api.post('/library/reserve', { book_id: currentBook.id }).then(function() {
                 utils.toast("Reservation Confirmed", "We will notify you immediately once a copy is returned.", "success");
-                setTimeout(() => window.location.href = 'user/reservations.html', 1200);
-            } catch (err) {
+                setTimeout(function() { window.location.href = 'user/reservations.html'; }, 1200);
+            }).catch(function(err) {
                 utils.toast("Reservation Error", err.message, "error");
-            }
+            });
         }
 
-        // Toggle Favorite
-        async function handleToggleFavorite() {
+        function handleToggleFavorite() {
             if (!auth.isLoggedIn()) {
                 utils.toast("Authentication Required", "Please log in to save favorites.", "warning");
                 return;
             }
-            try {
-                const res = await api.post('/favorites', { book_id: currentBook.id });
+            api.post('/favorites', { book_id: currentBook.id }).then(function(res) {
                 const favBtn = document.getElementById('favorite-btn');
                 if (res.data && res.data.favorited) {
                     favBtn.textContent = '♥ Favorited';
@@ -499,12 +466,11 @@
                     favBtn.className = 'btn btn-outline';
                     utils.toast("Removed", res.message, "info");
                 }
-            } catch (err) {
+            }).catch(function(err) {
                 utils.toast("Error", err.message, "error");
-            }
+            });
         }
 
-        // Toggle review form
         function toggleReviewForm() {
             const formCard = document.getElementById('review-form-card');
             formCard.style.display = formCard.style.display === 'none' ? 'block' : 'none';
@@ -519,8 +485,7 @@
             toggleReviewForm();
         });
 
-        // Submit Review
-        document.getElementById('review-form').addEventListener('submit', async function(e) {
+        document.getElementById('review-form').addEventListener('submit', function(e) {
             e.preventDefault();
             const ratingInput = document.querySelector('input[name="rating"]:checked');
             if (!ratingInput) {
@@ -534,22 +499,20 @@
             const submitBtn = document.getElementById('submit-review-btn');
             submitBtn.disabled = true;
 
-            try {
-                await api.post('/reviews', {
-                    book_id: currentBook.id,
-                    rating: rating,
-                    review_text: reviewText
-                });
-
+            api.post('/reviews', {
+                book_id: currentBook.id,
+                rating: rating,
+                review_text: reviewText
+            }).then(function() {
                 utils.toast("Review Submitted", "Thank you for reviewing this book!", "success");
                 toggleReviewForm();
                 loadReviews(currentBook.id);
 
-            } catch (err) {
+            }).catch(function(err) {
                 utils.toast("Review Failed", err.message, "error");
-            } finally {
+            }).then(function() {
                 submitBtn.disabled = false;
-            }
+            });
         });
 
         initPage();

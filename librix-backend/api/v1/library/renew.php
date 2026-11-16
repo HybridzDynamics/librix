@@ -1,7 +1,5 @@
 <?php
 
-// Configuration
-
 require_once __DIR__ . "/../../../config/config.php";
 require_once __DIR__ . "/../../../config/database.php";
 require_once __DIR__ . "/../../../helpers/response.php";
@@ -9,22 +7,13 @@ require_once __DIR__ . "/../../../helpers/validation.php";
 require_once __DIR__ . "/../../../helpers/functions.php";
 require_once __DIR__ . "/../../../middleware/auth.php";
 
-
-// Request Method
-
 if ($_SERVER["REQUEST_METHOD"] !== "POST") {
     methodNotAllowedResponse(["POST"]);
 }
 
-
-// Authentication
-
 $User = requireAuth();
 $UserId = (int)$User["id"];
 $IsAdmin = ($User["role"] === "admin");
-
-
-// Request Data
 
 $Input = getJsonInput();
 $IssueId = $Input["issue_id"] ?? null;
@@ -36,12 +25,9 @@ if ($IdError !== null) {
 
 $IssueId = (int)$IssueId;
 
-
-// Find Book Issue
-
 try {
     $Stmt = $pdo->prepare(
-        "SELECT 
+        "SELECT
             book_issues.id,
             book_issues.book_id,
             book_issues.user_id,
@@ -62,12 +48,10 @@ try {
         notFoundResponse("Book issue not found");
     }
 
-    // Permission check
     if (!$IsAdmin && (int)$Issue["user_id"] !== $UserId) {
         forbiddenResponse("You can only renew books issued to your account");
     }
 
-    // Status check
     if ($Issue["status"] === "returned") {
         errorResponse("Cannot renew a book that has already been returned", 400);
     }
@@ -79,21 +63,18 @@ try {
         errorResponse("Maximum number of renewals ({$MaxRenewals}) reached for this book", 400);
     }
 
-    // Calculate new due date (14 days from current due date or today if already overdue)
     $CurrentDueDate = strtotime($Issue["due_date"]);
     $BaseTime = ($CurrentDueDate > time()) ? $CurrentDueDate : time();
     $NewDueDate = date("Y-m-d", strtotime("+14 days", $BaseTime));
     $NewRenewalCount = $RenewalCount + 1;
 
-    // Update Issue
     $UpdateStmt = $pdo->prepare(
-        "UPDATE book_issues 
-         SET due_date = ?, renewal_count = ?, status = 'issued' 
+        "UPDATE book_issues
+         SET due_date = ?, renewal_count = ?, status = 'issued'
          WHERE id = ?"
     );
     $UpdateStmt->execute([$NewDueDate, $NewRenewalCount, $IssueId]);
 
-    // Send Notification
     $NotifStmt = $pdo->prepare(
         "INSERT INTO notifications (user_id, title, message, type)
          VALUES (?, ?, ?, 'success')"

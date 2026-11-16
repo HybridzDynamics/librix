@@ -1,7 +1,5 @@
 <?php
 
-// Configuration
-
 require_once __DIR__ . "/../../../config/config.php";
 require_once __DIR__ . "/../../../config/database.php";
 require_once __DIR__ . "/../../../helpers/response.php";
@@ -10,21 +8,12 @@ require_once __DIR__ . "/../../../helpers/functions.php";
 require_once __DIR__ . "/../../../middleware/auth.php";
 require_once __DIR__ . "/../../../middleware/admin.php";
 
-
-// Request Method
-
 if ($_SERVER["REQUEST_METHOD"] !== "GET") {
     methodNotAllowedResponse(["GET"]);
 }
 
-
-// Authentication
-
 $User = requireAuth();
 requireAdmin($User);
-
-
-// Parameters
 
 $Page = validatePageNumber($_GET["page"] ?? 1);
 $Limit = validatePageLimit($_GET["limit"] ?? DEFAULT_PAGE_SIZE, DEFAULT_PAGE_SIZE, MAX_PAGE_SIZE);
@@ -58,9 +47,6 @@ if ($BookId !== null && $BookId !== "") {
 
 $WhereSql = !empty($WhereClauses) ? "WHERE " . implode(" AND ", $WhereClauses) : "";
 
-
-// Total Count
-
 try {
     $CountSql = "SELECT COUNT(*) AS total FROM book_issues $WhereSql";
     $CountStmt = $pdo->prepare($CountSql);
@@ -70,9 +56,6 @@ try {
 } catch (PDOException $e) {
     errorResponse("Database error", 500);
 }
-
-
-// Fetch Issues
 
 try {
     $DataSql = "SELECT
@@ -121,9 +104,6 @@ try {
 } catch (PDOException $e) {
     errorResponse("Database error", 500);
 }
-
-
-// Response
 
 paginatedResponse(
     $Issues,

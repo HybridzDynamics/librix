@@ -1,7 +1,5 @@
 <?php
 
-// Configuration
-
 require_once __DIR__ . "/../../../../config/config.php";
 require_once __DIR__ . "/../../../../config/database.php";
 require_once __DIR__ . "/../../../../helpers/response.php";
@@ -10,19 +8,10 @@ require_once __DIR__ . "/../../../../helpers/functions.php";
 require_once __DIR__ . "/../../../../middleware/auth.php";
 require_once __DIR__ . "/../../../../middleware/admin.php";
 
-
-// Authentication
-
 $AdminUser = requireAuth();
 requireAdmin($AdminUser);
 
-
-// Request Method
-
 $Method = $_SERVER["REQUEST_METHOD"];
-
-
-// Create Maintenance Window (POST)
 
 if ($Method === "POST") {
 
@@ -89,7 +78,6 @@ if ($Method === "POST") {
         errorResponse("Unable to schedule maintenance", 500);
     }
 
-    // Return Created
     try {
         $Stmt = $pdo->prepare("SELECT * FROM maintenance_windows WHERE id = ? LIMIT 1");
         $Stmt->execute([$WindowId]);
@@ -102,9 +90,6 @@ if ($Method === "POST") {
 
     successResponse($Created, "Maintenance window scheduled successfully", 201);
 }
-
-
-// Update Maintenance Window (PUT/PATCH)
 
 if ($Method === "PUT" || $Method === "PATCH") {
 
@@ -183,7 +168,6 @@ if ($Method === "PUT" || $Method === "PATCH") {
         errorResponse("Unable to update maintenance window", 500);
     }
 
-    // Return Updated
     try {
         $Stmt = $pdo->prepare("SELECT * FROM maintenance_windows WHERE id = ? LIMIT 1");
         $Stmt->execute([$WindowId]);
@@ -196,9 +180,6 @@ if ($Method === "PUT" || $Method === "PATCH") {
 
     successResponse($Updated, "Maintenance window updated successfully");
 }
-
-
-// Delete Maintenance Window (DELETE)
 
 if ($Method === "DELETE") {
 

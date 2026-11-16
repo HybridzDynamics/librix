@@ -1,38 +1,24 @@
 <?php
 
-// Configuration
-
 require_once __DIR__ . "/../../../config/config.php";
 require_once __DIR__ . "/../../../config/database.php";
 require_once __DIR__ . "/../../../helpers/response.php";
 require_once __DIR__ . "/../../../helpers/validation.php";
 require_once __DIR__ . "/../../../helpers/functions.php";
 
-
-// Request Method
-
 if ($_SERVER["REQUEST_METHOD"] !== "POST") {
     methodNotAllowedResponse(["POST"]);
 }
 
-
-// Request Data
-
 $RequestData = getJsonInput();
 
 $Token = trim($RequestData["token"] ?? "");
-
-
-// Validation
 
 $TokenError = required($Token, "Verification token");
 
 if ($TokenError !== null) {
     ValidationerrorResponse(["token" => $TokenError]);
 }
-
-
-// Find Verification Token
 
 try {
     $Stmt = $pdo->prepare(
@@ -65,13 +51,9 @@ if (strtotime($TokenRecord["expires_at"]) <= time()) {
 $UserId = (int)$TokenRecord["user_id"];
 $TokenId = (int)$TokenRecord["id"];
 
-
-// Verification Transaction
-
 try {
     $pdo->beginTransaction();
 
-    // Mark Token Used
     $Stmt = $pdo->prepare(
         "UPDATE email_verification_tokens
          SET used_at = CURRENT_TIMESTAMP
@@ -80,7 +62,6 @@ try {
 
     $Stmt->execute([$TokenId]);
 
-    // Delete other tokens for this user
     $Stmt = $pdo->prepare(
         "DELETE FROM email_verification_tokens
          WHERE user_id = ? AND id != ?"
@@ -88,7 +69,6 @@ try {
 
     $Stmt->execute([$UserId, $TokenId]);
 
-    // Activate and Mark Verified
     $Stmt = $pdo->prepare(
         "UPDATE users
          SET email_verified_at = CURRENT_TIMESTAMP,
@@ -106,9 +86,6 @@ try {
     }
     errorResponse("Unable to verify email", 500);
 }
-
-
-// Response
 
 successResponse(
     [],

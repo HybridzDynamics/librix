@@ -13,7 +13,7 @@
 </head>
 
 <body>
-    <!-- Navigation Bar -->
+
     <nav id="nav-bar">
         <div class="nav-brand">
             <a href="../index.html" style="display: flex; align-items: center; gap: 10px; text-decoration: none;">
@@ -34,7 +34,6 @@
         </div>
     </nav>
 
-    <!-- Header -->
     <header style="background: linear-gradient(135deg, #1e1b4b 0%, #312e81 50%, #4338ca 100%); color: #ffffff; padding: 60px 0 40px;">
         <div class="container-narrow" style="text-align: center;">
             <h1 style="font-size: var(--font-3xl); font-weight: 800; color: #ffffff; margin-bottom: 10px;">Get in Touch</h1>
@@ -44,10 +43,9 @@
         </div>
     </header>
 
-    <!-- Main Content -->
     <main class="container" style="padding: 50px 24px 80px;">
         <div class="grid grid-2" style="gap: 48px; align-items: start;">
-            <!-- Contact Form Card -->
+
             <div class="card" style="padding: 32px; box-shadow: var(--shadow-md);">
                 <h2 style="font-size: var(--font-xl); font-weight: 800; margin-bottom: 6px;">Send Us a Message</h2>
                 <p style="font-size: var(--font-sm); color: var(--text-muted); margin-bottom: 24px;">Our circulation librarians typically reply within 24 hours.</p>
@@ -87,9 +85,8 @@
                 </form>
             </div>
 
-            <!-- Library Info & FAQ Column -->
             <div>
-                <!-- Contact Cards -->
+
                 <div style="display: flex; flex-direction: column; gap: 16px; margin-bottom: 36px;">
                     <div class="stat-card">
                         <div class="stat-icon stat-icon-primary">📍</div>
@@ -114,7 +111,6 @@
                     </div>
                 </div>
 
-                <!-- Quick Help / FAQs -->
                 <div class="card" style="padding: 24px;">
                     <h3 style="font-size: var(--font-base); font-weight: 800; margin-bottom: 16px;">Frequently Asked Questions</h3>
                     <div style="display: flex; flex-direction: column; gap: 14px; font-size: var(--font-sm);">
@@ -136,7 +132,6 @@
         </div>
     </main>
 
-    <!-- Footer -->
     <footer style="background: #0f172a; color: #94a3b8; padding: 40px 0 20px; border-top: 1px solid #1e293b;">
         <div class="container" style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 16px; font-size: var(--font-sm);">
             <div style="display: flex; align-items: center; gap: 8px;">
@@ -152,17 +147,15 @@
         </div>
     </footer>
 
-    <!-- Scripts -->
     <script src="../assets/js/api.js"></script>
     <script src="../assets/js/utils.js"></script>
     <script src="../assets/js/auth.js"></script>
     <script>
-        // Update navigation based on auth state
+
         document.addEventListener('DOMContentLoaded', function() {
             auth.updateNav();
         });
-        
-        // Autofill if logged in
+
         if (auth.isLoggedIn()) {
             const user = auth.getUser();
             document.getElementById('name').value = user.name || '';

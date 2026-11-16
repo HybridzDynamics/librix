@@ -1,35 +1,21 @@
 <?php
 
-// Configuration
-
 require_once __DIR__ . "/../../../config/config.php";
 require_once __DIR__ . "/../../../config/database.php";
 require_once __DIR__ . "/../../../helpers/response.php";
 require_once __DIR__ . "/../../../helpers/functions.php";
 require_once __DIR__ . "/../../../middleware/auth.php";
 
-
-// Request Method
-
 if ($_SERVER["REQUEST_METHOD"] !== "GET") {
     methodNotAllowedResponse(["GET"]);
 }
 
-
-// Authentication
-
 $User = requireAuth();
 $UserId = (int)$User["id"];
-
-
-// Pagination
 
 $Page = isset($_GET["page"]) ? max(1, (int)$_GET["page"]) : 1;
 $Limit = isset($_GET["limit"]) ? min(100, max(1, (int)$_GET["limit"])) : 20;
 $Offset = ($Page - 1) * $Limit;
-
-
-// Query Favorites
 
 try {
     $CountStmt = $pdo->prepare("SELECT COUNT(id) FROM favorites WHERE user_id = ?");
@@ -37,7 +23,7 @@ try {
     $Total = (int)$CountStmt->fetchColumn();
 
     $Stmt = $pdo->prepare(
-        "SELECT 
+        "SELECT
             favorites.id AS favorite_id,
             favorites.book_id,
             favorites.created_at AS favorited_at,

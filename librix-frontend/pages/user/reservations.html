@@ -64,11 +64,11 @@
     <script src="../../assets/js/utils.js"></script>
     <script src="../../assets/js/auth.js"></script>
     <script>
-        // Update navigation based on auth state
+
         document.addEventListener('DOMContentLoaded', function() {
             auth.updateNav();
         });
-        
+
         if (!auth.requireAuth()) {}
         const user = auth.getUser();
         if (user) {
@@ -77,11 +77,10 @@
         }
         function toggleSidebar() { document.getElementById('sidebar').classList.toggle('is-open'); }
 
-        async function loadReservations() {
+        function loadReservations() {
             const container = document.getElementById('reservations-container');
             container.innerHTML = `<div style="padding:60px;text-align:center;"><div class="spinner"></div></div>`;
-            try {
-                const res = await api.get('/library/my-books');
+            api.get('/library/my-books').then(function(res) {
                 const reservations = (res.data && res.data.reservations) ? res.data.reservations : [];
                 if (reservations.length === 0) {
                     container.innerHTML = `
@@ -112,29 +111,28 @@
                             </tbody>
                         </table>
                     </div>`;
-            } catch (err) {
+            }).catch(function(err) {
                 container.innerHTML = `<div style="padding:40px;text-align:center;color:var(--danger);">Failed to load reservations.</div>`;
-            }
+            });
         }
 
-        async function cancelReservation(resId, title) {
-            const confirmed = await utils.confirm({
+        function cancelReservation(resId, title) {
+            utils.confirm({
                 title: 'Cancel Reservation Hold',
                 message: `Are you sure you want to cancel your reservation for "${title}"?`,
                 confirmText: 'Cancel Hold',
                 type: 'warning',
                 icon: 'x-circle'
+            }).then(function(confirmed) {
+                if (!confirmed) return;
+
+                api.post('/library/cancel-reservation', { reservation_id: resId }).then(function() {
+                    utils.toast("Reservation Cancelled", `Cancelled hold on "${title}".`, "info");
+                    loadReservations();
+                }).catch(function(err) {
+                    utils.toast("Cancellation Failed", err.message, "danger");
+                });
             });
-
-            if (!confirmed) return;
-
-            try {
-                await api.post('/library/cancel-reservation', { reservation_id: resId });
-                utils.toast("Reservation Cancelled", `Cancelled hold on "${title}".`, "info");
-                loadReservations();
-            } catch (err) {
-                utils.toast("Cancellation Failed", err.message, "danger");
-            }
         }
 
         loadReservations();

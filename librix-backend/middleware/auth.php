@@ -1,13 +1,8 @@
 <?php
 
-// Authentication Middleware
-
 require_once __DIR__ . "/../config/database.php";
 require_once __DIR__ . "/../helpers/response.php";
 require_once __DIR__ . "/../helpers/functions.php";
-
-
-// Require Authentication
 
 function requireAuth()
 {
@@ -18,9 +13,6 @@ function requireAuth()
     if (!$Token) {
         unauthorizedResponse("Authorization token is required");
     }
-
-
-    // Find Session
 
     try {
         $Stmt = $pdo->prepare(
@@ -51,15 +43,9 @@ function requireAuth()
         errorResponse("Database error", 500);
     }
 
-
-    // Check Token
-
     if (!$User) {
         unauthorizedResponse("Invalid authentication token");
     }
-
-
-    // Check Expiration
 
     if (strtotime($User["expires_at"]) <= time()) {
 
@@ -78,15 +64,9 @@ function requireAuth()
         unauthorizedResponse("Authentication token has expired");
     }
 
-
-    // Check User Status
-
     if ($User["status"] !== "active") {
         unauthorizedResponse("User account is not active");
     }
-
-
-    // Return User
 
     return [
         "id" => (int)$User["user_id"],

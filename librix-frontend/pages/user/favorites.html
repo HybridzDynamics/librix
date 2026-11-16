@@ -66,11 +66,11 @@
     <script src="../../assets/js/utils.js"></script>
     <script src="../../assets/js/auth.js"></script>
     <script>
-        // Update navigation based on auth state
+
         document.addEventListener('DOMContentLoaded', function() {
             auth.updateNav();
         });
-        
+
         if (!auth.requireAuth()) {}
         const user = auth.getUser();
         if (user) {
@@ -83,12 +83,11 @@
         const trashSvg = `<svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 6h18"/><path d="M19 6v14c0 1-1 2-2 2H7c-1 0-2-1-2-2V6"/><path d="M8 6V4c0-1 1-2 2-2h4c1 0 2 1 2 2v2"/></svg>`;
         const bookSvg = `<svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M4 19.5v-15A2.5 2.5 0 0 1 6.5 2H20v20H6.5a2.5 2.5 0 0 1-2.5-2.5Z"/><path d="M6 2v20"/></svg>`;
 
-        async function loadFavorites() {
+        function loadFavorites() {
             const container = document.getElementById('favorites-container');
             const badgeContainer = document.getElementById('favorites-count-badge');
             container.innerHTML = `<div style="padding:60px;text-align:center;"><div class="spinner"></div></div>`;
-            try {
-                const res = await api.get('/favorites');
+            api.get('/favorites').then(function(res) {
                 const favorites = Array.isArray(res.data) ? res.data : (res.data && res.data.data ? res.data.data : []);
                 badgeContainer.innerHTML = `<span class="badge badge-primary">${favorites.length} Saved Titles</span>`;
 
@@ -137,19 +136,18 @@
                                 </div>`;
                         }).join('')}
                     </div>`;
-            } catch (err) {
+            }).catch(function(err) {
                 container.innerHTML = `<div style="padding:40px;text-align:center;color:var(--danger);">Failed to load saved favorites.</div>`;
-            }
+            });
         }
 
-        async function removeFavorite(bookId, title) {
-            try {
-                await api.post('/favorites', { book_id: bookId });
+        function removeFavorite(bookId, title) {
+            api.post('/favorites', { book_id: bookId }).then(function() {
                 utils.toast("Removed", `Removed "${title}" from your favorites list.`, "info");
                 loadFavorites();
-            } catch (err) {
+            }).catch(function(err) {
                 utils.toast("Error", err.message, "error");
-            }
+            });
         }
 
         loadFavorites();

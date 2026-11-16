@@ -13,7 +13,7 @@
 
 <body>
     <div class="dashboard-wrapper">
-        <!-- Sidebar -->
+
         <aside class="dashboard-sidebar" id="sidebar">
             <div class="sidebar-brand">
                 <img src="../../assets/images/logo.png" alt="LibriX Logo">
@@ -41,7 +41,6 @@
             </div>
         </aside>
 
-        <!-- Main Area -->
         <main class="dashboard-main">
             <header class="dashboard-topbar">
                 <div style="display:flex;align-items:center;gap:14px;">
@@ -73,11 +72,11 @@
     <script src="../../assets/js/utils.js"></script>
     <script src="../../assets/js/auth.js"></script>
     <script>
-        // Update navigation based on auth state
+
         document.addEventListener('DOMContentLoaded', function() {
             auth.updateNav();
         });
-        
+
         if (!auth.requireAuth()) {}
 
         const user = auth.getUser();
@@ -90,12 +89,11 @@
             document.getElementById('sidebar').classList.toggle('is-open');
         }
 
-        async function loadMyBooks() {
+        function loadMyBooks() {
             const container = document.getElementById('my-books-container');
             const badgeContainer = document.getElementById('active-count-badge');
 
-            try {
-                const res = await api.get('/library/my-books');
+            api.get('/library/my-books').then(function(res) {
                 const books = res.data && res.data.currently_issued ? res.data.currently_issued : [];
 
                 badgeContainer.innerHTML = `<span class="badge badge-primary" style="font-size:13px;padding:6px 14px;">${books.length} Active Loans</span>`;
@@ -188,49 +186,47 @@
                     lucide.createIcons(container);
                 }
 
-            } catch (err) {
+            }).catch(function(err) {
                 container.innerHTML = `<div style="padding:40px;text-align:center;color:var(--danger);">Failed to load your borrowed books.</div>`;
-            }
+            });
         }
 
-        async function renewBook(issueId, title) {
-            const confirmed = await utils.confirm({
+        function renewBook(issueId, title) {
+            utils.confirm({
                 title: 'Extend Loan Period',
                 message: `Would you like to extend your borrowing period for "${title}" by 14 additional days?`,
                 confirmText: 'Renew Book (+14 Days)',
                 icon: 'refresh-cw',
                 type: 'primary'
+            }).then(function(confirmed) {
+                if (!confirmed) return;
+
+                api.post('/library/renew', { issue_id: issueId }).then(function(res) {
+                    utils.toast("Loan Extended", res.message || `Renewed "${title}".`, "success");
+                    loadMyBooks();
+                }).catch(function(err) {
+                    utils.toast("Renewal Error", err.message, "danger");
+                });
             });
-
-            if (!confirmed) return;
-
-            try {
-                const res = await api.post('/library/renew', { issue_id: issueId });
-                utils.toast("Loan Extended", res.message || `Renewed "${title}".`, "success");
-                loadMyBooks();
-            } catch (err) {
-                utils.toast("Renewal Error", err.message, "danger");
-            }
         }
 
-        async function returnBook(issueId, title) {
-            const confirmed = await utils.confirm({
+        function returnBook(issueId, title) {
+            utils.confirm({
                 title: 'Return Book to Library',
                 message: `Are you ready to return "${title}" to the library? This will mark the borrowing complete and update available copies.`,
                 confirmText: 'Confirm Return',
                 icon: 'check-circle',
                 type: 'success'
+            }).then(function(confirmed) {
+                if (!confirmed) return;
+
+                api.post('/library/return', { issue_id: issueId }).then(function() {
+                    utils.toast("Book Returned", `"${title}" has been checked back in.`, "success");
+                    loadMyBooks();
+                }).catch(function(err) {
+                    utils.toast("Return Error", err.message, "danger");
+                });
             });
-
-            if (!confirmed) return;
-
-            try {
-                await api.post('/library/return', { issue_id: issueId });
-                utils.toast("Book Returned", `"${title}" has been checked back in.`, "success");
-                loadMyBooks();
-            } catch (err) {
-                utils.toast("Return Error", err.message, "danger");
-            }
         }
 
         loadMyBooks();

@@ -1,22 +1,14 @@
 <?php
 
-// Configuration
-
 require_once __DIR__ . "/../../../config/config.php";
 require_once __DIR__ . "/../../../config/database.php";
 require_once __DIR__ . "/../../../helpers/response.php";
 require_once __DIR__ . "/../../../helpers/validation.php";
 require_once __DIR__ . "/../../../helpers/functions.php";
 
-
-// Request Method
-
 if ($_SERVER["REQUEST_METHOD"] !== "POST") {
     methodNotAllowedResponse(["POST"]);
 }
-
-
-// Rate Limiting
 
 $ClientIp = getClientIp();
 $RateLimitKey = "resend_verify_" . $ClientIp;
@@ -26,15 +18,9 @@ if ($RetryAfter > 0) {
     tooManyRequestsResponse("Too many verification requests. Please try again later.", $RetryAfter);
 }
 
-
-// Request Data
-
 $RequestData = getJsonInput();
 
 $UserEmail = trim($RequestData["email"] ?? "");
-
-
-// Validation
 
 $Errors = [];
 
@@ -54,13 +40,7 @@ if (hasValidationErrors($Errors)) {
     ValidationerrorResponse($Errors);
 }
 
-
-// Generic Message
-
 $GenericMessage = "If an unverified account exists for this email, a new verification link has been sent.";
-
-
-// Check User
 
 try {
     $Stmt = $pdo->prepare(
@@ -77,9 +57,6 @@ try {
 } catch (PDOException $e) {
     errorResponse("Unable to process request", 500);
 }
-
-
-// Issue Token if User Exists, Not Suspended, and Unverified
 
 if ($User && $User["status"] !== "suspended" && $User["email_verified_at"] === null) {
 
@@ -116,9 +93,6 @@ if ($User && $User["status"] !== "suspended" && $User["email_verified_at"] === n
         errorResponse("Unable to process request", 500);
     }
 }
-
-
-// Response
 
 successResponse(
     [],

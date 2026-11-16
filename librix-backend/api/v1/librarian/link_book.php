@@ -1,11 +1,5 @@
 <?php
 
-// Librarian: Link an existing book to this librarian's org
-// POST /api/v1/librarian/link_book
-// Body: { "book_id": 42, "copies": 3 }
-// Creates a duplicate book record scoped to the librarian's org (preserving original),
-// OR updates org_id if the book has no org and librarian is linking an unowned book.
-
 require_once __DIR__ . "/../../../config/config.php";
 require_once __DIR__ . "/../../../config/database.php";
 require_once __DIR__ . "/../../../helpers/response.php";
@@ -34,7 +28,7 @@ if (!$OrgId) {
 }
 
 try {
-    // Fetch the source book
+
     $Stmt = $pdo->prepare("
         SELECT books.*, authors.name AS author_name, categories.name AS category_name
         FROM books
@@ -50,7 +44,6 @@ try {
         notFoundResponse("Book with ID $BookId not found in catalogue");
     }
 
-    // Check if this exact book is already linked to this org
     $DupCheck = $pdo->prepare("
         SELECT id FROM books
         WHERE org_id = ? AND (isbn = ? OR title = ?)
@@ -72,7 +65,6 @@ try {
         ]);
     }
 
-    // Clone the book for this org
     $InsStmt = $pdo->prepare("
         INSERT INTO books (
             org_id, author_id, category_id, publisher_id,
@@ -92,7 +84,7 @@ try {
         $Source["category_id"],
         $Source["publisher_id"],
         $Source["title"],
-        $Source["isbn"] ? $Source["isbn"] . "-ORG-$OrgId" : null,  // suffix to avoid unique constraint
+        $Source["isbn"] ? $Source["isbn"] . "-ORG-$OrgId" : null,
         $Source["description"],
         $Source["category"] ?? $Source["category_name"],
         $Source["language"],
@@ -108,7 +100,6 @@ try {
 
     $NewBookId = (int)$pdo->lastInsertId();
 
-    // Clone readability analysis
     $ReadStmt = $pdo->prepare("
         SELECT * FROM readability_analysis WHERE book_id = ? LIMIT 1
     ");
@@ -134,7 +125,7 @@ try {
             $ReadRow["estimated_reading_minutes"]
         ]);
     } else {
-        // Insert default readability
+
         $pdo->prepare("
             INSERT INTO readability_analysis (book_id, sample_text, word_count, sentence_count, syllable_count, flesch_reading_ease, flesch_kincaid_grade, difficulty_level, estimated_reading_minutes)
             VALUES (?, ?, 50, 4, 75, 70.0, 7.0, 'standard', 300)

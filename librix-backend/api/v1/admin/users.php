@@ -1,7 +1,5 @@
 <?php
 
-// Configuration
-
 require_once __DIR__ . "/../../../config/config.php";
 require_once __DIR__ . "/../../../config/database.php";
 require_once __DIR__ . "/../../../helpers/response.php";
@@ -10,19 +8,10 @@ require_once __DIR__ . "/../../../helpers/functions.php";
 require_once __DIR__ . "/../../../middleware/auth.php";
 require_once __DIR__ . "/../../../middleware/admin.php";
 
-
-// Authentication
-
 $AdminUser = requireAuth();
 requireAdmin($AdminUser);
 
-
-// Request Method
-
 $Method = $_SERVER["REQUEST_METHOD"];
-
-
-// Update User (Status / Role)
 
 if ($Method === "PUT" || $Method === "PATCH") {
 
@@ -38,7 +27,6 @@ if ($Method === "PUT" || $Method === "PATCH") {
 
     $TargetUserId = (int)$TargetUserId;
 
-    // Check Target User Exists
     try {
         $Stmt = $pdo->prepare("SELECT id, name, email, role, status FROM users WHERE id = ? LIMIT 1");
         $Stmt->execute([$TargetUserId]);
@@ -66,7 +54,6 @@ if ($Method === "PUT" || $Method === "PATCH") {
         errorResponse("Invalid role value. Allowed: " . implode(", ", $ValidRoles), 422);
     }
 
-    // Prevent Admin from suspending/deactivating self
     if ($TargetUserId === (int)$AdminUser["id"] && $NewStatus !== "active") {
         errorResponse("You cannot deactivate or suspend your own account", 400);
     }
@@ -85,7 +72,6 @@ if ($Method === "PUT" || $Method === "PATCH") {
             $TargetUserId
         ]);
 
-        // If user suspended or deactivated, revoke all their active sessions
         if ($NewStatus !== "active") {
             $Stmt = $pdo->prepare("DELETE FROM auth_tokens WHERE user_id = ?");
             $Stmt->execute([$TargetUserId]);
@@ -103,7 +89,6 @@ if ($Method === "PUT" || $Method === "PATCH") {
         errorResponse("Unable to update user status", 500);
     }
 
-    // Fetch Fresh User
     try {
         $Stmt = $pdo->prepare("SELECT id, name, email, role, status, email_verified_at, created_at, updated_at FROM users WHERE id = ? LIMIT 1");
         $Stmt->execute([$TargetUserId]);
@@ -116,9 +101,6 @@ if ($Method === "PUT" || $Method === "PATCH") {
 
     successResponse($UpdatedUser, "User updated successfully");
 }
-
-
-// List Users (GET)
 
 if ($Method === "GET") {
 
@@ -152,7 +134,6 @@ if ($Method === "GET") {
 
     $WhereSql = !empty($WhereClauses) ? "WHERE " . implode(" AND ", $WhereClauses) : "";
 
-    // Count Total
     try {
         $CountStmt = $pdo->prepare("SELECT COUNT(*) AS total FROM users $WhereSql");
         $CountStmt->execute($Bindings);
@@ -163,7 +144,6 @@ if ($Method === "GET") {
         errorResponse("Database error", 500);
     }
 
-    // Fetch Users
     try {
         $DataSql = "SELECT
                         id,

@@ -1,27 +1,16 @@
 <?php
 
-// Configuration
-
 require_once __DIR__ . "/../../../config/config.php";
 require_once __DIR__ . "/../../../config/database.php";
 require_once __DIR__ . "/../../../helpers/response.php";
 require_once __DIR__ . "/../../../helpers/validation.php";
 require_once __DIR__ . "/../../../helpers/functions.php";
 
-
-// Request Method
-
 if ($_SERVER["REQUEST_METHOD"] !== "GET") {
     methodNotAllowedResponse(["GET"]);
 }
 
-
-// Request Data
-
 $CategoryId = $categoryId ?? ($parts[3] ?? ($_GET["id"] ?? null));
-
-
-// Single Category
 
 if ($CategoryId !== null) {
     $IdError = validatePositiveInteger($CategoryId, "Category ID");
@@ -31,7 +20,7 @@ if ($CategoryId !== null) {
 
     try {
         $Stmt = $pdo->prepare(
-            "SELECT 
+            "SELECT
                 categories.id,
                 categories.name,
                 categories.description,
@@ -60,12 +49,9 @@ if ($CategoryId !== null) {
     }
 }
 
-
-// All Categories
-
 try {
     $Stmt = $pdo->prepare(
-        "SELECT 
+        "SELECT
             categories.id,
             categories.name,
             categories.description,

@@ -1,7 +1,5 @@
 <?php
 
-// Configuration
-
 require_once __DIR__ . "/../../../config/config.php";
 require_once __DIR__ . "/../../../config/database.php";
 require_once __DIR__ . "/../../../helpers/response.php";
@@ -10,29 +8,17 @@ require_once __DIR__ . "/../../../helpers/functions.php";
 require_once __DIR__ . "/../../../middleware/auth.php";
 require_once __DIR__ . "/../../../middleware/admin.php";
 
-
-// Request Method
-
 if ($_SERVER["REQUEST_METHOD"] !== "POST") {
     methodNotAllowedResponse(["POST"]);
 }
-
-
-// Authentication & Admin Check
 
 $User = requireAuth();
 requireAdmin($User);
 $UserId = (int)$User["id"];
 
-
-// Request Data
-
 $Input = getJsonInput();
 $Name = isset($Input["name"]) ? sanitizeString($Input["name"]) : null;
 $Description = isset($Input["description"]) ? sanitizeString($Input["description"]) : null;
-
-
-// Validation
 
 $Errors = [];
 
@@ -45,9 +31,6 @@ if (empty($Name)) {
 if (!empty($Errors)) {
     errorResponse("Validation failed", 422, $Errors);
 }
-
-
-// Check Duplicate Name
 
 try {
     $Check = $pdo->prepare("SELECT id FROM categories WHERE LOWER(name) = LOWER(?) LIMIT 1");

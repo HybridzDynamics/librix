@@ -1,7 +1,5 @@
 <?php
 
-// Configuration
-
 require_once __DIR__ . "/../../../config/config.php";
 require_once __DIR__ . "/../../../config/database.php";
 require_once __DIR__ . "/../../../helpers/response.php";
@@ -10,22 +8,13 @@ require_once __DIR__ . "/../../../helpers/functions.php";
 require_once __DIR__ . "/../../../middleware/auth.php";
 require_once __DIR__ . "/../../../middleware/admin.php";
 
-
-// Request Method
-
 if ($_SERVER["REQUEST_METHOD"] !== "PUT") {
     methodNotAllowedResponse(["PUT"]);
 }
 
-
-// Authentication & Admin Check
-
 $User = requireAuth();
 requireAdmin($User);
 $UserId = (int)$User["id"];
-
-
-// Publisher ID
 
 $PublisherId = $publisherId ?? ($parts[3] ?? null);
 $Input = getJsonInput();
@@ -41,9 +30,6 @@ if ($IdError !== null) {
 
 $PublisherId = (int)$PublisherId;
 
-
-// Find Existing Publisher
-
 try {
     $Stmt = $pdo->prepare("SELECT id, name, address, website FROM publishers WHERE id = ? LIMIT 1");
     $Stmt->execute([$PublisherId]);
@@ -56,9 +42,6 @@ try {
     errorResponse("Database error", 500);
 }
 
-
-// Update Fields
-
 $Name = isset($Input["name"]) ? sanitizeString($Input["name"]) : $Existing["name"];
 $Address = array_key_exists("address", $Input) ? ($Input["address"] ? sanitizeString($Input["address"]) : null) : $Existing["address"];
 $Website = array_key_exists("website", $Input) ? ($Input["website"] ? sanitizeString($Input["website"]) : null) : $Existing["website"];
@@ -70,9 +53,6 @@ if (empty($Name)) {
 if (!empty($Website) && !filter_var($Website, FILTER_VALIDATE_URL)) {
     errorResponse("Invalid website URL", 422);
 }
-
-
-// Update Database
 
 try {
     $UpdateStmt = $pdo->prepare("UPDATE publishers SET name = ?, address = ?, website = ? WHERE id = ?");

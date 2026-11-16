@@ -1,7 +1,5 @@
 <?php
 
-// Configuration
-
 require_once __DIR__ . "/../../../config/config.php";
 require_once __DIR__ . "/../../../config/database.php";
 require_once __DIR__ . "/../../../helpers/response.php";
@@ -9,21 +7,12 @@ require_once __DIR__ . "/../../../helpers/functions.php";
 require_once __DIR__ . "/../../../middleware/auth.php";
 require_once __DIR__ . "/../../../middleware/admin.php";
 
-
-// Request Method
-
 if ($_SERVER["REQUEST_METHOD"] !== "GET") {
     methodNotAllowedResponse(["GET"]);
 }
 
-
-// Authentication
-
 $User = requireAuth();
 requireAdmin($User);
-
-
-// Database Query - Users Statistics
 
 try {
     $Stmt = $pdo->prepare(
@@ -48,9 +37,6 @@ try {
     ];
 }
 
-
-// Database Query - Books Statistics
-
 try {
     $Stmt = $pdo->prepare(
         "SELECT
@@ -66,9 +52,6 @@ try {
     $BooksStats = ["total_books" => 0];
 }
 
-
-// Database Query - Authors Statistics
-
 try {
     $Stmt = $pdo->prepare(
         "SELECT COUNT(*) AS total_authors FROM authors"
@@ -81,9 +64,6 @@ try {
     error_log("Statistics authors error: " . $e->getMessage());
     $AuthorsStats = ["total_authors" => 0];
 }
-
-
-// Database Query - Issues Statistics
 
 try {
     $Stmt = $pdo->prepare(
@@ -108,9 +88,6 @@ try {
     ];
 }
 
-
-// Database Query - Reservations Statistics
-
 try {
     $Stmt = $pdo->prepare(
         "SELECT
@@ -129,9 +106,6 @@ try {
         "active_reservations" => 0
     ];
 }
-
-
-// Database Query - Fines Statistics
 
 try {
     $Stmt = $pdo->prepare(
@@ -156,9 +130,6 @@ try {
     ];
 }
 
-
-// Response
-
 successResponse(
     [
         "users" => [
@@ -169,7 +140,7 @@ successResponse(
         ],
         "books" => [
             "total_titles" => (int)($BooksStats["total_books"] ?? 0),
-            "total_copies" => (int)($BooksStats["total_books"] ?? 0) * 5, // Assume 5 copies per book
+            "total_copies" => (int)($BooksStats["total_books"] ?? 0) * 5,
             "available_copies" => (int)($BooksStats["total_books"] ?? 0) * 5,
             "issued_copies" => 0
         ],

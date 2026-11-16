@@ -1,7 +1,5 @@
 <?php
 
-// Configuration
-
 require_once __DIR__ . "/../../../config/config.php";
 require_once __DIR__ . "/../../../config/database.php";
 require_once __DIR__ . "/../../../helpers/response.php";
@@ -10,25 +8,17 @@ require_once __DIR__ . "/../../../helpers/functions.php";
 require_once __DIR__ . "/../../../middleware/auth.php";
 require_once __DIR__ . "/../../../middleware/admin.php";
 
-
-// Request Method
-
 $Method = $_SERVER["REQUEST_METHOD"];
 
 if ($Method !== "GET" && $Method !== "PUT") {
     methodNotAllowedResponse(["GET", "PUT"]);
 }
 
-
-// Authentication
-
 $User = requireAuth();
 requireAdmin($User);
 
-
-// Parameters
-
-$Page = validatePageNumber($_GET["page"] ?? 1);
+if ($Method === "GET") {
+    $Page = validatePageNumber($_GET["page"] ?? 1);
 $Limit = validatePageLimit($_GET["limit"] ?? DEFAULT_PAGE_SIZE, DEFAULT_PAGE_SIZE, MAX_PAGE_SIZE);
 $Offset = ($Page - 1) * $Limit;
 
@@ -44,9 +34,6 @@ if ($Status !== null && $Status !== "") {
 
 $WhereSql = !empty($WhereClauses) ? "WHERE " . implode(" AND ", $WhereClauses) : "";
 
-
-// Total Count
-
 try {
     $CountSql = "SELECT COUNT(*) AS total FROM reservations $WhereSql";
     $CountStmt = $pdo->prepare($CountSql);
@@ -56,9 +43,6 @@ try {
 } catch (PDOException $e) {
     errorResponse("Database error", 500);
 }
-
-
-// Fetch Reservations
 
 try {
     $DataSql = "SELECT
@@ -101,18 +85,12 @@ try {
     errorResponse("Database error", 500);
 }
 
-
-// Response
-
 paginatedResponse(
     $Reservations,
     $Page,
     $Limit,
     $Total);
 }
-
-
-// Update Reservation Status (PUT)
 
 if ($Method === "PUT") {
     $RequestData = getJsonInput();

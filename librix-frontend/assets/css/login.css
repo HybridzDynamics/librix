@@ -1,17 +1,9 @@
-/* =========================
-   RESET
-   ========================= */
 
 * {
     margin: 0;
     padding: 0;
     box-sizing: border-box;
 }
-
-
-/* =========================
-   BODY
-   ========================= */
 
 body {
     font-family:
@@ -33,11 +25,6 @@ body {
     flex-direction: column;
 }
 
-
-/* =========================
-   LOGIN PAGE
-   ========================= */
-
 .login-page {
     flex: 1;
 
@@ -48,11 +35,6 @@ body {
 
     padding: 50px 20px;
 }
-
-
-/* =========================
-   LOGIN CONTAINER
-   ========================= */
 
 .login-container {
     width: 100%;
@@ -65,11 +47,6 @@ body {
 
     align-items: center;
 }
-
-
-/* =========================
-   BRAND
-   ========================= */
 
 .login-brand {
     display: flex;
@@ -96,11 +73,6 @@ body {
     color: #4F46E5;
 }
 
-
-/* =========================
-   LOGIN CARD
-   ========================= */
-
 .login-card {
     width: 100%;
 
@@ -115,11 +87,6 @@ body {
     box-shadow:
         0 15px 40px rgba(15, 23, 42, 0.08);
 }
-
-
-/* =========================
-   LOGIN HEADER
-   ========================= */
 
 .login-header {
     text-align: center;
@@ -143,84 +110,9 @@ body {
     font-size: 14px;
 }
 
-
-/* =========================
-   FORM
-   ========================= */
-
 .login-form {
     width: 100%;
 }
-
-.form-group {
-    width: 100%;
-
-    margin-bottom: 20px;
-}
-
-
-/* =========================
-   LABEL
-   ========================= */
-
-.form-group > label {
-    display: block;
-
-    margin-bottom: 7px;
-
-    color: #334155;
-
-    font-size: 14px;
-
-    font-weight: 700;
-}
-
-
-/* =========================
-   EMAIL INPUT
-   ========================= */
-
-.form-group input[type="email"] {
-    width: 100%;
-
-    height: 46px;
-
-    padding: 0 14px;
-
-    border: 1px solid #CBD5E1;
-
-    border-radius: 8px;
-
-    outline: none;
-
-    background-color: #FFFFFF;
-
-    color: #0F172A;
-
-    font-family: inherit;
-
-    font-size: 14px;
-
-    transition:
-        border-color 0.2s ease,
-        box-shadow 0.2s ease;
-}
-
-.form-group input[type="email"]::placeholder {
-    color: #94A3B8;
-}
-
-.form-group input[type="email"]:focus {
-    border-color: #4F46E5;
-
-    box-shadow:
-        0 0 0 3px rgba(79, 70, 229, 0.10);
-}
-
-
-/* =========================
-   PASSWORD HEADER
-   ========================= */
 
 .password-header {
     display: flex;
@@ -254,21 +146,11 @@ body {
     text-decoration: underline;
 }
 
-
-/* =========================
-   PASSWORD WRAPPER
-   ========================= */
-
 .password-input {
     position: relative;
 
     width: 100%;
 }
-
-
-/* =========================
-   PASSWORD INPUT
-   ========================= */
 
 .password-input input {
     width: 100%;
@@ -306,11 +188,6 @@ body {
     box-shadow:
         0 0 0 3px rgba(79, 70, 229, 0.10);
 }
-
-
-/* =========================
-   EYE BUTTON
-   ========================= */
 
 .toggle-password {
     position: absolute;
@@ -368,11 +245,6 @@ body {
     pointer-events: none;
 }
 
-
-/* =========================
-   REMEMBER ME
-   ========================= */
-
 .remember-row {
     margin-top: -5px;
 
@@ -402,11 +274,6 @@ body {
 
     cursor: pointer;
 }
-
-
-/* =========================
-   LOGIN BUTTON
-   ========================= */
 
 .login-submit {
     width: 100%;
@@ -448,11 +315,6 @@ body {
     transform: translateY(0);
 }
 
-
-/* =========================
-   DIVIDER
-   ========================= */
-
 .divider {
     display: flex;
 
@@ -482,11 +344,6 @@ body {
     font-weight: 700;
 }
 
-
-/* =========================
-   REGISTER
-   ========================= */
-
 .register-section {
     text-align: center;
 }
@@ -515,11 +372,6 @@ body {
     text-decoration: underline;
 }
 
-
-/* =========================
-   BACK HOME
-   ========================= */
-
 .back-home {
     margin-top: 22px;
 
@@ -538,11 +390,6 @@ body {
     color: #4F46E5;
 }
 
-
-/* =========================
-   FOOTER
-   ========================= */
-
 .login-footer {
     width: 100%;
 
@@ -560,11 +407,6 @@ body {
 
     font-size: 13px;
 }
-
-
-/* =========================
-   RESPONSIVE
-   ========================= */
 
 @media (max-width: 500px) {
 

@@ -1,7 +1,5 @@
 <?php
 
-// Configuration
-
 require_once __DIR__ . "/../../../config/config.php";
 require_once __DIR__ . "/../../../config/database.php";
 require_once __DIR__ . "/../../../helpers/response.php";
@@ -9,21 +7,12 @@ require_once __DIR__ . "/../../../helpers/validation.php";
 require_once __DIR__ . "/../../../helpers/functions.php";
 require_once __DIR__ . "/../../../middleware/auth.php";
 
-
-// Request Method
-
 if ($_SERVER["REQUEST_METHOD"] !== "POST") {
     methodNotAllowedResponse(["POST"]);
 }
 
-
-// Authentication
-
 $User = requireAuth();
 $UserId = (int)$User["id"];
-
-
-// Request Data
 
 $Input = getJsonInput();
 $BookId = $Input["book_id"] ?? null;
@@ -35,9 +24,6 @@ if ($IdError !== null) {
 
 $BookId = (int)$BookId;
 
-
-// Check Book Exists
-
 try {
     $BookCheck = $pdo->prepare("SELECT id FROM books WHERE id = ? LIMIT 1");
     $BookCheck->execute([$BookId]);
@@ -48,16 +34,13 @@ try {
     errorResponse("Database error", 500);
 }
 
-
-// Check if already favorited
-
 try {
     $Stmt = $pdo->prepare("SELECT id FROM favorites WHERE user_id = ? AND book_id = ? LIMIT 1");
     $Stmt->execute([$UserId, $BookId]);
     $Existing = $Stmt->fetch();
 
     if ($Existing) {
-        // Remove from favorites
+
         $DelStmt = $pdo->prepare("DELETE FROM favorites WHERE id = ?");
         $DelStmt->execute([(int)$Existing["id"]]);
 
@@ -66,7 +49,7 @@ try {
             "book_id" => $BookId
         ], "Book removed from favorites");
     } else {
-        // Add to favorites
+
         $AddStmt = $pdo->prepare("INSERT INTO favorites (user_id, book_id) VALUES (?, ?)");
         $AddStmt->execute([$UserId, $BookId]);
 
