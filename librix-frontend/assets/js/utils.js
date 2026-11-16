@@ -1,6 +1,16 @@
 
 const utils = {
 
+    escapeHtml: function(str) {
+        if (!str) return '';
+        return String(str)
+            .replace(/&/g, '&amp;')
+            .replace(/</g, '&lt;')
+            .replace(/>/g, '&gt;')
+            .replace(/"/g, '&quot;')
+            .replace(/'/g, '&#039;');
+    },
+
     toast: function(title, message = '', type = 'info', duration = 4000) {
         let container = document.getElementById('toast-container');
         if (!container) {

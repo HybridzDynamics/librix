@@ -30,42 +30,42 @@
 
                 <div id="alert-box" style="display: none; padding: 10px 14px; margin-bottom: 16px; border-radius: var(--radius-md); font-size: var(--font-sm);"></div>
 
-                <form id="login-form" class="login-form" novalidate>
+                <form id="login-form" class="login-form" novalidate style="display: flex; flex-direction: column; gap: 18px;">
 
-                    <div class="form-group">
-                        <label for="email" class="form-label">Email Address <span class="required">*</span></label>
+                    <div>
+                        <label for="email" style="display: block; font-size: var(--font-sm); font-weight: 600; margin-bottom: 6px; color: var(--text-main);">Email Address <span style="color: var(--danger);">*</span></label>
                         <input
                             type="email"
                             id="email"
                             name="email"
-                            class="form-input"
                             placeholder="Enter your email"
                             autocomplete="email"
                             required
+                            style="width: 100%; padding: 10px 12px; border: 1px solid var(--border); border-radius: var(--radius); font-size: var(--font-sm); background: #ffffff;"
                         >
-                        <div class="form-error" id="email-error"></div>
+                        <div id="email-error" style="font-size: var(--font-xs); color: var(--danger); margin-top: 4px;"></div>
                     </div>
 
-                    <div class="form-group">
-                        <div class="password-header">
-                            <label for="password" class="form-label">Password <span class="required">*</span></label>
-                            <a href="#" id="forgot-password-link" style="font-size: var(--font-xs);">Forgot password?</a>
+                    <div>
+                        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 6px;">
+                            <label for="password" style="font-size: var(--font-sm); font-weight: 600; color: var(--text-main);">Password <span style="color: var(--danger);">*</span></label>
+                            <a href="#" id="forgot-password-link" style="font-size: var(--font-xs); color: var(--primary);">Forgot password?</a>
                         </div>
-                        <div class="password-input">
+                        <div style="position: relative;">
                             <input
                                 type="password"
                                 id="password"
                                 name="password"
-                                class="form-input"
                                 placeholder="Enter your password"
                                 autocomplete="current-password"
                                 required
+                                style="width: 100%; padding: 10px 12px; padding-right: 40px; border: 1px solid var(--border); border-radius: var(--radius); font-size: var(--font-sm); background: #ffffff;"
                             >
                             <button
                                 type="button"
-                                class="toggle-password"
                                 id="togglePassword"
                                 aria-label="Show password"
+                                style="position: absolute; right: 10px; top: 50%; transform: translateY(-50%); background: none; border: none; cursor: pointer; padding: 0; display: flex; align-items: center; color: var(--text-muted);"
                             >
                                 <svg id="eyeIcon" xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                                     <path d="M2.062 12.348a1 1 0 0 1 0-.696 10.75 10.75 0 0 1 19.876 0 1 1 0 0 1 0 .696 10.75 10.75 0 0 1-19.876 0"/>
@@ -73,18 +73,16 @@
                                 </svg>
                             </button>
                         </div>
-                        <div class="form-error" id="password-error"></div>
+                        <div id="password-error" style="font-size: var(--font-xs); color: var(--danger); margin-top: 4px;"></div>
                     </div>
 
-                    <div class="remember-row">
-                        <label class="form-checkbox-label">
-                            <input type="checkbox" name="remember" class="form-checkbox" id="remember">
-                            <span>Remember me</span>
-                        </label>
+                    <div style="display: flex; align-items: center; gap: 8px;">
+                        <input type="checkbox" name="remember" id="remember" style="width: 16px; height: 16px; cursor: pointer;">
+                        <label for="remember" style="font-size: var(--font-sm); color: var(--text-main); cursor: pointer;">Remember me</label>
                     </div>
 
-                    <button type="submit" id="submit-btn" class="login-submit btn-primary">
-                        <span>Sign In</span>
+                    <button type="submit" id="submit-btn" class="btn btn-primary" style="width: 100%; padding: 12px; font-weight: 600;">
+                        Sign In
                     </button>
                 </form>
 
@@ -135,8 +133,10 @@
         const alertBox = document.getElementById("alert-box");
 
         function clearErrors() {
-            document.querySelectorAll(".form-error").forEach(el => el.textContent = "");
-            document.querySelectorAll(".form-input").forEach(el => el.classList.remove("is-invalid"));
+            document.getElementById("email-error").textContent = "";
+            document.getElementById("password-error").textContent = "";
+            document.getElementById("email").style.borderColor = "var(--border)";
+            document.getElementById("password").style.borderColor = "var(--border)";
             alertBox.style.display = "none";
         }
 
@@ -151,20 +151,20 @@
 
             if (!email) {
                 document.getElementById("email-error").textContent = "Email is required";
-                document.getElementById("email").classList.add("is-invalid");
+                document.getElementById("email").style.borderColor = "var(--danger)";
                 hasError = true;
             }
 
             if (!password) {
                 document.getElementById("password-error").textContent = "Password is required";
-                document.getElementById("password").classList.add("is-invalid");
+                document.getElementById("password").style.borderColor = "var(--danger)";
                 hasError = true;
             }
 
             if (hasError) return;
 
             submitBtn.disabled = true;
-            submitBtn.innerHTML = '<span class="spinner spinner-sm spinner-white"></span> Signing in...';
+            submitBtn.textContent = 'Signing in...';
 
             auth.login(email, password).then(function(data) {
                 utils.toast("Signed in", `Welcome back, ${data.user.name}!`, "success");
@@ -187,13 +187,13 @@
 
             }).catch(function(err) {
                 submitBtn.disabled = false;
-                submitBtn.innerHTML = '<span>Sign In</span>';
+                submitBtn.textContent = 'Sign In';
 
                 alertBox.style.display = "block";
-                alertBox.style.backgroundColor = "var(--danger-light)";
-                alertBox.style.color = "var(--danger-text)";
-                alertBox.style.border = "1px solid var(--danger-border)";
-                alertBox.textContent = err.message || "Invalid email or password.";
+                alertBox.style.backgroundColor = "#fee2e2";
+                alertBox.style.color = "#991b1b";
+                alertBox.style.border = "1px solid #fecaca";
+                alertBox.textContent = (err && err.message) ? err.message : "Invalid email or password.";
             });
         });
 

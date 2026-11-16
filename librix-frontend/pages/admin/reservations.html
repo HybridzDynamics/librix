@@ -16,18 +16,16 @@
 
         <aside class="admin-sidebar" id="sidebar">
             <div class="admin-sidebar-brand">
-                <img src="../../assets/images/logo.png" alt="Librix Logo">
-                <h2>LibriX <span class="badge-admin">LIBRARIAN</span></h2>
+                <img src="../../assets/images/logo.png" alt="LibriX Logo">
+                <h2>LibriX <span class="badge-admin">ADMIN</span></h2>
             </div>
-
             <div class="admin-sidebar-user">
                 <div class="admin-sidebar-avatar" id="admin-avatar">A</div>
-                <div style="overflow: hidden;">
+                <div style="overflow:hidden;">
                     <div class="admin-sidebar-name" id="admin-name">Administrator</div>
-                    <div class="admin-sidebar-role">Library Operations</div>
+                    <div class="admin-sidebar-role">System Administration</div>
                 </div>
             </div>
-
             <ul class="admin-sidebar-menu">
                 <li class="admin-menu-header">Core Operations</li>
                 <li class="admin-sidebar-item"><a href="dashboard.html"><span class="admin-sidebar-icon"><i data-lucide="layout-dashboard" data-size="18"></i></span><span>Overview Dashboard</span></a></li>
@@ -43,12 +41,17 @@
 
                 <li class="admin-menu-header">Administration</li>
                 <li class="admin-sidebar-item"><a href="users.html"><span class="admin-sidebar-icon"><i data-lucide="users" data-size="18"></i></span><span>Users &amp; Patrons</span></a></li>
+                <li class="admin-sidebar-item"><a href="organizations.html"><span class="admin-sidebar-icon"><i data-lucide="building-2" data-size="18"></i></span><span>Organizations</span></a></li>
+                <li class="admin-sidebar-item"><a href="librarian-requests.html"><span class="admin-sidebar-icon"><i data-lucide="user-check" data-size="18"></i></span><span>Librarian Requests</span></a></li>
+                <li class="admin-sidebar-item"><a href="join-requests.html"><span class="admin-sidebar-icon"><i data-lucide="user-plus" data-size="18"></i></span><span>Join Requests</span></a></li>
+                <li class="admin-menu-header">System &amp; Security</li>
+                <li class="admin-sidebar-item"><a href="audit-logs.html"><span class="admin-sidebar-icon"><i data-lucide="shield-check" data-size="18"></i></span><span>Audit Logs</span></a></li>
                 <li class="admin-sidebar-item"><a href="reports.html"><span class="admin-sidebar-icon"><i data-lucide="bar-chart-2" data-size="18"></i></span><span>Reports &amp; Analytics</span></a></li>
+                <li class="admin-menu-header">External Services</li>
                 <li class="admin-sidebar-item"><a href="../catalogue.html" target="_blank"><span class="admin-sidebar-icon"><i data-lucide="external-link" data-size="18"></i></span><span>Live Public Site</span></a></li>
             </ul>
-
             <div class="admin-sidebar-footer">
-                <button class="btn btn-outline btn-sm" style="width: 100%; border-color: #334155; color: #cbd5e1; display: flex; align-items: center; justify-content: center; gap: 8px;" onclick="auth.logout()">
+                <button class="btn btn-sm" style="width:100%;display:flex;align-items:center;justify-content:center;gap:8px;border:1px solid #334155;color:#cbd5e1;background:transparent;" onclick="auth.logout()">
                     <i data-lucide="log-out" data-size="16"></i> Logout Admin
                 </button>
             </div>

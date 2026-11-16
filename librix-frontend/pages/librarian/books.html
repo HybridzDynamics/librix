@@ -8,7 +8,6 @@
     <link rel="icon" type="image/png" href="../../assets/images/favicon.png">
     <link rel="stylesheet" href="../../assets/css/global.css">
     <link rel="stylesheet" href="../../assets/css/dashboard.css">
-    <link rel="stylesheet" href="../../assets/css/admin.css">
     <script src="../../assets/js/icons.js"></script>
 </head>
 
@@ -24,7 +23,7 @@
                 <div class="sidebar-avatar" id="user-avatar" style="background:#7e22ce;color:#fff;">L</div>
                 <div class="sidebar-user-info">
                     <div class="sidebar-user-name" id="user-name-display">Loading...</div>
-                    <div class="sidebar-user-role" style="color:#7e22ce;font-weight:600;">Librarian Officer</div>
+                    <div class="sidebar-user-role" style="color:#7e22ce;font-weight:600;">Library Staff</div>
                 </div>
             </div>
             <ul class="sidebar-menu">
@@ -46,7 +45,7 @@
                     <span style="font-weight:700;font-size:var(--font-base);">Organization Books Management</span>
                 </div>
                 <div class="topbar-actions" style="display:flex;align-items:center;gap:10px;">
-                    <span class="badge badge-accent" id="active-org-badge" style="background:#f3e8ff;color:#7e22ce;font-weight:600;padding:6px 12px;">ORG-MIT-01</span>
+                    <span class="badge badge-accent" id="active-org-badge" style="background:#f3e8ff;color:#7e22ce;font-weight:600;padding:6px 12px;">org-code</span>
                     <button class="btn btn-primary btn-sm" onclick="openAddBookModal()" style="display:flex;align-items:center;gap:6px;"><i data-lucide="plus" data-size="16"></i> Add Book to Org</button>
                 </div>
             </header>
@@ -138,7 +137,7 @@
                         </div>
                         <div class="form-group">
                             <label class="form-label">Publisher</label>
-                            <input type="text" id="book-publisher" class="form-control" placeholder="e.g. MIT Press" />
+                            <input type="text" id="book-publisher" class="form-control" placeholder="e.g. Your Publisher" />
                         </div>
                     </div>
                     <div class="grid grid-2" style="gap:14px;margin-bottom:14px;">
@@ -153,14 +152,14 @@
                     </div>
                     <div class="form-group" style="margin-bottom:14px;">
                         <label class="form-label">Cover Image URL</label>
-                        <input type="url" id="book-cover" class="form-control" placeholder="https://images.unsplash.com/photo-..." value="https://images.unsplash.com/photo-1544716278-ca5e3f4abd8c?w=500&q=80" />
+                        <input type="url" id="book-cover" class="form-control" placeholder="https://yourlibrary.com/cover.jpg" value="" />
                     </div>
                     <div class="form-group" style="margin-bottom:14px;">
                         <label class="form-label">Synopsis / Description</label>
                         <textarea id="book-description" class="form-control" rows="3" placeholder="Overview of the book contents and reading relevance..."></textarea>
                     </div>
                     <div style="background:#f8fafc;padding:12px 16px;border-radius:8px;border:1px solid var(--border);font-size:12px;color:var(--text-muted);">
-                        <i data-lucide="info" data-size="14" style="vertical-align:middle;margin-right:4px;"></i> This book will be tagged with your active organization: <strong id="modal-org-label">ORG-MIT-01</strong>
+                        <i data-lucide="info" data-size="14" style="vertical-align:middle;margin-right:4px;"></i> This book will be tagged with your active organization: <strong id="modal-org-label">org-code</strong>
                     </div>
                     <div class="modal-footer" style="margin-top:18px;padding-right:0;padding-bottom:0;">
                         <button type="button" class="btn btn-outline btn-sm" data-modal-close>Cancel</button>
@@ -272,7 +271,7 @@
                     <tr>
                         <td>
                             <div style="display:flex;align-items:center;gap:12px;">
-                                <img src="${b.cover_image || 'https://images.unsplash.com/photo-1543002588-bfa74002ed7e?w=500&q=80'}" alt="${utils.escapeHtml(b.title)}" style="width:40px;height:52px;object-fit:cover;border-radius:4px;box-shadow:0 2px 6px rgba(0,0,0,0.1);" />
+                                <img src="${b.cover_image || 'https://via.placeholder.com/500x650?text=Book'}" alt="${utils.escapeHtml(b.title)}" style="width:40px;height:52px;object-fit:cover;border-radius:4px;box-shadow:0 2px 6px rgba(0,0,0,0.1);" />
                                 <div>
                                     <div style="font-weight:700;color:var(--text-main);">${utils.escapeHtml(b.title)}</div>
                                     <div style="font-size:12px;color:var(--text-muted);">${utils.escapeHtml(b.author_name || 'Academic Contributor')}</div>

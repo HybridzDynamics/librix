@@ -21,14 +21,73 @@
                 </div>
             </div>
             <ul class="sidebar-menu">
-                <li class="sidebar-item"><a href="dashboard.html"><span class="sidebar-icon"><i data-lucide="layout-dashboard" data-size="18"></i></span><span>Dashboard</span></a></li>
-                <li class="sidebar-item"><a href="my-books.html"><span class="sidebar-icon"><i data-lucide="book" data-size="18"></i></span><span>My Borrowed Books</span></a></li>
-                <li class="sidebar-item"><a href="history.html"><span class="sidebar-icon"><i data-lucide="clock" data-size="18"></i></span><span>Borrowing History</span></a></li>
-                <li class="sidebar-item"><a href="reservations.html" class="active"><span class="sidebar-icon"><i data-lucide="bookmark" data-size="18"></i></span><span>Reservations</span></a></li>
-                <li class="sidebar-item"><a href="favorites.html"><span class="sidebar-icon"><i data-lucide="heart" data-size="18"></i></span><span>My Favorites</span></a></li>
-                <li class="sidebar-item"><a href="notifications.html"><span class="sidebar-icon"><i data-lucide="bell" data-size="18"></i></span><span>Notifications</span></a></li>
-                <li class="sidebar-item"><a href="profile.html"><span class="sidebar-icon"><i data-lucide="settings" data-size="18"></i></span><span>Profile &amp; Settings</span></a></li>
-                <li class="sidebar-item" style="margin-top:12px;border-top:1px solid var(--border);padding-top:12px;"><a href="../catalogue.html"><span class="sidebar-icon"><i data-lucide="search" data-size="18"></i></span><span>Explore Catalogue</span></a></li>
+                <li class="sidebar-item">
+                    <a href="dashboard.html">
+                        <span class="sidebar-icon"><i data-lucide="layout-dashboard" data-size="18"></i></span>
+                        <span>Dashboard</span>
+                    </a>
+                </li>
+                <li class="sidebar-item">
+                    <a href="my-books.html">
+                        <span class="sidebar-icon"><i data-lucide="book" data-size="18"></i></span>
+                        <span>My Borrowed Books</span>
+                    </a>
+                </li>
+                <li class="sidebar-item">
+                    <a href="history.html">
+                        <span class="sidebar-icon"><i data-lucide="clock" data-size="18"></i></span>
+                        <span>Borrowing History</span>
+                    </a>
+                </li>
+                <li class="sidebar-item">
+                    <a href="reservations.html">
+                        <span class="sidebar-icon"><i data-lucide="bookmark" data-size="18"></i></span>
+                        <span>Reservations</span>
+                    </a>
+                </li>
+                <li class="sidebar-item">
+                    <a href="favorites.html">
+                        <span class="sidebar-icon"><i data-lucide="heart" data-size="18"></i></span>
+                        <span>My Favorites</span>
+                    </a>
+                </li>
+                <li class="sidebar-item">
+                    <a href="notifications.html">
+                        <span class="sidebar-icon"><i data-lucide="bell" data-size="18"></i></span>
+                        <span>Notifications</span>
+                        <span id="sidebar-unread-badge" class="badge badge-danger" style="margin-left: auto; display: none; font-size: 10px; padding: 1px 6px;">0</span>
+                    </a>
+                </li>
+                <li class="sidebar-item">
+                    <a href="fines.html">
+                        <span class="sidebar-icon"><i data-lucide="dollar-sign" data-size="18"></i></span>
+                        <span>Fines & Payments</span>
+                    </a>
+                </li>
+                <li class="sidebar-item">
+                    <a href="profile.html">
+                        <span class="sidebar-icon"><i data-lucide="settings" data-size="18"></i></span>
+                        <span>Profile &amp; Settings</span>
+                    </a>
+                </li>
+                <li class="sidebar-item">
+                    <a href="../join-organization.html">
+                        <span class="sidebar-icon"><i data-lucide="building-2" data-size="18"></i></span>
+                        <span>Join Organization</span>
+                    </a>
+                </li>
+                <li class="sidebar-item">
+                    <a href="../librarian-request.html">
+                        <span class="sidebar-icon"><i data-lucide="user-check" data-size="18"></i></span>
+                        <span>Request Librarian</span>
+                    </a>
+                </li>
+                <li class="sidebar-item" style="margin-top: 12px; border-top: 1px solid var(--border); padding-top: 12px;">
+                    <a href="../catalogue.html">
+                        <span class="sidebar-icon"><i data-lucide="search" data-size="18"></i></span>
+                        <span>Explore Catalogue</span>
+                    </a>
+                </li>
             </ul>
             <div class="sidebar-footer">
                 <button class="btn btn-outline btn-sm" style="width:100%;display:flex;align-items:center;justify-content:center;gap:8px;border-color:var(--border);" onclick="auth.logout()"><i data-lucide="log-out" data-size="16"></i> Sign Out</button>

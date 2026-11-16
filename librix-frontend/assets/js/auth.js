@@ -35,12 +35,12 @@ const auth = {
 
     getOrgName: function() {
         const user = this.getUser();
-        return user ? (user.org_name || 'MIT Central Library') : 'MIT Central Library';
+        return user ? (user.org_name || 'Your Library') : 'Your Library';
     },
 
     getOrgCode: function() {
         const user = this.getUser();
-        return user ? (user.org_code || 'ORG-MIT-01') : 'ORG-MIT-01';
+        return user ? (user.org_code || 'org-code') : 'org-code';
     },
 
     _pathPrefix: function() {
@@ -70,6 +70,24 @@ const auth = {
         }
     },
 
+    register: function(name, email, password, orgId) {
+        orgId = orgId || 1;
+
+        return api.post('/auth/register', {
+            name: name,
+            email: email,
+            password: password,
+            org_id: orgId
+        }).then(function(response) {
+            if (response.success && response.data) {
+                localStorage.setItem('librix_token', response.data.token);
+                localStorage.setItem('librix_user', JSON.stringify(response.data.user));
+                return response.data;
+            }
+            throw new Error(response.message || 'Registration failed');
+        });
+    },
+
     login: function(email, password) {
         return api.post('/auth/login', { email: email, password: password }).then(function(response) {
             if (response.success && response.data) {
@@ -78,26 +96,6 @@ const auth = {
                 return response.data;
             }
             throw new Error(response.message || 'Login failed');
-        });
-    },
-
-    register: function(name, email, password, orgId, role) {
-        orgId = orgId || 1;
-        role = role || 'user';
-
-        return api.post('/auth/register', {
-            name: name,
-            email: email,
-            password: password,
-            org_id: orgId,
-            role: role
-        }).then(function(response) {
-            if (response.success && response.data) {
-                localStorage.setItem('librix_token', response.data.token);
-                localStorage.setItem('librix_user', JSON.stringify(response.data.user));
-                return response.data;
-            }
-            throw new Error(response.message || 'Registration failed');
         });
     },
 
@@ -182,6 +180,8 @@ const auth = {
         } else if (user.role === 'librarian') {
             dashboardUrl = prefix + 'librarian/dashboard.html';
             roleBadge = '<span class="badge badge-accent" style="font-size: 10px; padding: 1px 6px; background:#f3e8ff; color:#7e22ce;">LIBRARIAN</span>';
+        } else {
+            dashboardUrl = prefix + 'user/dashboard.html';
         }
 
         let profileImage = '';

@@ -26,7 +26,6 @@
             <a href="catalogue.html">Catalogue</a>
             <a href="about.html" class="active">About</a>
             <a href="contact.html">Contact</a>
-            <a href="status.html">System Status</a>
         </div>
         <div class="nav-auth" id="nav-auth-container">
             <a href="login.html" class="btn btn-outline btn-sm">Login</a>
@@ -64,7 +63,7 @@
                     LibriX unifies all core library operations—catalogue search, single-click borrowings, digital reservations, automated renewals, fine ledgers, and patron reviews—into one clean web application.
                 </p>
                 <div style="display: flex; flex-direction: column; gap: 10px; font-size: var(--font-sm); color: var(--text-main); font-weight: 500;">
-                    <div>✓ Automated Flesch-Kincaid Reading Complexity Indexing</div>
+                    <div>✓ Automated Reading Complexity Analysis</div>
                     <div>✓ Estimated Reading Pace Calculation in Hours & Minutes</div>
                     <div>✓ Real-Time Copy Availability & Instant Reservation Queues</div>
                 </div>
@@ -73,26 +72,26 @@
 
         <div class="card" style="padding: 40px; margin-bottom: 70px; background: #ffffff;">
             <div style="text-align: center; max-width: 680px; margin: 0 auto 36px;">
-                <span class="badge badge-primary" style="margin-bottom: 8px;">ALGORITHMIC INSIGHT</span>
+                <span class="badge badge-primary" style="margin-bottom: 8px;">READING INSIGHTS</span>
                 <h2 style="font-size: var(--font-2xl); font-weight: 800;">How the Readability Engine Works</h2>
                 <p style="color: var(--text-muted); font-size: var(--font-sm);">
-                    LibriX analyzes text patterns using proven linguistic formulas to give you objective reading metrics.
+                    LibriX analyzes text patterns to give you objective reading metrics for every book.
                 </p>
             </div>
 
             <div class="grid grid-3" style="gap: 24px;">
                 <div style="background: #f8fafc; border: 1px solid var(--border); border-radius: var(--radius-lg); padding: 24px;">
                     <div style="font-size: 32px; margin-bottom: 12px;">📐</div>
-                    <h3 style="font-size: var(--font-base); font-weight: 700; margin-bottom: 8px;">Flesch Reading Ease</h3>
+                    <h3 style="font-size: var(--font-base); font-weight: 700; margin-bottom: 8px;">Reading Ease Score</h3>
                     <p style="font-size: var(--font-xs); color: var(--text-muted); line-height: 1.6;">
-                        Calculates a score between 0 and 100 based on average sentence length and syllables per word. 90-100 is comic-strip simple; 30-50 is academic and collegiate.
+                        Scores each book between 0 and 100 based on sentence length and word complexity. Higher scores mean easier, faster reads.
                     </p>
                 </div>
                 <div style="background: #f8fafc; border: 1px solid var(--border); border-radius: var(--radius-lg); padding: 24px;">
                     <div style="font-size: 32px; margin-bottom: 12px;">🎓</div>
-                    <h3 style="font-size: var(--font-base); font-weight: 700; margin-bottom: 8px;">Flesch-Kincaid Grade</h3>
+                    <h3 style="font-size: var(--font-base); font-weight: 700; margin-bottom: 8px;">Grade Level Estimate</h3>
                     <p style="font-size: var(--font-xs); color: var(--text-muted); line-height: 1.6;">
-                        Translates syllable density and sentence complexity into a US grade reading level (e.g., Grade 8.2), making it simple for educators and students to calibrate.
+                        Translates text complexity into a reading grade level, making it simple for educators and students to pick the right book.
                     </p>
                 </div>
                 <div style="background: #f8fafc; border: 1px solid var(--border); border-radius: var(--radius-lg); padding: 24px;">
@@ -101,6 +100,37 @@
                     <p style="font-size: var(--font-xs); color: var(--text-muted); line-height: 1.6;">
                         Computes precise reading completion time based on 200 words-per-minute average adult silent comprehension rates, allowing readers to plan their schedule.
                     </p>
+                </div>
+            </div>
+        </div>
+
+        <div style="margin-bottom: 70px;">
+            <div style="text-align: center; max-width: 680px; margin: 0 auto 36px;">
+                <span class="badge badge-primary" style="margin-bottom: 8px;">MEET THE TEAM</span>
+                <h2 style="font-size: var(--font-2xl); font-weight: 800;">The People Behind LibriX</h2>
+                <p style="color: var(--text-muted); font-size: var(--font-sm);">
+                    A small team of developers and librarians building better reading infrastructure.
+                </p>
+            </div>
+
+            <div class="grid grid-3" style="gap: 24px;">
+                <div class="card card-hover" style="padding: 32px 24px; text-align: center;">
+                    <div style="width: 80px; height: 80px; border-radius: 50%; background: linear-gradient(135deg, var(--primary), var(--accent)); color: #fff; display: flex; align-items: center; justify-content: center; font-size: 30px; font-weight: 800; margin: 0 auto 18px; box-shadow: var(--shadow-md);">MA</div>
+                    <h3 style="font-size: var(--font-lg); font-weight: 700; margin-bottom: 4px; color: var(--text-main);">Mohammad Arsh</h3>
+                    <p style="font-size: var(--font-xs); color: var(--primary); font-weight: 700; text-transform: uppercase; letter-spacing: 0.05em; margin-bottom: 12px;">Backend Developer</p>
+                    <p style="font-size: var(--font-xs); color: var(--text-muted); line-height: 1.7;">Built the REST API, authentication system, database schema, and all server-side business logic that powers LibriX.</p>
+                </div>
+                <div class="card card-hover" style="padding: 32px 24px; text-align: center;">
+                    <div style="width: 80px; height: 80px; border-radius: 50%; background: linear-gradient(135deg, var(--secondary), var(--primary)); color: #fff; display: flex; align-items: center; justify-content: center; font-size: 30px; font-weight: 800; margin: 0 auto 18px; box-shadow: var(--shadow-md);">M</div>
+                    <h3 style="font-size: var(--font-lg); font-weight: 700; margin-bottom: 4px; color: var(--text-main);">Mohit</h3>
+                    <p style="font-size: var(--font-xs); color: var(--primary); font-weight: 700; text-transform: uppercase; letter-spacing: 0.05em; margin-bottom: 12px;">Frontend Developer</p>
+                    <p style="font-size: var(--font-xs); color: var(--text-muted); line-height: 1.7;">Designed the catalogue, dashboards, and every interactive page you see across the platform.</p>
+                </div>
+                <div class="card card-hover" style="padding: 32px 24px; text-align: center;">
+                    <div style="width: 80px; height: 80px; border-radius: 50%; background: linear-gradient(135deg, var(--success), var(--secondary)); color: #fff; display: flex; align-items: center; justify-content: center; font-size: 30px; font-weight: 800; margin: 0 auto 18px; box-shadow: var(--shadow-md);">P</div>
+                    <h3 style="font-size: var(--font-lg); font-weight: 700; margin-bottom: 4px; color: var(--text-main);">Parikshit</h3>
+                    <p style="font-size: var(--font-xs); color: var(--primary); font-weight: 700; text-transform: uppercase; letter-spacing: 0.05em; margin-bottom: 12px;">Frontend Developer</p>
+                    <p style="font-size: var(--font-xs); color: var(--text-muted); line-height: 1.7;">Crafted the responsive layouts, component styling, and user experience across all LibriX interfaces.</p>
                 </div>
             </div>
         </div>
@@ -128,7 +158,6 @@
             <div style="display: flex; gap: 16px;">
                 <a href="catalogue.html" style="color: #94a3b8;">Catalogue</a>
                 <a href="contact.html" style="color: #94a3b8;">Contact</a>
-                <a href="status.html" style="color: #94a3b8;">Status</a>
             </div>
         </div>
     </footer>

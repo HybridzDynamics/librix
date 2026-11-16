@@ -26,7 +26,6 @@
             <a href="catalogue.html">Catalogue</a>
             <a href="about.html">About</a>
             <a href="contact.html" class="active">Contact</a>
-            <a href="status.html">System Status</a>
         </div>
         <div class="nav-auth" id="nav-auth-container">
             <a href="login.html" class="btn btn-outline btn-sm">Login</a>
@@ -50,20 +49,20 @@
                 <h2 style="font-size: var(--font-xl); font-weight: 800; margin-bottom: 6px;">Send Us a Message</h2>
                 <p style="font-size: var(--font-sm); color: var(--text-muted); margin-bottom: 24px;">Our circulation librarians typically reply within 24 hours.</p>
 
-                <form id="contact-form" novalidate>
-                    <div class="form-group">
-                        <label for="name" class="form-label">Full Name <span class="required">*</span></label>
-                        <input type="text" id="name" class="form-input" placeholder="Your name" required>
+                <form id="contact-form" novalidate style="display: flex; flex-direction: column; gap: 18px;">
+                    <div>
+                        <label for="name" style="display: block; font-size: var(--font-sm); font-weight: 600; margin-bottom: 6px; color: var(--text-main);">Full Name <span style="color: var(--danger);">*</span></label>
+                        <input type="text" id="name" placeholder="Your name" required style="width: 100%; padding: 10px 12px; border: 1px solid var(--border); border-radius: var(--radius); font-size: var(--font-sm); background: #ffffff;">
                     </div>
 
-                    <div class="form-group">
-                        <label for="email" class="form-label">Email Address <span class="required">*</span></label>
-                        <input type="email" id="email" class="form-input" placeholder="you@domain.com" required>
+                    <div>
+                        <label for="email" style="display: block; font-size: var(--font-sm); font-weight: 600; margin-bottom: 6px; color: var(--text-main);">Email Address <span style="color: var(--danger);">*</span></label>
+                        <input type="email" id="email" placeholder="you@domain.com" required style="width: 100%; padding: 10px 12px; border: 1px solid var(--border); border-radius: var(--radius); font-size: var(--font-sm); background: #ffffff;">
                     </div>
 
-                    <div class="form-group">
-                        <label for="subject" class="form-label">Inquiry Subject <span class="required">*</span></label>
-                        <select id="subject" class="form-select" required>
+                    <div>
+                        <label for="subject" style="display: block; font-size: var(--font-sm); font-weight: 600; margin-bottom: 6px; color: var(--text-main);">Inquiry Subject <span style="color: var(--danger);">*</span></label>
+                        <select id="subject" required style="width: 100%; padding: 10px 12px; border: 1px solid var(--border); border-radius: var(--radius); font-size: var(--font-sm); background: #ffffff;">
                             <option value="">Select a topic...</option>
                             <option value="borrowing">Borrowing & Renewals Question</option>
                             <option value="recommendation">Recommend a Book for Catalogue</option>
@@ -74,12 +73,12 @@
                         </select>
                     </div>
 
-                    <div class="form-group">
-                        <label for="message" class="form-label">Message <span class="required">*</span></label>
-                        <textarea id="message" class="form-textarea" rows="4" placeholder="How can our library team assist you?" required></textarea>
+                    <div>
+                        <label for="message" style="display: block; font-size: var(--font-sm); font-weight: 600; margin-bottom: 6px; color: var(--text-main);">Message <span style="color: var(--danger);">*</span></label>
+                        <textarea id="message" rows="4" placeholder="How can our library team assist you?" required style="width: 100%; padding: 10px 12px; border: 1px solid var(--border); border-radius: var(--radius); font-size: var(--font-sm); background: #ffffff; resize: vertical;"></textarea>
                     </div>
 
-                    <button type="submit" id="contact-submit-btn" class="btn btn-primary" style="width: 100%;">
+                    <button type="submit" id="contact-submit-btn" class="btn btn-primary" style="width: 100%; padding: 12px;">
                         Send Inquiry
                     </button>
                 </form>
@@ -89,24 +88,24 @@
 
                 <div style="display: flex; flex-direction: column; gap: 16px; margin-bottom: 36px;">
                     <div class="stat-card">
-                        <div class="stat-icon stat-icon-primary">📍</div>
+                        <div class="stat-icon stat-icon-primary"><i data-lucide="map-pin" data-size="20"></i></div>
                         <div>
-                            <h4 style="font-size: var(--font-sm); font-weight: 700; margin-bottom: 2px;">Central Campus Library</h4>
-                            <p style="font-size: var(--font-xs); color: var(--text-muted); margin: 0;">100 University Boulevard, Building C</p>
+                            <h4 style="font-size: var(--font-sm); font-weight: 700; margin-bottom: 2px;">Library Address</h4>
+                            <p style="font-size: var(--font-xs); color: var(--text-muted); margin: 0;">Contact administration for location details</p>
                         </div>
                     </div>
                     <div class="stat-card">
-                        <div class="stat-icon stat-icon-success">🕒</div>
+                        <div class="stat-icon stat-icon-success"><i data-lucide="clock" data-size="20"></i></div>
                         <div>
-                            <h4 style="font-size: var(--font-sm); font-weight: 700; margin-bottom: 2px;">Circulation Desk Hours</h4>
-                            <p style="font-size: var(--font-xs); color: var(--text-muted); margin: 0;">Mon - Fri: 8:00 AM - 8:00 PM • Sat: 9:00 AM - 5:00 PM</p>
+                            <h4 style="font-size: var(--font-sm); font-weight: 700; margin-bottom: 2px;">Business Hours</h4>
+                            <p style="font-size: var(--font-xs); color: var(--text-muted); margin: 0;">Contact administration for hours of operation</p>
                         </div>
                     </div>
                     <div class="stat-card">
-                        <div class="stat-icon stat-icon-info">data-lucide="mail"</div>
+                        <div class="stat-icon stat-icon-info"><i data-lucide="mail" data-size="20"></i></div>
                         <div>
-                            <h4 style="font-size: var(--font-sm); font-weight: 700; margin-bottom: 2px;">Direct Email & Phone</h4>
-                            <p style="font-size: var(--font-xs); color: var(--text-muted); margin: 0;">librarian@librix.local • (555) 019-2834</p>
+                            <h4 style="font-size: var(--font-sm); font-weight: 700; margin-bottom: 2px;">Contact Email</h4>
+                            <p style="font-size: var(--font-xs); color: var(--text-muted); margin: 0;">contact@yourlibrary.com</p>
                         </div>
                     </div>
                 </div>
@@ -116,15 +115,15 @@
                     <div style="display: flex; flex-direction: column; gap: 14px; font-size: var(--font-sm);">
                         <div>
                             <strong style="color: var(--text-main); display: block; margin-bottom: 2px;">How long can I borrow a book?</strong>
-                            <span style="color: var(--text-muted); font-size: var(--font-xs);">Standard loan period is 14 days with up to 2 renewals if no other patron has reserved the title.</span>
+                            <span style="color: var(--text-muted); font-size: var(--font-xs);">Contact library staff for current loan policies and renewal options.</span>
                         </div>
                         <div>
                             <strong style="color: var(--text-main); display: block; margin-bottom: 2px;">How are overdue fines handled?</strong>
-                            <span style="color: var(--text-muted); font-size: var(--font-xs);">Overdue fines accumulate at $0.50/day after the grace period and can be paid or waived via the admin desk.</span>
+                            <span style="color: var(--text-muted); font-size: var(--font-xs);">Contact library staff for fine rates and payment options.</span>
                         </div>
                         <div>
                             <strong style="color: var(--text-main); display: block; margin-bottom: 2px;">How does Readability scoring work?</strong>
-                            <span style="color: var(--text-muted); font-size: var(--font-xs);">Our background analyzer scans word and sentence syllables using the Flesch-Kincaid formula to estimate reading ease.</span>
+                            <span style="color: var(--text-muted); font-size: var(--font-xs);">The system analyzes text patterns to estimate reading difficulty and grade level.</span>
                         </div>
                     </div>
                 </div>
@@ -142,7 +141,6 @@
             <div style="display: flex; gap: 16px;">
                 <a href="catalogue.html" style="color: #94a3b8;">Catalogue</a>
                 <a href="about.html" style="color: #94a3b8;">About</a>
-                <a href="status.html" style="color: #94a3b8;">Status</a>
             </div>
         </div>
     </footer>
@@ -151,39 +149,47 @@
     <script src="../assets/js/utils.js"></script>
     <script src="../assets/js/auth.js"></script>
     <script>
-
         document.addEventListener('DOMContentLoaded', function() {
             auth.updateNav();
-        });
 
-        if (auth.isLoggedIn()) {
-            const user = auth.getUser();
-            document.getElementById('name').value = user.name || '';
-            document.getElementById('email').value = user.email || '';
-        }
-
-        document.getElementById('contact-form').addEventListener('submit', function(e) {
-            e.preventDefault();
-            const name = document.getElementById('name').value.trim();
-            const email = document.getElementById('email').value.trim();
-            const subject = document.getElementById('subject').value;
-            const message = document.getElementById('message').value.trim();
-
-            if (!name || !email || !subject || !message) {
-                utils.toast("Missing Information", "Please fill in all required fields.", "warning");
-                return;
+            if (auth.isLoggedIn()) {
+                const user = auth.getUser();
+                document.getElementById('name').value = user.name || '';
+                document.getElementById('email').value = user.email || '';
             }
 
-            const btn = document.getElementById('contact-submit-btn');
-            btn.disabled = true;
-            btn.textContent = 'Transmitting inquiry...';
+            document.getElementById('contact-form').addEventListener('submit', function(e) {
+                e.preventDefault();
+                const name = document.getElementById('name').value.trim();
+                const email = document.getElementById('email').value.trim();
+                const subject = document.getElementById('subject').value;
+                const message = document.getElementById('message').value.trim();
 
-            setTimeout(() => {
-                utils.toast("Inquiry Dispatched", "Your message has been received by our library team. Thank you!", "success", 6000);
-                document.getElementById('message').value = '';
-                btn.disabled = false;
-                btn.textContent = 'Send Inquiry';
-            }, 800);
+                if (!name || !email || !subject || !message) {
+                    utils.toast("Missing Information", "Please fill in all required fields.", "warning");
+                    return;
+                }
+
+                const btn = document.getElementById('contact-submit-btn');
+                btn.disabled = true;
+                btn.textContent = 'Transmitting inquiry...';
+
+                api.post('/contact/submit', {
+                    name: name,
+                    email: email,
+                    subject: subject,
+                    message: message
+                }).then(function() {
+                    utils.toast("Inquiry Dispatched", "Your message has been received by our library team. Thank you!", "success", 6000);
+                    document.getElementById('message').value = '';
+                    btn.disabled = false;
+                    btn.textContent = 'Send Inquiry';
+                }).catch(function(err) {
+                    utils.toast("Submission Failed", (err && err.message) ? err.message : "Could not send your inquiry. Please try again.", "error");
+                    btn.disabled = false;
+                    btn.textContent = 'Send Inquiry';
+                });
+            });
         });
     </script>
 </body>

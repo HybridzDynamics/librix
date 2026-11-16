@@ -56,7 +56,7 @@ $Filename = "user_{$UserId}_" . time() . "_{$Ext}." . $Ext;
 
 $UploadDir = defined("PROFILE_PIC_UPLOAD_PATH")
     ? PROFILE_PIC_UPLOAD_PATH
-    : dirname(__DIR__, 3) . "/uploads/profile_pics/";
+    : dirname(__DIR__, 3) . "/uploads/profile-pictures/";
 
 if (!is_dir($UploadDir)) {
     @mkdir($UploadDir, 0755, true);
@@ -83,7 +83,7 @@ try {
 
 }
 
-$UrlPath = (defined("PROFILE_PIC_URL_PATH") ? PROFILE_PIC_URL_PATH : "/uploads/profile_pics/") . $Filename;
+$UrlPath = (defined("PROFILE_PIC_URL_PATH") ? PROFILE_PIC_URL_PATH : "/uploads/profile-pictures/") . $Filename;
 
 try {
     $Stmt = $pdo->prepare("UPDATE users SET profile_picture_path = ?, updated_at = NOW() WHERE id = ?");

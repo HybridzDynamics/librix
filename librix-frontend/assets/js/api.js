@@ -4,8 +4,7 @@
     let baseUrl = (window.LIBRIX_API_BASE_URL || window.API_BASE_URL || '').replace(/\/+$/, '');
 
     if (!baseUrl) {
-        const origin = window.location.origin || '';
-        baseUrl = origin + '/librix-backend/index.php/api/v1';
+        baseUrl = 'http://localhost:8000/index.php/api/v1';
     }
 
     const api = {
@@ -49,6 +48,14 @@
 
                     if (response.ok) {
                         return data || { success: true, data: null };
+                    }
+
+                    if (response.status === 401) {
+                        localStorage.removeItem('librix_token');
+                        localStorage.removeItem('librix_user');
+                        const loginPage = window.location.pathname.indexOf('/pages/') !== -1 ? 'login.html' : 'pages/login.html';
+                        window.location.href = loginPage;
+                        return new Promise(function() {});
                     }
 
                     const message = (data && (data.error || data.message)) || 'Request failed';

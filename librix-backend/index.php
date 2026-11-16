@@ -27,17 +27,17 @@ $path = trim($path, "/");
 
 $basePath = trim(dirname($_SERVER["SCRIPT_NAME"]), "/");
 
-if ($basePath !== "" && !str_contains($path, "api")) {
-    if (str_starts_with($path, $basePath)) {
-        $path = trim(substr($path, strlen($basePath)), "/");
-    }
+if ($basePath !== "" && str_starts_with($path, $basePath . "/")) {
+    $path = substr($path, strlen($basePath) + 1);
 }
 
-if (str_starts_with($path, "index.php")) {
-    $path = trim(substr($path, strlen("index.php")), "/");
+if (str_starts_with($path, "index.php/")) {
+    $path = substr($path, strlen("index.php/"));
+} elseif ($path === "index.php") {
+    $path = "";
 }
 
-$path = ltrim($path, "/");
+$path = trim($path, "/");
 
 $parts = $path === "" ? [] : explode("/", $path);
 
@@ -396,6 +396,14 @@ switch ($route) {
         }
 
         methodNotAllowedResponse(["GET"]);
+        break;
+
+    case "contact":
+        if ($method === "POST" && $subRoute === "submit") {
+            require_once __DIR__ . "/api/v1/contact/submit.php";
+        }
+
+        notFoundResponse("Contact route not found");
         break;
 
     default:

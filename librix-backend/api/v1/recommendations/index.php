@@ -2,7 +2,6 @@
 
 require_once __DIR__ . "/../../../config/config.php";
 require_once __DIR__ . "/../../../config/database.php";
-require_once __DIR__ . "/../../../config/bookmind.php";
 require_once __DIR__ . "/../../../helpers/response.php";
 require_once __DIR__ . "/../../../helpers/functions.php";
 require_once __DIR__ . "/../../../middleware/auth.php";
@@ -21,127 +20,19 @@ try {
 $Limit = isset($_GET["limit"]) ? min(50, max(1, (int)$_GET["limit"])) : 10;
 $Type = $_GET["type"] ?? "popular";
 $BookId = isset($_GET["book_id"]) ? (int)$_GET["book_id"] : null;
-$UserId = isset($_GET["user_id"]) ? (int)$_GET["user_id"] : null;
-
-$BookMindBaseUrl = BOOKMIND_API_URL;
 
 try {
-    $Recommendations = [];
-    $BookMindAvailable = false;
-
-    $HealthCheckUrl = BOOKMEND_HEALTH_ENDPOINT;
-    $HealthCheck = @file_get_contents($HealthCheckUrl);
-    if ($HealthCheck !== false) {
-        $HealthData = json_decode($HealthCheck, true);
-        if (isset($HealthData["status"]) && $HealthData["status"] === "healthy") {
-            $BookMindAvailable = true;
-        }
-    }
-
-    if ($BookMindAvailable) {
-        switch ($Type) {
-            case "popular":
-
-                $Url = $BookMindBaseUrl . "/recommendations/popular?limit=" . $Limit;
-                $Response = @file_get_contents($Url);
-                if ($Response !== false) {
-                    $Data = json_decode($Response, true);
-                    if (isset($Data["recommendations"])) {
-                        $Recommendations = $Data["recommendations"];
-                    }
-                }
-                break;
-
-            case "content":
-
-                if (!$BookId) {
-                    errorResponse("book_id parameter is required for content recommendations", 400);
-                }
-                $Url = $BookMindBaseUrl . "/recommendations/content/" . $BookId . "?limit=" . $Limit;
-                $Response = @file_get_contents($Url);
-                if ($Response !== false) {
-                    $Data = json_decode($Response, true);
-                    if (isset($Data["recommendations"])) {
-                        $Recommendations = $Data["recommendations"];
-                    }
-                }
-                break;
-
-            case "collaborative":
-
-                $TargetUserId = $UserId ?: ($User ? $User["id"] : null);
-                if (!$TargetUserId) {
-                    errorResponse("user_id parameter is required for collaborative recommendations", 400);
-                }
-                $Url = $BookMindBaseUrl . "/recommendations/collaborative/" . $TargetUserId . "?limit=" . $Limit;
-                $Response = @file_get_contents($Url);
-                if ($Response !== false) {
-                    $Data = json_decode($Response, true);
-                    if (isset($Data["recommendations"])) {
-                        $Recommendations = $Data["recommendations"];
-                    }
-                }
-                break;
-
-            case "hybrid":
-
-                $TargetUserId = $UserId ?: ($User ? $User["id"] : null);
-                if ($TargetUserId) {
-                    $Url = $BookMindBaseUrl . "/recommendations/hybrid/" . $TargetUserId . "?limit=" . $Limit;
-                    $Response = @file_get_contents($Url);
-                    if ($Response !== false) {
-                        $Data = json_decode($Response, true);
-                        if (isset($Data["recommendations"])) {
-                            $Recommendations = $Data["recommendations"];
-                        }
-                    }
-                } else {
-
-                    $Url = $BookMindBaseUrl . "/recommendations/popular?limit=" . $Limit;
-                    $Response = @file_get_contents($Url);
-                    if ($Response !== false) {
-                        $Data = json_decode($Response, true);
-                        if (isset($Data["recommendations"])) {
-                            $Recommendations = $Data["recommendations"];
-
-                            foreach ($Recommendations as &$Rec) {
-                                $Rec["fallback_reason"] = "cold_start_recommendation";
-                            }
-                        }
-                    }
-                }
-                break;
-
-            default:
-                errorResponse("Invalid recommendation type. Use: popular, content, collaborative, or hybrid", 400);
-        }
-    }
-
-    if (empty($Recommendations) || !$BookMindAvailable) {
-        $Recommendations = getFallbackRecommendations($pdo, $Limit, $Type, $BookId, $User);
-        $Source = $BookMindAvailable ? "bookmind" : "database_fallback";
-    } else {
-        $Source = "bookmind";
-    }
-
-    successResponse([
-        "recommendations" => $Recommendations,
-        "type" => $Type,
-        "count" => count($Recommendations),
-        "source" => $Source,
-        "bookmind_available" => $BookMindAvailable
-    ], "Recommendations retrieved successfully");
-
-} catch (Exception $e) {
     $Recommendations = getFallbackRecommendations($pdo, $Limit, $Type, $BookId, $User);
 
     successResponse([
         "recommendations" => $Recommendations,
         "type" => $Type,
         "count" => count($Recommendations),
-        "source" => "database_fallback",
-        "bookmind_available" => false
+        "source" => "database"
     ], "Recommendations retrieved successfully");
+
+} catch (Exception $e) {
+    errorResponse("Failed to retrieve recommendations", 500);
 }
 
 function getFallbackRecommendations($pdo, $limit, $type, $bookId, $user) {

@@ -55,7 +55,7 @@ $PasswordError = required($Password, "Password");
 if ($PasswordError !== null) {
     $Errors["password"] = $PasswordError;
 } else {
-    $PasswordError = minLength($Password, 8, "Password");
+    $PasswordError = minLength($Password, 6, "Password");
 
     if ($PasswordError !== null) {
         $Errors["password"] = $PasswordError;
@@ -88,10 +88,7 @@ $HashedPassword = password_hash(
     PASSWORD_DEFAULT
 );
 
-$UserRole = $RequestData["role"] ?? "user";
-if (!in_array($UserRole, ["user", "librarian"])) {
-    $UserRole = "user";
-}
+$UserRole = "user";
 
 $OrgId = isset($RequestData["org_id"]) ? (int)$RequestData["org_id"] : null;
 

@@ -28,7 +28,6 @@
             <a href="catalogue.html" class="active">Catalogue</a>
             <a href="about.html">About</a>
             <a href="contact.html">Contact</a>
-            <a href="status.html">System Status</a>
         </div>
         <div class="nav-auth" id="nav-auth-container">
             <a href="login.html" class="btn btn-outline btn-sm">Login</a>
@@ -117,7 +116,7 @@
                     </div>
 
                     <p style="font-size: var(--font-xs); color: var(--text-muted); margin-top: 14px; margin-bottom: 0;">
-                        💡 <strong>Understanding the score:</strong> Higher Reading Ease (80+) means simpler, faster reading. Lower scores indicate rich, scholarly or technical vocabulary.
+                        <i data-lucide="lightbulb" data-size="14" style="vertical-align: middle; margin-right: 4px;"></i> <strong>Understanding the score:</strong> Higher Reading Ease (80+) means simpler, faster reading. Lower scores indicate rich, scholarly or technical vocabulary.
                     </p>
                 </div>
 
@@ -210,7 +209,6 @@
             <div style="display: flex; gap: 16px;">
                 <a href="about.html" style="color: #94a3b8;">About</a>
                 <a href="contact.html" style="color: #94a3b8;">Contact</a>
-                <a href="status.html" style="color: #94a3b8;">Status</a>
             </div>
         </div>
     </footer>
@@ -292,7 +290,8 @@
                 actionBtn.className = 'btn btn-primary btn-lg';
                 actionBtn.onclick = handleBorrow;
             } else {
-                stockContainer.innerHTML = `<span class="badge badge-danger" style="font-size: 13px; width: 100%; justify-content: center; padding: 6px;">⚠ All Copies Checked Out</span>`;
+                stockContainer.innerHTML = `<span class="badge badge-danger" style="font-size: 13px; width: 100%; justify-content: center; padding: 6px;"><i data-lucide="alert-triangle" data-size="14" style="margin-right: 4px;"></i> All Copies Checked Out</span>`;
+                lucide.createIcons(stockContainer);
                 actionBtn.textContent = 'Place a Reservation';
                 actionBtn.className = 'btn btn-secondary btn-lg';
                 actionBtn.onclick = handleReserve;
