@@ -185,7 +185,7 @@
                 limit: pageSize,
                 search: searchInput.value.trim(),
                 category: categorySelect.value,
-                available: availabilitySelect.value === "available" ? 1 : "",
+                available: availabilitySelect.value === "available" ? 1 : (availabilitySelect.value === "unavailable" ? 0 : ""),
                 sort: sortSelect.value
             };
 
@@ -255,7 +255,11 @@
 
                             <div class="book-readability-snippet">
                                 <span style="color: var(--text-muted);">Difficulty:</span>
-                                <span style="font-weight: 600; color: var(--primary);">Standard (Grade 8)</span>
+                                ${book.flesch_kincaid_grade !== null && book.flesch_kincaid_grade !== undefined
+                                    ? `<span style="font-weight: 600; color: var(--primary);">Grade ${Number(book.flesch_kincaid_grade).toFixed(1)}</span>
+                                       <span style="color: var(--text-muted);">&middot; ${utils.escapeHtml((book.difficulty_level || 'standard').replace(/_/g, ' '))}</span>
+                                       ${book.estimated_reading_minutes ? `<span style="color: var(--text-muted);">&middot; ~${book.estimated_reading_minutes} min</span>` : ''}`
+                                    : `<span style="color: var(--text-muted);">Not analyzed</span>`}
                             </div>
 
                             <div style="margin-top: auto; display: flex; gap: 8px;">

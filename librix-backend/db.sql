@@ -1,6 +1,4 @@
 CREATE DATABASE IF NOT EXISTS librix
-CHARACTER SET utf8mb4
-COLLATE utf8mb4_unicode_ci;
 
 USE librix;
 
@@ -12,7 +10,7 @@ CREATE TABLE IF NOT EXISTS organizations (
     contact_email VARCHAR(255) NULL,
     logo_url VARCHAR(500) NULL,
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
 );
 CREATE TABLE IF NOT EXISTS users (
     id INT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
@@ -33,7 +31,7 @@ CREATE TABLE IF NOT EXISTS users (
         FOREIGN KEY (org_id)
         REFERENCES organizations(id)
         ON DELETE SET NULL
-        ON UPDATE CASCADE,
+        ON UPDATE CASCADE
 );
 CREATE TABLE IF NOT EXISTS authors (
     id INT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
@@ -96,7 +94,7 @@ CREATE TABLE IF NOT EXISTS books (
         FOREIGN KEY (publisher_id)
         REFERENCES publishers(id)
         ON DELETE SET NULL
-        ON UPDATE CASCADE,
+        ON UPDATE CASCADE
 );
 CREATE TABLE IF NOT EXISTS book_issues (
     id INT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
@@ -122,7 +120,7 @@ CREATE TABLE IF NOT EXISTS book_issues (
     CONSTRAINT fk_issues_user
         FOREIGN KEY (user_id)
         REFERENCES users(id)
-        ON DELETE CASCADE,
+        ON DELETE CASCADE
 );
 CREATE TABLE IF NOT EXISTS reservations (
     id INT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
@@ -146,7 +144,7 @@ CREATE TABLE IF NOT EXISTS reservations (
     CONSTRAINT fk_reservations_user
         FOREIGN KEY (user_id)
         REFERENCES users(id)
-        ON DELETE CASCADE,
+        ON DELETE CASCADE
 );
 CREATE TABLE IF NOT EXISTS fines (
     id INT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
@@ -181,7 +179,7 @@ CREATE TABLE IF NOT EXISTS reviews (
     CONSTRAINT fk_reviews_user
         FOREIGN KEY (user_id)
         REFERENCES users(id)
-        ON DELETE CASCADE,
+        ON DELETE CASCADE
 );
 CREATE TABLE IF NOT EXISTS readability_analysis (
     id INT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
@@ -212,7 +210,7 @@ CREATE TABLE IF NOT EXISTS favorites (
     CONSTRAINT fk_favorites_book
         FOREIGN KEY (book_id)
         REFERENCES books(id)
-        ON DELETE CASCADE,
+        ON DELETE CASCADE
 );
 CREATE TABLE IF NOT EXISTS notifications (
     id INT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
@@ -236,7 +234,7 @@ CREATE TABLE IF NOT EXISTS auth_tokens (
     CONSTRAINT fk_tokens_user
         FOREIGN KEY (user_id)
         REFERENCES users(id)
-        ON DELETE CASCADE,
+        ON DELETE CASCADE
 );
 CREATE TABLE IF NOT EXISTS status_checks (
     id INT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
@@ -342,7 +340,7 @@ CREATE TABLE IF NOT EXISTS email_notifications (
     CONSTRAINT fk_email_notifications_user
         FOREIGN KEY (user_id)
         REFERENCES users(id)
-        ON DELETE CASCADE,
+        ON DELETE CASCADE
 );
 CREATE TABLE IF NOT EXISTS fine_payments (
     id BIGINT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
@@ -362,7 +360,7 @@ CREATE TABLE IF NOT EXISTS fine_payments (
     CONSTRAINT fk_fine_payments_issue
         FOREIGN KEY (issue_id)
         REFERENCES book_issues(id)
-        ON DELETE SET NULL,
+        ON DELETE SET NULL
 );
 CREATE TABLE IF NOT EXISTS file_uploads (
     id BIGINT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
@@ -382,7 +380,7 @@ CREATE TABLE IF NOT EXISTS file_uploads (
     CONSTRAINT fk_file_uploads_org
         FOREIGN KEY (org_id)
         REFERENCES organizations(id)
-        ON DELETE SET NULL,
+        ON DELETE SET NULL
 );
 CREATE TABLE IF NOT EXISTS book_recommendations (
     id BIGINT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
@@ -399,7 +397,7 @@ CREATE TABLE IF NOT EXISTS book_recommendations (
     CONSTRAINT fk_recommendations_book
         FOREIGN KEY (book_id)
         REFERENCES books(id)
-        ON DELETE CASCADE,
+        ON DELETE CASCADE
 );
 INSERT INTO users (name, email, password, role, status) VALUES
 ('System Admin', 'admin@librix.com', '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi', 'admin', 'active')
